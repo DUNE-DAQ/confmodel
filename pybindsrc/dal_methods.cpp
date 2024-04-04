@@ -25,7 +25,7 @@ namespace dunedaq::coredal::python {
 
   struct ObjectLocator {
     ObjectLocator(const std::string& id_arg, const std::string& class_name_arg) :
-      id(id_arg), class_name(class_name_arg) 
+      id(id_arg), class_name(class_name_arg)
       {}
     const std::string id;
     const std::string class_name;
@@ -75,11 +75,11 @@ namespace dunedaq::coredal::python {
 
     component_ptr->get_parents(*session_ptr, parents);
 
-    for (const auto& parent : parents) { 
+    for (const auto& parent : parents) {
       std::vector<ObjectLocator> parents_components;
-      for (const auto& ancestor_component_ptr : parent) { 
+      for (const auto& ancestor_component_ptr : parent) {
         parents_components.emplace_back(
-          ObjectLocator(ancestor_component_ptr->UID(), 
+          ObjectLocator(ancestor_component_ptr->UID(),
                         ancestor_component_ptr->class_name()) );
       }
       parent_ids.emplace_back(parents_components);
@@ -95,6 +95,14 @@ namespace dunedaq::coredal::python {
     }
     return resources;
   }
+
+  std::vector<std::string> application_parse_commandline_parameters(const Configuration& db,
+                                                                    const std::string& app_id) {
+    auto app = const_cast<Configuration&>(db).get<dunedaq::coredal::DaqApplication>(app_id);
+    return app->parse_commandline_parameters();
+  }
+
+
 void
 register_dal_methods(py::module& m)
 {
@@ -110,6 +118,7 @@ register_dal_methods(py::module& m)
   m.def("component_disabled", &component_disabled, "Determine if a Component-derived object (e.g. a Segment) has been disabled");
   m.def("component_get_parents", &component_get_parents, "Get the Component-derived class instances of the parent(s) of the Component-derived object in question");
   m.def("daqapp_get_used_resources", &daq_application_get_used_hostresources, "Get list of HostResources used by DAQApplication");
+  m.def("application_parse_commandline_parameters", &application_parse_commandline_parameters, "Get a version of the command line agruments parsed");
 }
 
 } // namespace dunedaq::coredal::python

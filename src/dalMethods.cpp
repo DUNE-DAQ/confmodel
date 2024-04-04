@@ -13,11 +13,14 @@
 #include "coredal/DaqApplication.hpp"
 #include "coredal/DaqModule.hpp"
 #include "coredal/Jsonable.hpp"
+#include "coredal/PhysicalHost.hpp"
 #include "coredal/Resource.hpp"
 #include "coredal/ResourceSetAND.hpp"
 #include "coredal/ResourceSetOR.hpp"
 #include "coredal/Segment.hpp"
 #include "coredal/Session.hpp"
+#include "coredal/Service.hpp"
+#include "coredal/VirtualHost.hpp"
 
 #include "test_circular_dependency.hpp"
 
@@ -274,6 +277,56 @@ nlohmann::json get_json_config(oksdbinterfaces::Configuration& confdb,
 nlohmann::json Jsonable::to_json(bool direct_only) const {
 
   return get_json_config(p_db, class_name(), UID(), direct_only);
+}
+
+/*
+  * Turns key into upper case
+  * Replace KEY from `original` with `value`
+  */
+
+const std::string search_replace_uppercase(const std::string original,
+                                            const std::string key,
+                                            const std::string value) {
+  std::string out = original;
+  std::string KEY;
+  std::transform(key.begin(), key.end(), std::back_inserter(KEY), ::toupper);
+  std::size_t pos = original.find(KEY);
+
+  if (pos != std::string::npos)
+    out.replace(pos, KEY.length(), value);
+  return out;
+}
+
+const std::vector<std::string> Application::parse_commandline_parameters() const {
+
+  std::vector<std::string> CLAs = get_commandline_parameters();
+  std::lock_guard scoped_lock(m_mutex);
+  const std::string host = get_runs_on()->get_runs_on()->UID();
+
+  for (auto& CLA: CLAs) {
+    std::string host_keyword = "{{APP_HOST}}";
+    CLA = search_replace_uppercase(CLA, host_keyword, host);
+
+    for (auto const& SVC: get_exposes_service()) {
+      std::string keyword = "{{SVC_"+SVC->UID()+"_PORT}}";
+      CLA = search_replace_uppercase(CLA, keyword, std::to_string(SVC->get_port()));
+
+      keyword = "{{SVC_"+SVC->get_protocol()+"_PROTOCOL}}";
+      CLA = search_replace_uppercase(CLA, keyword, SVC->get_protocol());
+
+      keyword = "{{SVC_"+SVC->get_eth_device_name()+"_ETH_DEVICE_NAME}}";
+      CLA = search_replace_uppercase(CLA, keyword, SVC->get_eth_device_name());
+    }
+  }
+  for (auto& CLA: CLAs) {
+    std::size_t pos_start = CLA.find("{{");
+    std::size_t pos_end   = CLA.find("}}");
+
+    if (pos_start != std::string::npos and pos_end != std::string::npos)
+      throw UnresolvedCommandLineParameter(ERS_HERE, CLA);
+
+  }
+  return CLAs;
 }
 
 }

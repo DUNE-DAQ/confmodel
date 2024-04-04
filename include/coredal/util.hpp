@@ -22,7 +22,7 @@ namespace coredal {
      *
      *  The last parameter of the algorithm can be used to optimise performance
      *  of the DAL in case if a database server config implementation %is used.
-     *  The parameter defines how many layers of objects referenced by given 
+     *  The parameter defines how many layers of objects referenced by given
      *  session object should be read into client's config cache together with
      *  session object during single network operation. For example:
      *  - if the parameter %is 0, then only session object %is read;
@@ -56,6 +56,9 @@ namespace coredal {
       attributes[name] = nlohmann::json(value_vector);
     }
   }
+
+
+
 } // namespace coredal
 
 
@@ -285,6 +288,15 @@ namespace coredal {
     ((std::string)segment)
     ((std::string)first)
     ((std::string)second)
+  )
+
+  ERS_DECLARE_ISSUE_BASE(
+    coredal,
+    UnresolvedCommandLineParameter,
+    AlgorithmError,
+    "The command line parameter \"" << command_line << "\" could not be resolved",
+    ,
+    ((std::string)command_line)
   )
 
 } // namespace dunedaq
