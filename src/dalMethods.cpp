@@ -285,8 +285,9 @@ nlohmann::json Jsonable::to_json(bool direct_only) const {
   */
 
 const std::string search_replace_uppercase(const std::string original,
-                                            const std::string key,
-                                            const std::string value) {
+                                           const std::string key,
+                                           const std::string value) {
+
   std::string out = original;
   std::string KEY;
   std::transform(key.begin(), key.end(), std::back_inserter(KEY), ::toupper);
@@ -298,26 +299,27 @@ const std::string search_replace_uppercase(const std::string original,
 }
 
 const std::vector<std::string> Application::parse_commandline_parameters() const {
-
   std::vector<std::string> CLAs = get_commandline_parameters();
+
   std::lock_guard scoped_lock(m_mutex);
-  const std::string host = get_runs_on()->get_runs_on()->UID();
+  const std::string host = m_runs_on->get_runs_on()->UID();
 
   for (auto& CLA: CLAs) {
     std::string host_keyword = "{{APP_HOST}}";
     CLA = search_replace_uppercase(CLA, host_keyword, host);
 
-    for (auto const& SVC: get_exposes_service()) {
+    for (auto const& SVC: m_exposes_service) {
       std::string keyword = "{{SVC_"+SVC->UID()+"_PORT}}";
       CLA = search_replace_uppercase(CLA, keyword, std::to_string(SVC->get_port()));
 
-      keyword = "{{SVC_"+SVC->get_protocol()+"_PROTOCOL}}";
+      keyword = "{{SVC_"+SVC->UID()+"_PROTOCOL}}";
       CLA = search_replace_uppercase(CLA, keyword, SVC->get_protocol());
 
-      keyword = "{{SVC_"+SVC->get_eth_device_name()+"_ETH_DEVICE_NAME}}";
+      keyword = "{{SVC_"+SVC->UID()+"_ETH_DEVICE_NAME}}";
       CLA = search_replace_uppercase(CLA, keyword, SVC->get_eth_device_name());
     }
   }
+
   for (auto& CLA: CLAs) {
     std::size_t pos_start = CLA.find("{{");
     std::size_t pos_end   = CLA.find("}}");
