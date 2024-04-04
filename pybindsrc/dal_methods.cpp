@@ -98,7 +98,7 @@ namespace dunedaq::coredal::python {
 
   std::vector<std::string> application_parse_commandline_parameters(const Configuration& db,
                                                                     const std::string& app_id) {
-    auto app = const_cast<Configuration&>(db).get<dunedaq::coredal::DaqApplication>(app_id);
+    auto app = const_cast<Configuration&>(db).get<dunedaq::coredal::Application>(app_id);
     return app->parse_commandline_parameters();
   }
 
