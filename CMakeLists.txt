@@ -28,6 +28,9 @@ daq_add_library(dalMethods.cpp
 daq_add_application(listApps list_apps.cxx
   LINK_LIBRARIES coredal oksdbinterfaces::oksdbinterfaces)
 
+daq_add_application(getAppsArguments get_apps_arguments.cxx
+  LINK_LIBRARIES coredal oksdbinterfaces::oksdbinterfaces)
+
 daq_add_application(disable_test disable_test.cxx TEST
   LINK_LIBRARIES coredal oksdbinterfaces::oksdbinterfaces logging::logging)
 ##############################################################################
