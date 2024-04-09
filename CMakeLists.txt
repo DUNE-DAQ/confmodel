@@ -1,4 +1,3 @@
-
 cmake_minimum_required(VERSION 3.12)
 project(coredal VERSION 1.2.0)
 
@@ -26,9 +25,6 @@ daq_add_library(dalMethods.cpp
 
 
 daq_add_application(listApps list_apps.cxx
-  LINK_LIBRARIES coredal oksdbinterfaces::oksdbinterfaces)
-
-daq_add_application(getAppsArguments get_apps_arguments.cxx
   LINK_LIBRARIES coredal oksdbinterfaces::oksdbinterfaces)
 
 daq_add_application(disable_test disable_test.cxx TEST
