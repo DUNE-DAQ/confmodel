@@ -13,6 +13,7 @@
 #include "coredal/Application.hpp"
 #include "coredal/DaqApplication.hpp"
 #include "coredal/HostComponent.hpp"
+#include "coredal/RCApplication.hpp"
 #include "coredal/Session.hpp"
 
 
@@ -96,13 +97,21 @@ namespace dunedaq::coredal::python {
     return resources;
   }
 
-  std::vector<std::string> application_parse_commandline_parameters(const Configuration& db,
-                                                                    const std::string& app_id) {
-    auto app = const_cast<Configuration&>(db).get<dunedaq::coredal::Application>(app_id);
-    return app->parse_commandline_parameters();
+  std::vector<std::string> daq_application_construct_commandline_parameters(const Configuration& db,
+                                                                            const std::string& session_id,
+                                                                            const std::string& app_id) {
+    const auto* app = const_cast<Configuration&>(db).get<dunedaq::coredal::DaqApplication>(app_id);
+    const auto* session = const_cast<Configuration&>(db).get<dunedaq::coredal::Session>(session_id);
+    return app->construct_commandline_parameters(db, session);
   }
 
-
+  std::vector<std::string> rc_application_construct_commandline_parameters(const Configuration& db,
+                                                                           const std::string& session_id,
+                                                                           const std::string& app_id) {
+    const auto* app = const_cast<Configuration&>(db).get<dunedaq::coredal::RCApplication>(app_id);
+    const auto* session = const_cast<Configuration&>(db).get<dunedaq::coredal::Session>(session_id);
+    return app->construct_commandline_parameters(db, session);
+  }
 void
 register_dal_methods(py::module& m)
 {
@@ -118,7 +127,8 @@ register_dal_methods(py::module& m)
   m.def("component_disabled", &component_disabled, "Determine if a Component-derived object (e.g. a Segment) has been disabled");
   m.def("component_get_parents", &component_get_parents, "Get the Component-derived class instances of the parent(s) of the Component-derived object in question");
   m.def("daqapp_get_used_resources", &daq_application_get_used_hostresources, "Get list of HostResources used by DAQApplication");
-  m.def("application_parse_commandline_parameters", &application_parse_commandline_parameters, "Get a version of the command line agruments parsed");
+  m.def("daq_application_construct_commandline_parameters", &daq_application_construct_commandline_parameters, "Get a version of the command line agruments parsed");
+  m.def("rc_application_construct_commandline_parameters", &rc_application_construct_commandline_parameters, "Get a version of the command line agruments parsed");
 }
 
 } // namespace dunedaq::coredal::python
