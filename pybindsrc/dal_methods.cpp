@@ -58,6 +58,13 @@ namespace dunedaq::coredal::python {
   }
 
   bool component_disabled(const Configuration& db, const std::string& session_id, const std::string& component_id) {
+    try {
+      ConfigObject object;
+      const_cast<Configuration&>(db).get("Component", component_id, object);
+    }
+    catch (oksdbinterfaces::NotFound& except) {
+      return false;
+    }
     const dunedaq::coredal::Component* component_ptr = const_cast<Configuration&>(db).get<dunedaq::coredal::Component>(component_id);
     const dunedaq::coredal::Session* session_ptr = const_cast<Configuration&>(db).get<dunedaq::coredal::Session>(session_id);
 
