@@ -13,11 +13,15 @@
 #include "coredal/DaqApplication.hpp"
 #include "coredal/DaqModule.hpp"
 #include "coredal/Jsonable.hpp"
+#include "coredal/PhysicalHost.hpp"
+#include "coredal/RCApplication.hpp"
 #include "coredal/Resource.hpp"
 #include "coredal/ResourceSetAND.hpp"
 #include "coredal/ResourceSetOR.hpp"
 #include "coredal/Segment.hpp"
 #include "coredal/Session.hpp"
+#include "coredal/Service.hpp"
+#include "coredal/VirtualHost.hpp"
 
 #include "test_circular_dependency.hpp"
 
@@ -274,6 +278,42 @@ nlohmann::json get_json_config(oksdbinterfaces::Configuration& confdb,
 nlohmann::json Jsonable::to_json(bool direct_only) const {
 
   return get_json_config(p_db, class_name(), UID(), direct_only);
+}
+
+const std::vector<std::string> DaqApplication::construct_commandline_parameters(
+  const oksdbinterfaces::Configuration& confdb,
+  const dunedaq::coredal::Session* session) const {
+
+    return construct_commandline_parameters_appfwk<dunedaq::coredal::DaqApplication>(this, confdb, session);
+}
+
+const std::vector<std::string> RCApplication::construct_commandline_parameters(
+  const oksdbinterfaces::Configuration& confdb,
+  const dunedaq::coredal::Session* session) const {
+
+    const std::string configuration_uri = confdb.get_impl_spec();
+    const dunedaq::coredal::Service* control_service = nullptr;
+
+    for (auto const* as: get_exposes_service())
+      if (as->UID() == UID()+"_control") // unclear this is the best way to do this.
+        control_service = as;
+
+    if (control_service == nullptr)
+      throw NoControlServiceDefined(ERS_HERE, UID());
+
+    const std::string control_uri =
+      control_service->get_protocol()
+      + "://"
+      + get_runs_on()->get_runs_on()->UID()
+      + ":"
+      + std::to_string(control_service->get_port());
+
+    std::vector<std::string> ret = {};
+    ret.push_back(configuration_uri);
+    ret.push_back(control_uri);
+    ret.push_back(UID());
+    ret.push_back(session->UID());
+    return ret;
 }
 
 }

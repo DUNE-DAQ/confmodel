@@ -7,11 +7,41 @@
 #include "oksdbinterfaces/DalObject.hpp"
 #include "nlohmann/json.hpp"
 
+#include "coredal/Application.hpp"
+#include "coredal/PhysicalHost.hpp"
+#include "coredal/Segment.hpp"
+#include "coredal/Service.hpp"
+#include "coredal/Session.hpp"
+#include "coredal/VirtualHost.hpp"
 
 namespace dunedaq {
+  ERS_DECLARE_ISSUE(
+    coredal,
+    ConfigurationError,
+    ,
+  )
+
+
+  ERS_DECLARE_ISSUE_BASE(
+    coredal,
+    NoOpmonInfrastructure,
+    ConfigurationError,
+    "The opmon infrastructure has not been set up in the configuration",
+    ,
+  )
+
+  ERS_DECLARE_ISSUE_BASE(
+    coredal,
+    NoControlServiceDefined,
+    ConfigurationError,
+    "The control service has not been set up for the application " + app_name + " you need to define a service called " + app_name + "_control",
+    ,
+    ((std::string)app_name)
+
+  )
+
 
 namespace coredal {
-  class Session;
 
     /**
      *  \brief Get session object.
@@ -22,7 +52,7 @@ namespace coredal {
      *
      *  The last parameter of the algorithm can be used to optimise performance
      *  of the DAL in case if a database server config implementation %is used.
-     *  The parameter defines how many layers of objects referenced by given 
+     *  The parameter defines how many layers of objects referenced by given
      *  session object should be read into client's config cache together with
      *  session object during single network operation. For example:
      *  - if the parameter %is 0, then only session object %is read;
@@ -56,6 +86,65 @@ namespace coredal {
       attributes[name] = nlohmann::json(value_vector);
     }
   }
+
+    template<typename T>
+    const std::vector<std::string> construct_commandline_parameters_appfwk(const T* app,
+                                                                            const oksdbinterfaces::Configuration& confdb,
+                                                                            const dunedaq::coredal::Session* session) {
+
+        const dunedaq::coredal::Service* control_service = nullptr;
+
+        for (auto const* as: app->get_exposes_service())
+            if (as->UID() == app->UID()+"_control") // unclear this is the best way to do this.
+            control_service = as;
+
+        if (control_service == nullptr)
+            throw NoControlServiceDefined(ERS_HERE, app->UID());
+
+        const std::string control_uri =
+            control_service->get_protocol()
+            + "://"
+            + app->get_runs_on()->get_runs_on()->UID()
+            + ":"
+            + std::to_string(control_service->get_port());
+
+        const dunedaq::coredal::Application* opmon_app = nullptr;
+        for (auto const* ia: session->get_infrastructure_applications())
+            if (ia->castable("OpMonService"))
+              opmon_app = ia;
+
+        if (opmon_app == nullptr)
+            throw NoOpmonInfrastructure(ERS_HERE, session->UID());
+
+        const dunedaq::coredal::Service* opmon_service = opmon_app->get_exposes_service()[0];
+        std::string opmon_uri =
+            opmon_service->get_protocol()
+            + "://"
+            + opmon_app->get_runs_on()->get_runs_on()->UID()
+            + ":"
+            + std::to_string(opmon_service->get_port())
+            + opmon_service->get_path();
+
+        if (opmon_service->get_protocol() == "file")
+            opmon_uri =
+            opmon_service->get_protocol()
+            + "://"
+            + opmon_service->get_path();
+
+        const std::string configuration_uri = confdb.get_impl_spec();
+
+        return {
+            "--name",
+            app->UID(),
+            "-c",
+            control_uri,
+            "-i",
+            opmon_uri,
+            "--configurationService",
+            configuration_uri,
+        };
+    }
+
 } // namespace coredal
 
 
@@ -286,6 +375,7 @@ namespace coredal {
     ((std::string)first)
     ((std::string)second)
   )
+
 
 } // namespace dunedaq
 
