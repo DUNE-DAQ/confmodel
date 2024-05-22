@@ -160,10 +160,10 @@
   <relationship name="command_sequences" class-type="FSMsequence" low-cc="zero" high-cc="many" is-composite="yes" is-exclusive="no" is-dependent="no"/>
   <relationship name="pre_transitions" class-type="FSMxTransition" low-cc="zero" high-cc="many" is-composite="yes" is-exclusive="no" is-dependent="no"/>
   <relationship name="post_transitions" class-type="FSMxTransition" low-cc="zero" high-cc="many" is-composite="yes" is-exclusive="no" is-dependent="no"/>
-  <relationship name="interfaces" class-type="FSMinterface" low-cc="zero" high-cc="many" is-composite="yes" is-exclusive="no" is-dependent="no"/>
+  <relationship name="actions" class-type="FSMaction" low-cc="zero" high-cc="many" is-composite="yes" is-exclusive="no" is-dependent="no"/>
  </class>
 
- <class name="FSMinterface">
+ <class name="FSMaction">
   <attribute name="name" type="string" is-not-null="yes"/>
   <attribute name="commands" type="string" is-multi-value="yes"/>
  </class>
