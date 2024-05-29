@@ -11,7 +11,7 @@
 
 #include "test_circular_dependency.hpp"
 
-using namespace dunedaq::oksdbinterfaces;
+using namespace dunedaq::conffwk;
 using namespace dunedaq::coredal;
 
 DisabledComponents::DisabledComponents(Configuration& db,
