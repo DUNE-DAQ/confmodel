@@ -20,7 +20,7 @@
 #include <sstream>
 
 namespace py = pybind11;
-using namespace dunedaq::oksdbinterfaces;
+using namespace dunedaq::conffwk;
 
 namespace dunedaq::coredal::python {
 
@@ -62,7 +62,7 @@ namespace dunedaq::coredal::python {
       ConfigObject object;
       const_cast<Configuration&>(db).get("Component", component_id, object);
     }
-    catch (oksdbinterfaces::NotFound& except) {
+    catch (conffwk::NotFound& except) {
       return false;
     }
     const dunedaq::coredal::Component* component_ptr = const_cast<Configuration&>(db).get<dunedaq::coredal::Component>(component_id);
