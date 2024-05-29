@@ -80,7 +80,7 @@
 
 <oks-schema>
 
-<info name="" type="" num-of-items="45" oks-format="schema" oks-version="oks-08-03-04-11-g3f5bde7 built &quot;Feb 21 2023&quot;" created-by="jcfree" created-on="mu2edaq13.fnal.gov" creation-time="20230123T223700" last-modified-by="glehmann" last-modified-on="np04-srv-024.cern.ch" last-modification-time="20240527T135153"/>
+<info name="" type="" num-of-items="42" oks-format="schema" oks-version="oks-08-03-04-11-g3f5bde7 built &quot;Feb 21 2023&quot;" created-by="jcfree" created-on="mu2edaq13.fnal.gov" creation-time="20230123T223700" last-modified-by="glehmann" last-modified-on="np04-srv-024.cern.ch" last-modification-time="20240528T163319"/>
 
  <class name="Application" description="A software executable" is-abstract="yes">
   <attribute name="application_name" description="Name of the application binary to run." type="string" is-not-null="yes"/>
@@ -114,7 +114,7 @@
  </class>
 
  <class name="DROStreamConf">
-  <superclass name="ResourceBase"/>
+  <superclass name="Resource"/>
   <attribute name="source_id" type="u32" is-not-null="yes"/>
   <relationship name="geo_id" class-type="GeoId" low-cc="one" high-cc="one" is-composite="no" is-exclusive="no" is-dependent="no"/>
   <relationship name="stream_params" class-type="StreamParameters" low-cc="one" high-cc="one" is-composite="no" is-exclusive="no" is-dependent="no"/>
@@ -260,20 +260,6 @@
   <attribute name="publish_timeout" type="u32" init-value="2" is-not-null="yes"/>
  </class>
 
- <!--
- <class name="ReadoutInterface" description="The ReadoutInterface contains a set of DROStreamConf objects that represent the detector data streams handled by that interface.">
-  <superclass name="Resource"/>
- </class>
- <class name="ReadoutGroup" description="The ReadoutGroup class should contain a set of ReadoutInterface objects that describe the readout streams of the detector module handled by a single interface..">
-  <superclass name="ResourceSetAND"/>
- </class>
-
-
- <class name="ReadoutMap">
-  <relationship name="groups" class-type="ReadoutGroup" low-cc="one" high-cc="many" is-composite="no" is-exclusive="no" is-dependent="no"/>
- </class>
- -->
-
  <class name="Resource">
   <superclass name="ResourceBase"/>
  </class>
@@ -321,9 +307,7 @@
   <relationship name="segment" description="List of configuration Segments that form this Session" class-type="Segment" low-cc="one" high-cc="one" is-composite="yes" is-exclusive="no" is-dependent="yes"/>
   <relationship name="infrastructure_applications" class-type="Application" low-cc="zero" high-cc="many" is-composite="yes" is-exclusive="no" is-dependent="yes"/>
   <relationship name="detector_configuration" class-type="DetectorConfig" low-cc="one" high-cc="one" is-composite="no" is-exclusive="no" is-dependent="no"/>
-  <!--  <relationship name="readout_map" class-type="ReadoutMap" low-cc="one" high-cc="one" is-composite="no" is-exclusive="no" is-dependent="no"/>
-  -->
-   <method name="get_all_applications" description="Returns applications defined in the Session and all of its Segments.">
+  <method name="get_all_applications" description="Returns applications defined in the Session and all of its Segments.">
    <method-implementation language="c++" prototype="std::vector&lt;const dunedaq::coredal::Application *&gt; get_all_applications() const" body=""/>
   </method>
   <method name="set_disabled" description="In addition to persistently disabled components, dynamically disable these components. It will be taken into account by disabled() algorithm of Component class. This information is not committed to the database and will be overwritten by next set_disabled() call or erased by any config action (DB load, unload, reload).">
