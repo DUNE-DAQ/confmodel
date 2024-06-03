@@ -153,11 +153,6 @@
   <attribute name="optional" type="bool" init-value="true" is-not-null="yes"/>
  </class>
 
- <class name="FSMaction">
-  <attribute name="name" type="string" is-not-null="yes"/>
-  <attribute name="commands" type="string" is-multi-value="yes"/>
- </class>
-
  <class name="FSMconfiguration">
   <attribute name="states" type="string" is-multi-value="yes" init-value="&quot;initial&quot;,&quot;configured&quot;" is-not-null="yes"/>
   <attribute name="initial_state" type="string" init-value="initial" is-not-null="yes"/>
@@ -165,12 +160,17 @@
   <relationship name="command_sequences" class-type="FSMsequence" low-cc="zero" high-cc="many" is-composite="yes" is-exclusive="no" is-dependent="no"/>
   <relationship name="pre_transitions" class-type="FSMxTransition" low-cc="zero" high-cc="many" is-composite="yes" is-exclusive="no" is-dependent="no"/>
   <relationship name="post_transitions" class-type="FSMxTransition" low-cc="zero" high-cc="many" is-composite="yes" is-exclusive="no" is-dependent="no"/>
-  <relationship name="actions" class-type="FSMaction" low-cc="zero" high-cc="many" is-composite="yes" is-exclusive="no" is-dependent="no"/>
+  <relationship name="actions" class-type="FSMaction" low-cc="zero" high-cc="many" is-composite="yes" is-exclusive="no" is-dependent="no"/>  
  </class>
 
  <class name="FSMactionFileLogbook">
   <superclass name="FSMaction"/>
   <attribute name="file_name" type="string" is-not-null="yes"/>
+ 
+  <class name="FSMaction">
+  <attribute name="name" type="string" is-not-null="yes"/>
+  <attribute name="commands" type="string" is-multi-value="yes"/>
+  <relationship name="parameters" class-type="Variable" low-cc="zero" high-cc="many" is-composite="yes" is-exclusive="no" is-dependent="no"/>
  </class>
 
  <class name="FSMsequence">
