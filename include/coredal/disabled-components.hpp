@@ -4,8 +4,8 @@
 #include <string>
 #include <vector>
 
-#include "oksdbinterfaces/Configuration.hpp"
-#include "oksdbinterfaces/ConfigAction.hpp"
+#include "conffwk/Configuration.hpp"
+#include "conffwk/ConfigAction.hpp"
 
 #include "coredal/Component.hpp"
 
@@ -15,7 +15,7 @@ namespace dunedaq::coredal {
     class ResourceSet;
     // class Segment;
 
-    class DisabledComponents : public dunedaq::oksdbinterfaces::ConfigAction
+    class DisabledComponents : public dunedaq::conffwk::ConfigAction
     {
 
       friend class Session;
@@ -32,7 +32,7 @@ namespace dunedaq::coredal {
         }
       };
 
-      dunedaq::oksdbinterfaces::Configuration& m_db;
+      dunedaq::conffwk::Configuration& m_db;
       Session* m_session;
 
       unsigned long m_num_of_slr_enabled_resources;
@@ -54,13 +54,13 @@ namespace dunedaq::coredal {
 
     public:
 
-      DisabledComponents(dunedaq::oksdbinterfaces::Configuration& db, Session* session);
+      DisabledComponents(dunedaq::conffwk::Configuration& db, Session* session);
 
       virtual
       ~DisabledComponents();
 
       void
-      notify(std::vector<dunedaq::oksdbinterfaces::ConfigurationChange *>& /*changes*/) noexcept;
+      notify(std::vector<dunedaq::conffwk::ConfigurationChange *>& /*changes*/) noexcept;
 
       void
       load() noexcept;
@@ -69,7 +69,7 @@ namespace dunedaq::coredal {
       unload() noexcept;
 
       void
-      update(const dunedaq::oksdbinterfaces::ConfigObject& obj, const std::string& name) noexcept;
+      update(const dunedaq::conffwk::ConfigObject& obj, const std::string& name) noexcept;
 
       void
       reset() noexcept;

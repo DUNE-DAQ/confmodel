@@ -128,7 +128,7 @@
    <method-implementation language="c++" prototype=" std::set&lt;const dunedaq::coredal::HostComponent*&gt; get_used_hostresources() const" body=""/>
   </method>
   <method name="construct_commandline_parameters" description="get the command line parameters for this application">
-   <method-implementation language="c++" prototype=" const std::vector&lt;std::string&gt; construct_commandline_parameters(const oksdbinterfaces::Configuration&amp; confdb, const dunedaq::coredal::Session* session) const" body="BEGIN_HEADER_PROLOGUE&#xA;#include &quot;coredal/util.hpp&quot;&#xA;END_HEADER_PROLOGUE"/>
+   <method-implementation language="c++" prototype=" const std::vector&lt;std::string&gt; construct_commandline_parameters(const conffwk::Configuration&amp; confdb, const dunedaq::coredal::Session* session) const" body="BEGIN_HEADER_PROLOGUE&#xA;#include &quot;coredal/util.hpp&quot;&#xA;END_HEADER_PROLOGUE"/>
   </method>
  </class>
 
@@ -166,6 +166,11 @@
   <relationship name="pre_transitions" class-type="FSMxTransition" low-cc="zero" high-cc="many" is-composite="yes" is-exclusive="no" is-dependent="no"/>
   <relationship name="post_transitions" class-type="FSMxTransition" low-cc="zero" high-cc="many" is-composite="yes" is-exclusive="no" is-dependent="no"/>
   <relationship name="actions" class-type="FSMaction" low-cc="zero" high-cc="many" is-composite="yes" is-exclusive="no" is-dependent="no"/>
+ </class>
+
+ <class name="FSMactionFileLogbook">
+  <superclass name="FSMaction"/>
+  <attribute name="file_name" type="string" is-not-null="yes"/>
  </class>
 
  <class name="FSMsequence">
@@ -250,7 +255,7 @@
   <relationship name="fsm" class-type="FSMconfiguration" low-cc="one" high-cc="one" is-composite="yes" is-exclusive="no" is-dependent="yes"/>
   <relationship name="broadcaster" class-type="RCBroadcaster" low-cc="zero" high-cc="one" is-composite="yes" is-exclusive="no" is-dependent="no"/>
   <method name="construct_commandline_parameters" description="get the command line parameters for this rc application">
-   <method-implementation language="c++" prototype=" const std::vector&lt;std::string&gt; construct_commandline_parameters(const oksdbinterfaces::Configuration&amp; confdb, const dunedaq::coredal::Session* session) const" body=""/>
+   <method-implementation language="c++" prototype=" const std::vector&lt;std::string&gt; construct_commandline_parameters(const conffwk::Configuration&amp; confdb, const dunedaq::coredal::Session* session) const" body=""/> <!-- BEGIN_HEADER_PROLOGUE&#xA;#include &quot;coredal/util.hpp&quot;&#xA;END_HEADER_PROLOGUE"/> -->
   </method>
  </class>
 

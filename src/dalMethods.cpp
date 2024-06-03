@@ -26,16 +26,16 @@
 #include "test_circular_dependency.hpp"
 
 #include "nlohmann/json.hpp"
-#include "oksdbinterfaces/ConfigObject.hpp"
-#include "oksdbinterfaces/Configuration.hpp"
-#include "oksdbinterfaces/Schema.hpp"
+#include "conffwk/ConfigObject.hpp"
+#include "conffwk/Configuration.hpp"
+#include "conffwk/Schema.hpp"
 
 #include <list>
 #include <set>
 #include <iostream>
 
 // Stolen from ATLAS dal package
-using namespace dunedaq::oksdbinterfaces;
+using namespace dunedaq::conffwk;
 
 namespace dunedaq::coredal {
   /**
@@ -183,12 +183,12 @@ DaqApplication::get_used_hostresources() const {
   return res;
 }
 
-nlohmann::json get_json_config(oksdbinterfaces::Configuration& confdb,
+nlohmann::json get_json_config(conffwk::Configuration& confdb,
                                const std::string& class_name,
                                const std::string& uid,
                                bool direct_only) {
   using nlohmann::json;
-  using namespace oksdbinterfaces;
+  using namespace conffwk;
   TLOG_DBG(9) << "Getting attributes for " << uid << " of class " << class_name;
   json attributes;
   auto class_info = confdb.get_class_info(class_name);
@@ -281,14 +281,14 @@ nlohmann::json Jsonable::to_json(bool direct_only) const {
 }
 
 const std::vector<std::string> DaqApplication::construct_commandline_parameters(
-  const oksdbinterfaces::Configuration& confdb,
+  const conffwk::Configuration& confdb,
   const dunedaq::coredal::Session* session) const {
 
     return construct_commandline_parameters_appfwk<dunedaq::coredal::DaqApplication>(this, confdb, session);
 }
 
 const std::vector<std::string> RCApplication::construct_commandline_parameters(
-  const oksdbinterfaces::Configuration& confdb,
+  const conffwk::Configuration& confdb,
   const dunedaq::coredal::Session* session) const {
 
     const std::string configuration_uri = confdb.get_impl_spec();

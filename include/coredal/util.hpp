@@ -3,8 +3,8 @@
 
 #include <exception>
 
-#include "oksdbinterfaces/Configuration.hpp"
-#include "oksdbinterfaces/DalObject.hpp"
+#include "conffwk/Configuration.hpp"
+#include "conffwk/DalObject.hpp"
 #include "nlohmann/json.hpp"
 
 #include "coredal/Application.hpp"
@@ -69,9 +69,9 @@ namespace coredal {
      *  \return Returns the pointer to the session object if found, or 0.
      */
 
-  const dunedaq::coredal::Session * get_session(dunedaq::oksdbinterfaces::Configuration& conf, const std::string& name, unsigned long rlevel = 10, const std::vector<std::string> * rclasses = nullptr);
+  const dunedaq::coredal::Session * get_session(dunedaq::conffwk::Configuration& conf, const std::string& name, unsigned long rlevel = 10, const std::vector<std::string> * rclasses = nullptr);
 
-  template <typename T> void add_json_value(oksdbinterfaces::ConfigObject& obj,
+  template <typename T> void add_json_value(conffwk::ConfigObject& obj,
                                             std::string& name,
                                             bool multi_value,
                                             nlohmann::json& attributes) {
@@ -89,7 +89,7 @@ namespace coredal {
 
     template<typename T>
     const std::vector<std::string> construct_commandline_parameters_appfwk(const T* app,
-                                                                            const oksdbinterfaces::Configuration& confdb,
+                                                                            const conffwk::Configuration& confdb,
                                                                             const dunedaq::coredal::Session* session) {
 
         const dunedaq::coredal::Service* control_service = nullptr;

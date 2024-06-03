@@ -1,6 +1,6 @@
 #include "logging/Logging.hpp"
 
-#include "oksdbinterfaces/Configuration.hpp"
+#include "conffwk/Configuration.hpp"
 
 #include "coredal/Component.hpp"
 #include "coredal/DaqApplication.hpp"
@@ -21,8 +21,8 @@ int main(int argc, char* argv[]) {
     std::cout << "Usage: " << argv[0] << " session database-file\n";
     return 0;
   }
-  std::string confimpl = "oksconfig:" + std::string(argv[2]);
-  auto confdb = new oksdbinterfaces::Configuration(confimpl);
+  std::string confimpl = "oksconflibs:" + std::string(argv[2]);
+  auto confdb = new conffwk::Configuration(confimpl);
 
   std::string sessionName(argv[1]);
   auto session = confdb->get<coredal::Session>(sessionName);

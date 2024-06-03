@@ -25,7 +25,7 @@ PYBIND11_MODULE(_daq_coredal_py, m)
   m.doc() = "C++ implementation of the coredal modules";
 #if 0
   py::class_<dunedaq::coredal::DaqApplication>(m,"DaqApplication")
-    .def(py::init<oksdbinterfaces::Configuration& , const oksdbinterfaces::ConfigObject&>())
+    .def(py::init<conffwk::Configuration& , const conffwk::ConfigObject&>())
     .def("get_used_hostresources", &dunedaq::coredal::DaqApplication::get_used_hostresources);
   py::class_<dunedaq::coredal::HostComponent>(m,"HostComponent");
 #endif
