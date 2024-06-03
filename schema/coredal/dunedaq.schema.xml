@@ -166,6 +166,7 @@
  <class name="FSMactionFileLogbook">
   <superclass name="FSMaction"/>
   <attribute name="file_name" type="string" is-not-null="yes"/>
+ </class>
  
   <class name="FSMaction">
   <attribute name="name" type="string" is-not-null="yes"/>
