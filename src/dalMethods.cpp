@@ -1,27 +1,27 @@
 /**
  * @file dalMethods.cxx
  *
- * Implementations of Methods defined in coredal schema classes
+ * Implementations of Methods defined in confmodel schema classes
  *
  * This is part of the DUNE DAQ Software Suite, copyright 2020.
  * Licensing/copyright details are in the COPYING file that you should have
  * received with this code.
  */
 
-#include "coredal/Application.hpp"
-#include "coredal/Component.hpp"
-#include "coredal/DaqApplication.hpp"
-#include "coredal/DaqModule.hpp"
-#include "coredal/Jsonable.hpp"
-#include "coredal/PhysicalHost.hpp"
-#include "coredal/RCApplication.hpp"
-#include "coredal/Resource.hpp"
-#include "coredal/ResourceSetAND.hpp"
-#include "coredal/ResourceSetOR.hpp"
-#include "coredal/Segment.hpp"
-#include "coredal/Session.hpp"
-#include "coredal/Service.hpp"
-#include "coredal/VirtualHost.hpp"
+#include "confmodel/Application.hpp"
+#include "confmodel/Component.hpp"
+#include "confmodel/DaqApplication.hpp"
+#include "confmodel/DaqModule.hpp"
+#include "confmodel/Jsonable.hpp"
+#include "confmodel/PhysicalHost.hpp"
+#include "confmodel/RCApplication.hpp"
+#include "confmodel/Resource.hpp"
+#include "confmodel/ResourceSetAND.hpp"
+#include "confmodel/ResourceSetOR.hpp"
+#include "confmodel/Segment.hpp"
+#include "confmodel/Session.hpp"
+#include "confmodel/Service.hpp"
+#include "confmodel/VirtualHost.hpp"
 
 #include "test_circular_dependency.hpp"
 
@@ -37,7 +37,7 @@
 // Stolen from ATLAS dal package
 using namespace dunedaq::conffwk;
 
-namespace dunedaq::coredal {
+namespace dunedaq::confmodel {
   /**
    *  Static function to calculate list of components
    *  from the root segment to the lowest component which
@@ -47,12 +47,12 @@ namespace dunedaq::coredal {
 static void
 make_parents_list(
     const ConfigObjectImpl * child,
-    const dunedaq::coredal::ResourceSet * resource_set,
-    std::vector<const dunedaq::coredal::Component *> & p_list,
-    std::list< std::vector<const dunedaq::coredal::Component *> >& out,
-    dunedaq::coredal::TestCircularDependency& cd_fuse)
+    const dunedaq::confmodel::ResourceSet * resource_set,
+    std::vector<const dunedaq::confmodel::Component *> & p_list,
+    std::list< std::vector<const dunedaq::confmodel::Component *> >& out,
+    dunedaq::confmodel::TestCircularDependency& cd_fuse)
 {
-  dunedaq::coredal::AddTestOnCircularDependency add_fuse_test(cd_fuse, resource_set);
+  dunedaq::confmodel::AddTestOnCircularDependency add_fuse_test(cd_fuse, resource_set);
 
   // add the resource set to the path
   p_list.push_back(resource_set);
@@ -62,7 +62,7 @@ make_parents_list(
     if (i->config_object().implementation() == child) {
       out.push_back(p_list);
     }
-    else if (const dunedaq::coredal::ResourceSet * rs = i->cast<dunedaq::coredal::ResourceSet>()) {
+    else if (const dunedaq::confmodel::ResourceSet * rs = i->cast<dunedaq::confmodel::ResourceSet>()) {
       make_parents_list(child, rs, p_list, out, cd_fuse);
     }
   }
@@ -74,13 +74,13 @@ make_parents_list(
 static void
 make_parents_list(
     const ConfigObjectImpl * child,
-    const dunedaq::coredal::Segment * segment,
-    std::vector<const dunedaq::coredal::Component *> & p_list,
-    std::list<std::vector<const dunedaq::coredal::Component *> >& out,
+    const dunedaq::confmodel::Segment * segment,
+    std::vector<const dunedaq::confmodel::Component *> & p_list,
+    std::list<std::vector<const dunedaq::confmodel::Component *> >& out,
     bool is_segment,
-    dunedaq::coredal::TestCircularDependency& cd_fuse)
+    dunedaq::confmodel::TestCircularDependency& cd_fuse)
 {
-  dunedaq::coredal::AddTestOnCircularDependency add_fuse_test(cd_fuse, segment);
+  dunedaq::confmodel::AddTestOnCircularDependency add_fuse_test(cd_fuse, segment);
 
   // add the segment to the path
   p_list.push_back(segment);
@@ -96,7 +96,7 @@ make_parents_list(
     for (const auto& app : segment->get_applications()) {
       if (app->config_object().implementation() == child)
         out.push_back(p_list);
-      else if (const auto resource_set = app->cast<dunedaq::coredal::ResourceSet>())
+      else if (const auto resource_set = app->cast<dunedaq::confmodel::ResourceSet>())
         make_parents_list(child, resource_set, p_list, out, cd_fuse);
     }
   }
@@ -109,15 +109,15 @@ make_parents_list(
 
 static void
 check_segment(
-    std::list< std::vector<const dunedaq::coredal::Component *> >& out,
-    const dunedaq::coredal::Segment * segment,
+    std::list< std::vector<const dunedaq::confmodel::Component *> >& out,
+    const dunedaq::confmodel::Segment * segment,
     const ConfigObjectImpl * child,
     bool is_segment,
-    dunedaq::coredal::TestCircularDependency& cd_fuse)
+    dunedaq::confmodel::TestCircularDependency& cd_fuse)
 {
-  dunedaq::coredal::AddTestOnCircularDependency add_fuse_test(cd_fuse, segment);
+  dunedaq::confmodel::AddTestOnCircularDependency add_fuse_test(cd_fuse, segment);
 
-  std::vector<const dunedaq::coredal::Component *> compList;
+  std::vector<const dunedaq::confmodel::Component *> compList;
 
   if (segment->config_object().implementation() == child) {
     out.push_back(compList);
@@ -126,16 +126,16 @@ check_segment(
 }
 
 void
-dunedaq::coredal::Component::get_parents(
-  const dunedaq::coredal::Session& session,
-  std::list<std::vector<const dunedaq::coredal::Component *>>& parents) const
+dunedaq::confmodel::Component::get_parents(
+  const dunedaq::confmodel::Session& session,
+  std::list<std::vector<const dunedaq::confmodel::Component *>>& parents) const
 {
   const ConfigObjectImpl * obj_impl = config_object().implementation();
 
-  const bool is_segment = castable(dunedaq::coredal::Segment::s_class_name);
+  const bool is_segment = castable(dunedaq::confmodel::Segment::s_class_name);
 
   try {
-    dunedaq::coredal::TestCircularDependency cd_fuse("component parents", &session);
+    dunedaq::confmodel::TestCircularDependency cd_fuse("component parents", &session);
 
     // check session's segment
     check_segment(parents, session.get_segment(), obj_impl, is_segment,
@@ -282,17 +282,17 @@ nlohmann::json Jsonable::to_json(bool direct_only) const {
 
 const std::vector<std::string> DaqApplication::construct_commandline_parameters(
   const conffwk::Configuration& confdb,
-  const dunedaq::coredal::Session* session) const {
+  const dunedaq::confmodel::Session* session) const {
 
-    return construct_commandline_parameters_appfwk<dunedaq::coredal::DaqApplication>(this, confdb, session);
+    return construct_commandline_parameters_appfwk<dunedaq::confmodel::DaqApplication>(this, confdb, session);
 }
 
 const std::vector<std::string> RCApplication::construct_commandline_parameters(
   const conffwk::Configuration& confdb,
-  const dunedaq::coredal::Session* session) const {
+  const dunedaq::confmodel::Session* session) const {
 
     const std::string configuration_uri = confdb.get_impl_spec();
-    const dunedaq::coredal::Service* control_service = nullptr;
+    const dunedaq::confmodel::Service* control_service = nullptr;
 
     for (auto const* as: get_exposes_service())
       if (as->UID() == UID()+"_control") // unclear this is the best way to do this.
