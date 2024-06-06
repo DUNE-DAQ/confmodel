@@ -7,9 +7,9 @@
 #include "conffwk/Configuration.hpp"
 #include "conffwk/ConfigAction.hpp"
 
-#include "coredal/Component.hpp"
+#include "confmodel/Component.hpp"
 
-namespace dunedaq::coredal {
+namespace dunedaq::confmodel {
 
     class Session;
     class ResourceSet;
@@ -39,8 +39,8 @@ namespace dunedaq::coredal {
       unsigned long m_num_of_slr_disabled_resources;
 
       std::set<const std::string *, SortStringPtr> m_disabled;
-      std::set<const dunedaq::coredal::Component *> m_user_disabled;
-      std::set<const dunedaq::coredal::Component *> m_user_enabled;
+      std::set<const dunedaq::confmodel::Component *> m_user_disabled;
+      std::set<const dunedaq::confmodel::Component *> m_user_enabled;
 
       void
       __clear() noexcept
@@ -81,26 +81,26 @@ namespace dunedaq::coredal {
       }
 
       void
-      disable(const dunedaq::coredal::Component& c)
+      disable(const dunedaq::confmodel::Component& c)
       {
         m_disabled.insert(&c.UID());
       }
 
       bool
-      is_enabled(const dunedaq::coredal::Component* c) {
+      is_enabled(const dunedaq::confmodel::Component* c) {
         return (m_disabled.find(&c->UID()) == m_disabled.end());
       }
 
       void
-      disable_children(const dunedaq::coredal::ResourceSet&);
+      disable_children(const dunedaq::confmodel::ResourceSet&);
 
       void
-      disable_children(const dunedaq::coredal::Segment&);
+      disable_children(const dunedaq::confmodel::Segment&);
 
       static unsigned long
-      get_num_of_slr_resources(const dunedaq::coredal::Session& p);
+      get_num_of_slr_resources(const dunedaq::confmodel::Session& p);
 
     };
-} // namespace dunedaq::coredal
+} // namespace dunedaq::confmodel
 
 #endif // DUNEDAQDAL_DISABLED_COMPONENTS_H

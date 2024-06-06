@@ -1,18 +1,18 @@
-#include "coredal/Application.hpp"
-#include "coredal/ResourceSet.hpp"
-#include "coredal/ResourceSetAND.hpp"
-#include "coredal/ResourceSetOR.hpp"
-#include "coredal/Segment.hpp"
-#include "coredal/Session.hpp"
-#include "coredal/util.hpp"
-#include "coredal/disabled-components.hpp"
+#include "confmodel/Application.hpp"
+#include "confmodel/ResourceSet.hpp"
+#include "confmodel/ResourceSetAND.hpp"
+#include "confmodel/ResourceSetOR.hpp"
+#include "confmodel/Segment.hpp"
+#include "confmodel/Session.hpp"
+#include "confmodel/util.hpp"
+#include "confmodel/disabled-components.hpp"
 
 #include "logging/Logging.hpp"
 
 #include "test_circular_dependency.hpp"
 
 using namespace dunedaq::conffwk;
-using namespace dunedaq::coredal;
+using namespace dunedaq::confmodel;
 
 DisabledComponents::DisabledComponents(Configuration& db,
  Session* session) :
@@ -123,7 +123,7 @@ Session::set_enabled(const std::set<const Component *>& objs) const
 
 namespace dunedaq {
   ERS_DECLARE_ISSUE_BASE(
-    coredal,
+    confmodel,
     ReadMaxAllowedIterations,
     AlgorithmError,
     "Has exceeded the maximum of iterations allowed (" << limit << ") during calculation of disabled objects",

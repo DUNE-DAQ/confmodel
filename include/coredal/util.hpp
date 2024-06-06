@@ -7,23 +7,23 @@
 #include "conffwk/DalObject.hpp"
 #include "nlohmann/json.hpp"
 
-#include "coredal/Application.hpp"
-#include "coredal/PhysicalHost.hpp"
-#include "coredal/Segment.hpp"
-#include "coredal/Service.hpp"
-#include "coredal/Session.hpp"
-#include "coredal/VirtualHost.hpp"
+#include "confmodel/Application.hpp"
+#include "confmodel/PhysicalHost.hpp"
+#include "confmodel/Segment.hpp"
+#include "confmodel/Service.hpp"
+#include "confmodel/Session.hpp"
+#include "confmodel/VirtualHost.hpp"
 
 namespace dunedaq {
   ERS_DECLARE_ISSUE(
-    coredal,
+    confmodel,
     ConfigurationError,
     ,
   )
 
 
   ERS_DECLARE_ISSUE_BASE(
-    coredal,
+    confmodel,
     NoOpmonInfrastructure,
     ConfigurationError,
     "The opmon infrastructure has not been set up in the configuration",
@@ -31,7 +31,7 @@ namespace dunedaq {
   )
 
   ERS_DECLARE_ISSUE_BASE(
-    coredal,
+    confmodel,
     NoControlServiceDefined,
     ConfigurationError,
     "The control service has not been set up for the application " + app_name + " you need to define a service called " + app_name + "_control",
@@ -41,7 +41,7 @@ namespace dunedaq {
   )
 
 
-namespace coredal {
+namespace confmodel {
 
     /**
      *  \brief Get session object.
@@ -69,7 +69,7 @@ namespace coredal {
      *  \return Returns the pointer to the session object if found, or 0.
      */
 
-  const dunedaq::coredal::Session * get_session(dunedaq::conffwk::Configuration& conf, const std::string& name, unsigned long rlevel = 10, const std::vector<std::string> * rclasses = nullptr);
+  const dunedaq::confmodel::Session * get_session(dunedaq::conffwk::Configuration& conf, const std::string& name, unsigned long rlevel = 10, const std::vector<std::string> * rclasses = nullptr);
 
   template <typename T> void add_json_value(conffwk::ConfigObject& obj,
                                             std::string& name,
@@ -90,9 +90,9 @@ namespace coredal {
     template<typename T>
     const std::vector<std::string> construct_commandline_parameters_appfwk(const T* app,
                                                                             const conffwk::Configuration& confdb,
-                                                                            const dunedaq::coredal::Session* session) {
+                                                                            const dunedaq::confmodel::Session* session) {
 
-        const dunedaq::coredal::Service* control_service = nullptr;
+        const dunedaq::confmodel::Service* control_service = nullptr;
 
         for (auto const* as: app->get_exposes_service())
             if (as->UID() == app->UID()+"_control") // unclear this is the best way to do this.
@@ -108,7 +108,7 @@ namespace coredal {
             + ":"
             + std::to_string(control_service->get_port());
 
-        const dunedaq::coredal::Application* opmon_app = nullptr;
+        const dunedaq::confmodel::Application* opmon_app = nullptr;
         for (auto const* ia: session->get_infrastructure_applications())
             if (ia->castable("OpMonService"))
               opmon_app = ia;
@@ -116,7 +116,7 @@ namespace coredal {
         if (opmon_app == nullptr)
             throw NoOpmonInfrastructure(ERS_HERE, session->UID());
 
-        const dunedaq::coredal::Service* opmon_service = opmon_app->get_exposes_service()[0];
+        const dunedaq::confmodel::Service* opmon_service = opmon_app->get_exposes_service()[0];
         std::string opmon_uri =
             opmon_service->get_protocol()
             + "://"
@@ -145,17 +145,17 @@ namespace coredal {
         };
     }
 
-} // namespace coredal
+} // namespace confmodel
 
 
   ERS_DECLARE_ISSUE(
-    coredal,
+    confmodel,
     AlgorithmError,
     ,
   )
 
   ERS_DECLARE_ISSUE_BASE(
-    coredal,
+    confmodel,
     BadVariableUsage,
     AlgorithmError,
     message,
@@ -164,7 +164,7 @@ namespace coredal {
   )
 
   ERS_DECLARE_ISSUE_BASE(
-    coredal,
+    confmodel,
     BadApplicationInfo,
     AlgorithmError,
     "Failed to retrieve information for Application \'" << app_id << "\' from the database: " << message,
@@ -174,7 +174,7 @@ namespace coredal {
   )
 
   ERS_DECLARE_ISSUE_BASE(
-    coredal,
+    confmodel,
     BadSessionID,
     AlgorithmError,
     "There is no session object with UID = \"" << name << '\"',
@@ -183,7 +183,7 @@ namespace coredal {
   )
 
   ERS_DECLARE_ISSUE_BASE(
-    coredal,
+    confmodel,
     SegmentDisabled,
     AlgorithmError,
     "Cannot get information about applications because the segment is disabled",
@@ -191,7 +191,7 @@ namespace coredal {
   )
 
   ERS_DECLARE_ISSUE_BASE(
-    coredal,
+    confmodel,
     BadProgramInfo,
     AlgorithmError,
     "Failed to retrieve information for Program \'" << prog_id << "\' from the database: " << message,
@@ -201,7 +201,7 @@ namespace coredal {
   )
 
   ERS_DECLARE_ISSUE_BASE(
-    coredal,
+    confmodel,
     BadHost,
     AlgorithmError,
     "Failed to retrieve application \'" << app_id << "\' from the database: " << message,
@@ -211,7 +211,7 @@ namespace coredal {
   )
 
   ERS_DECLARE_ISSUE_BASE(
-    coredal,
+    confmodel,
     NoDefaultHost,
     AlgorithmError,
     "Failed to find default host for segment \'" << seg_id << "\' " << message,
@@ -221,7 +221,7 @@ namespace coredal {
   )
 
   ERS_DECLARE_ISSUE_BASE(
-    coredal,
+    confmodel,
     NoTemplateAppHost,
     AlgorithmError,
     "Both session default and segment default hosts are not defined for template application \'" << app_id << "\' from segment \'" << seg_id << "\' (will use localhost, that may cause problems presenting info in IGUI for distributed session).",
@@ -232,7 +232,7 @@ namespace coredal {
 
 
   ERS_DECLARE_ISSUE_BASE(
-    coredal,
+    confmodel,
     BadTag,
     AlgorithmError,
     "Failed to use tag \'" << tag_id << "\' because: " << message,
@@ -242,7 +242,7 @@ namespace coredal {
   )
 
   ERS_DECLARE_ISSUE_BASE(
-    coredal,
+    confmodel,
     BadSegment,
     AlgorithmError,
     "Invalid Segment \'" << seg_id << "\' because: " << message,
@@ -252,7 +252,7 @@ namespace coredal {
   )
 
   ERS_DECLARE_ISSUE_BASE(
-    coredal,
+    confmodel,
     GetTemplateApplicationsOfSegmentError,
     AlgorithmError,
     "Failed to get template applications of \'" << name << "\' segment" << message,
@@ -262,7 +262,7 @@ namespace coredal {
   )
 
   ERS_DECLARE_ISSUE_BASE(
-    coredal,
+    confmodel,
     BadTemplateSegmentDescription,
     AlgorithmError,
     "Bad configuration description of template segment \'" << name << "\': " << message,
@@ -272,7 +272,7 @@ namespace coredal {
   )
 
   ERS_DECLARE_ISSUE_BASE(
-    coredal,
+    confmodel,
     CannotGetApplicationObject,
     AlgorithmError,
     "Failed to get application object from name: " << reason,
@@ -281,7 +281,7 @@ namespace coredal {
   )
 
   ERS_DECLARE_ISSUE_BASE(
-    coredal,
+    confmodel,
     CannotFindSegmentByName,
     AlgorithmError,
     "Failed to find segment object \'" << name << "\': " << reason,
@@ -291,7 +291,7 @@ namespace coredal {
   )
 
   ERS_DECLARE_ISSUE_BASE(
-    coredal,
+    confmodel,
     NotInitedObject,
     AlgorithmError,
     "The " << item << " object " << obj << " was not initialized",
@@ -301,7 +301,7 @@ namespace coredal {
   )
 
   ERS_DECLARE_ISSUE_BASE(
-    coredal,
+    confmodel,
     NotInitedByDalAlgorithm,
     AlgorithmError,
     "The " << obj_id << '@' << obj_class << " object " << address << " was not initialized by DAL algorithm " << algo,
@@ -313,7 +313,7 @@ namespace coredal {
   )
 
   ERS_DECLARE_ISSUE_BASE(
-    coredal,
+    confmodel,
     CannotCreateSegConfig,
     AlgorithmError,
     "Failed to create config for segment \'" << name << "\': " << reason,
@@ -323,7 +323,7 @@ namespace coredal {
   )
 
   ERS_DECLARE_ISSUE_BASE(
-    coredal,
+    confmodel,
     CannotGetParents,
     AlgorithmError,
     "Failed to get parents of \'" << object << '\'',
@@ -332,7 +332,7 @@ namespace coredal {
   )
 
   ERS_DECLARE_ISSUE_BASE(
-    coredal,
+    confmodel,
     FoundCircularDependency,
     AlgorithmError,
     "Reach maximum allowed recursion (" << limit << ") during calculation of " << goal << "; possibly there is circular dependency between these objects: " << objects,
@@ -343,7 +343,7 @@ namespace coredal {
   )
 
   ERS_DECLARE_ISSUE_BASE(
-    coredal,
+    confmodel,
     NoJarFile,
     AlgorithmError,
     "Cannot find jar file \'" << file << "\' described by \'" << obj_id << '@' << obj_class << "\' that is part of \'" << rep_id << '@' << rep_class << '\'',
@@ -356,7 +356,7 @@ namespace coredal {
   )
 
   ERS_DECLARE_ISSUE_BASE(
-    coredal,
+    confmodel,
     DuplicatedApplicationID,
     AlgorithmError,
     "Two applications have equal IDs:\n  1) " << first << "\n  2) " << second,
@@ -366,7 +366,7 @@ namespace coredal {
   )
 
   ERS_DECLARE_ISSUE_BASE(
-    coredal,
+    confmodel,
     SegmentIncludedMultipleTimes,
     AlgorithmError,
     "The segment \"" << segment << "\" is included by:\n  1) " << first << "\n  2) " << second,

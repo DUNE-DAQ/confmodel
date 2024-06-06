@@ -2,7 +2,7 @@
 #define _daq_core_test_circular_dependency_H_
 
 
-#include "coredal/util.hpp"
+#include "confmodel/util.hpp"
 
 namespace dunedaq {
   namespace conffwk {
@@ -10,7 +10,7 @@ namespace dunedaq {
   }
 }
 
-namespace dunedaq::coredal {
+namespace dunedaq::confmodel {
 
     class TestCircularDependency {
 
@@ -27,7 +27,7 @@ namespace dunedaq::coredal {
 
       private:
 
-        /// \throw dunedaq::coredal::FoundCircularDependency
+        /// \throw dunedaq::confmodel::FoundCircularDependency
         void push(const dunedaq::conffwk::DalObject * object);
 
         void
@@ -59,7 +59,7 @@ namespace dunedaq::coredal {
 
         TestCircularDependency& p_fuse;
     };
-} // dunedaq::coredal
+} // dunedaq::confmodel
 
 
 #endif

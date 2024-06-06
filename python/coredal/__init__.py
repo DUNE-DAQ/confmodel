@@ -1,1 +1,1 @@
-from ._daq_coredal_py import *
+from ._daq_confmodel_py import *
