@@ -5,7 +5,6 @@ find_package(daq-cmake REQUIRED)
 
 daq_setup_environment()
 
-find_package(okssystem REQUIRED)
 find_package(oksdalgen REQUIRED)
 find_package(ers REQUIRED)
 find_package(logging REQUIRED)
@@ -20,7 +19,7 @@ daq_oks_codegen(dunedaq.schema.xml)
 
 daq_add_library(dalMethods.cpp
   test_circular_dependency.cpp disabled-components.cpp
-  LINK_LIBRARIES conffwk::conffwk okssystem::okssystem
+  LINK_LIBRARIES conffwk::conffwk
   logging::logging nlohmann_json::nlohmann_json)
 
 
