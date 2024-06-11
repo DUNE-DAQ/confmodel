@@ -29,6 +29,9 @@
 #include "conffwk/ConfigObject.hpp"
 #include "conffwk/Configuration.hpp"
 #include "conffwk/Schema.hpp"
+#include "confmodel/DetDataSender.hpp"
+#include "confmodel/DetDataReceiver.hpp"
+#include "confmodel/DetectorToDaqConnection.hpp"
 
 #include <list>
 #include <set>
@@ -316,4 +319,40 @@ const std::vector<std::string> RCApplication::construct_commandline_parameters(
     return ret;
 }
 
+std::vector<const confmodel::DetDataSender*> DetectorToDaqConnection::get_senders() const {
+  std::vector<const confmodel::DetDataSender*> senders;
+
+  for ( auto d2d_endpoint : this->get_contains() ) {
+      auto s = d2d_endpoint->cast<confmodel::DetDataSender>();
+      if ( s == nullptr ) 
+        continue;
+
+      senders.push_back(s);
+  }
+
+
+  return senders;
+}
+
+const confmodel::DetDataReceiver* DetectorToDaqConnection::get_receiver() const {
+
+  std::vector<const confmodel::DetDataReceiver*> receivers;
+
+  for ( auto d2d_endpoint : this->get_contains() ) {
+      auto r = d2d_endpoint->cast<confmodel::DetDataReceiver>();
+      if ( r == nullptr ) 
+        continue;
+
+      receivers.push_back(r);
+  }
+
+  if (receivers.size() != 1) {
+      throw(ConfigurationError(ERS_HERE, "DetectorToDaqConnection : expected 1 receiver in D2d conection {name of connection}, found {number found}"));
+  }
+
+
+  // Receiver identified
+  return receivers.at(0);
+
+}
 }
