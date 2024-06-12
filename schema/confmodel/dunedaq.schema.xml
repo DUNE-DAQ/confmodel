@@ -159,6 +159,9 @@
   <method name="get_receiver" description="">
    <method-implementation language="c++" prototype="const confmodel::DetDataReceiver* get_receiver() const" body=""/>
   </method>
+  <method name="get_streams" description="">
+   <method-implementation language="c++" prototype="std::vector&lt;const confmodel::DetectorStream*&gt; get_streams() const" body=""/>
+  </method>
  </class>
 
  <class name="FSMCommand">
