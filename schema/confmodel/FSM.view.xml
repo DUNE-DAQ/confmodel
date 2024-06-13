@@ -1,0 +1,373 @@
+<?xml version="1.0" encoding="ASCII"?>
+
+<!-- oks-data version 2.2 -->
+
+
+<!DOCTYPE oks-data [
+  <!ELEMENT oks-data (info, (include)?, (comments)?, (obj)+)>
+  <!ELEMENT info EMPTY>
+  <!ATTLIST info
+      name CDATA #IMPLIED
+      type CDATA #IMPLIED
+      num-of-items CDATA #REQUIRED
+      oks-format CDATA #FIXED "data"
+      oks-version CDATA #REQUIRED
+      created-by CDATA #IMPLIED
+      created-on CDATA #IMPLIED
+      creation-time CDATA #IMPLIED
+      last-modified-by CDATA #IMPLIED
+      last-modified-on CDATA #IMPLIED
+      last-modification-time CDATA #IMPLIED
+  >
+  <!ELEMENT include (file)*>
+  <!ELEMENT file EMPTY>
+  <!ATTLIST file
+      path CDATA #REQUIRED
+  >
+  <!ELEMENT comments (comment)*>
+  <!ELEMENT comment EMPTY>
+  <!ATTLIST comment
+      creation-time CDATA #REQUIRED
+      created-by CDATA #REQUIRED
+      created-on CDATA #REQUIRED
+      author CDATA #REQUIRED
+      text CDATA #REQUIRED
+  >
+  <!ELEMENT obj (attr | rel)*>
+  <!ATTLIST obj
+      class CDATA #REQUIRED
+      id CDATA #REQUIRED
+  >
+  <!ELEMENT attr (data)*>
+  <!ATTLIST attr
+      name CDATA #REQUIRED
+      type (bool|s8|u8|s16|u16|s32|u32|s64|u64|float|double|date|time|string|uid|enum|class|-) "-"
+      val CDATA ""
+  >
+  <!ELEMENT data EMPTY>
+  <!ATTLIST data
+      val CDATA #REQUIRED
+  >
+  <!ELEMENT rel (ref)*>
+  <!ATTLIST rel
+      name CDATA #REQUIRED
+      class CDATA ""
+      id CDATA ""
+  >
+  <!ELEMENT ref EMPTY>
+  <!ATTLIST ref
+      class CDATA #REQUIRED
+      id CDATA #REQUIRED
+  >
+]>
+
+<oks-data>
+
+<info name="" type="" num-of-items="49" oks-format="data" oks-version="oks-08-03-04-11-g3f5bde7 built &quot;Feb 21 2023&quot;" created-by="glehmann" created-on="np04-srv-024.cern.ch" creation-time="20240611T130607" last-modified-by="glehmann" last-modified-on="np04-srv-024.cern.ch" last-modification-time="20240611T130607"/>
+
+<obj class="ALink" id="FSMconfiguration-2-FSMaction-via-actions">
+ <attr name="Name" type="string" val="actions"/>
+ <rel name="From" class="Class" id="FSMconfiguration"/>
+ <rel name="To" class="Class" id="FSMaction"/>
+ <rel name="Points">
+  <ref class="Point" id="1 FSMconfiguration-2-FSMaction-via-actions"/>
+  <ref class="Point" id="2 FSMconfiguration-2-FSMaction-via-actions"/>
+  <ref class="Point" id="3 FSMconfiguration-2-FSMaction-via-actions"/>
+  <ref class="Point" id="4 FSMconfiguration-2-FSMaction-via-actions"/>
+ </rel>
+</obj>
+
+<obj class="ALink" id="FSMconfiguration-2-FSMsequence-via-command_sequences">
+ <attr name="Name" type="string" val="command_sequences"/>
+ <rel name="From" class="Class" id="FSMconfiguration"/>
+ <rel name="To" class="Class" id="FSMsequence"/>
+ <rel name="Points">
+  <ref class="Point" id="1 FSMconfiguration-2-FSMsequence-via-command_sequences"/>
+  <ref class="Point" id="2 FSMconfiguration-2-FSMsequence-via-command_sequences"/>
+  <ref class="Point" id="3 FSMconfiguration-2-FSMsequence-via-command_sequences"/>
+  <ref class="Point" id="4 FSMconfiguration-2-FSMsequence-via-command_sequences"/>
+ </rel>
+</obj>
+
+<obj class="ALink" id="FSMconfiguration-2-FSMtransition-via-transitions">
+ <attr name="Name" type="string" val="transitions"/>
+ <rel name="From" class="Class" id="FSMconfiguration"/>
+ <rel name="To" class="Class" id="FSMtransition"/>
+ <rel name="Points">
+  <ref class="Point" id="1 FSMconfiguration-2-FSMtransition-via-transitions"/>
+  <ref class="Point" id="2 FSMconfiguration-2-FSMtransition-via-transitions"/>
+  <ref class="Point" id="3 FSMconfiguration-2-FSMtransition-via-transitions"/>
+  <ref class="Point" id="4 FSMconfiguration-2-FSMtransition-via-transitions"/>
+ </rel>
+</obj>
+
+<obj class="ALink" id="FSMconfiguration-2-FSMxTransition-via-post_transitions">
+ <attr name="Name" type="string" val="post_transitions"/>
+ <rel name="From" class="Class" id="FSMconfiguration"/>
+ <rel name="To" class="Class" id="FSMxTransition"/>
+ <rel name="Points">
+  <ref class="Point" id="1 FSMconfiguration-2-FSMxTransition-via-post_transitions"/>
+  <ref class="Point" id="2 FSMconfiguration-2-FSMxTransition-via-post_transitions"/>
+  <ref class="Point" id="3 FSMconfiguration-2-FSMxTransition-via-post_transitions"/>
+  <ref class="Point" id="4 FSMconfiguration-2-FSMxTransition-via-post_transitions"/>
+ </rel>
+</obj>
+
+<obj class="ALink" id="FSMconfiguration-2-FSMxTransition-via-pre_transitions">
+ <attr name="Name" type="string" val="pre_transitions"/>
+ <rel name="From" class="Class" id="FSMconfiguration"/>
+ <rel name="To" class="Class" id="FSMxTransition"/>
+ <rel name="Points">
+  <ref class="Point" id="1 FSMconfiguration-2-FSMxTransition-via-pre_transitions"/>
+  <ref class="Point" id="2 FSMconfiguration-2-FSMxTransition-via-pre_transitions"/>
+  <ref class="Point" id="3 FSMconfiguration-2-FSMxTransition-via-pre_transitions"/>
+  <ref class="Point" id="4 FSMconfiguration-2-FSMxTransition-via-pre_transitions"/>
+ </rel>
+</obj>
+
+<obj class="ALink" id="FSMsequence-2-FSMCommand-via-sequence">
+ <attr name="Name" type="string" val="sequence"/>
+ <rel name="From" class="Class" id="FSMsequence"/>
+ <rel name="To" class="Class" id="FSMCommand"/>
+ <rel name="Points">
+  <ref class="Point" id="1 FSMsequence-2-FSMCommand-via-sequence"/>
+  <ref class="Point" id="2 FSMsequence-2-FSMCommand-via-sequence"/>
+  <ref class="Point" id="3 FSMsequence-2-FSMCommand-via-sequence"/>
+  <ref class="Point" id="4 FSMsequence-2-FSMCommand-via-sequence"/>
+ </rel>
+</obj>
+
+<obj class="ALink" id="RCApplication-2-FSMconfiguration-via-fsm">
+ <attr name="Name" type="string" val="fsm"/>
+ <rel name="From" class="Class" id="RCApplication"/>
+ <rel name="To" class="Class" id="FSMconfiguration"/>
+ <rel name="Points">
+  <ref class="Point" id="1 RCApplication-2-FSMconfiguration-via-fsm"/>
+  <ref class="Point" id="2 RCApplication-2-FSMconfiguration-via-fsm"/>
+  <ref class="Point" id="3 RCApplication-2-FSMconfiguration-via-fsm"/>
+  <ref class="Point" id="4 RCApplication-2-FSMconfiguration-via-fsm"/>
+ </rel>
+</obj>
+
+<obj class="Class" id="FSMCommand">
+ <attr name="x" type="s16" val="717"/>
+ <attr name="y" type="s16" val="225"/>
+</obj>
+
+<obj class="Class" id="FSMaction">
+ <attr name="x" type="s16" val="573"/>
+ <attr name="y" type="s16" val="33"/>
+</obj>
+
+<obj class="Class" id="FSMactionFileLogbook">
+ <attr name="x" type="s16" val="723"/>
+ <attr name="y" type="s16" val="125"/>
+</obj>
+
+<obj class="Class" id="FSMconfiguration">
+ <attr name="x" type="s16" val="255"/>
+ <attr name="y" type="s16" val="38"/>
+</obj>
+
+<obj class="Class" id="FSMsequence">
+ <attr name="x" type="s16" val="511"/>
+ <attr name="y" type="s16" val="227"/>
+</obj>
+
+<obj class="Class" id="FSMtransition">
+ <attr name="x" type="s16" val="84"/>
+ <attr name="y" type="s16" val="166"/>
+</obj>
+
+<obj class="Class" id="FSMxTransition">
+ <attr name="x" type="s16" val="81"/>
+ <attr name="y" type="s16" val="246"/>
+</obj>
+
+<obj class="Class" id="RCApplication">
+ <attr name="x" type="s16" val="10"/>
+ <attr name="y" type="s16" val="38"/>
+</obj>
+
+<obj class="GLink" id="FSMaction-2-FSMactionFileLogbook">
+ <rel name="From" class="Class" id="FSMaction"/>
+ <rel name="To" class="Class" id="FSMactionFileLogbook"/>
+ <rel name="Points">
+  <ref class="Point" id="1 FSMaction-2-FSMactionFileLogbook"/>
+  <ref class="Point" id="2 FSMaction-2-FSMactionFileLogbook"/>
+  <ref class="Point" id="3 FSMaction-2-FSMactionFileLogbook"/>
+  <ref class="Point" id="4 FSMaction-2-FSMactionFileLogbook"/>
+ </rel>
+</obj>
+
+<obj class="Point" id="1 FSMaction-2-FSMactionFileLogbook">
+ <attr name="x" type="s16" val="104"/>
+ <attr name="y" type="s16" val="51"/>
+</obj>
+
+<obj class="Point" id="1 FSMconfiguration-2-FSMaction-via-actions">
+ <attr name="x" type="s16" val="183"/>
+ <attr name="y" type="s16" val="51"/>
+</obj>
+
+<obj class="Point" id="1 FSMconfiguration-2-FSMsequence-via-command_sequences">
+ <attr name="x" type="s16" val="183"/>
+ <attr name="y" type="s16" val="51"/>
+</obj>
+
+<obj class="Point" id="1 FSMconfiguration-2-FSMtransition-via-transitions">
+ <attr name="x" type="s16" val="24"/>
+ <attr name="y" type="s16" val="51"/>
+</obj>
+
+<obj class="Point" id="1 FSMconfiguration-2-FSMxTransition-via-post_transitions">
+ <attr name="x" type="s16" val="51"/>
+ <attr name="y" type="s16" val="51"/>
+</obj>
+
+<obj class="Point" id="1 FSMconfiguration-2-FSMxTransition-via-pre_transitions">
+ <attr name="x" type="s16" val="144"/>
+ <attr name="y" type="s16" val="51"/>
+</obj>
+
+<obj class="Point" id="1 FSMsequence-2-FSMCommand-via-sequence">
+ <attr name="x" type="s16" val="82"/>
+ <attr name="y" type="s16" val="38"/>
+</obj>
+
+<obj class="Point" id="1 RCApplication-2-FSMconfiguration-via-fsm">
+ <attr name="x" type="s16" val="163"/>
+ <attr name="y" type="s16" val="51"/>
+</obj>
+
+<obj class="Point" id="2 FSMaction-2-FSMactionFileLogbook">
+ <attr name="x" type="s16" val="104"/>
+ <attr name="y" type="s16" val="78"/>
+</obj>
+
+<obj class="Point" id="2 FSMconfiguration-2-FSMaction-via-actions">
+ <attr name="x" type="s16" val="183"/>
+ <attr name="y" type="s16" val="79"/>
+</obj>
+
+<obj class="Point" id="2 FSMconfiguration-2-FSMsequence-via-command_sequences">
+ <attr name="x" type="s16" val="183"/>
+ <attr name="y" type="s16" val="163"/>
+</obj>
+
+<obj class="Point" id="2 FSMconfiguration-2-FSMtransition-via-transitions">
+ <attr name="x" type="s16" val="24"/>
+ <attr name="y" type="s16" val="146"/>
+</obj>
+
+<obj class="Point" id="2 FSMconfiguration-2-FSMxTransition-via-post_transitions">
+ <attr name="x" type="s16" val="51"/>
+ <attr name="y" type="s16" val="267"/>
+</obj>
+
+<obj class="Point" id="2 FSMconfiguration-2-FSMxTransition-via-pre_transitions">
+ <attr name="x" type="s16" val="144"/>
+ <attr name="y" type="s16" val="299"/>
+</obj>
+
+<obj class="Point" id="2 FSMsequence-2-FSMCommand-via-sequence">
+ <attr name="x" type="s16" val="82"/>
+ <attr name="y" type="s16" val="251"/>
+</obj>
+
+<obj class="Point" id="2 RCApplication-2-FSMconfiguration-via-fsm">
+ <attr name="x" type="s16" val="163"/>
+ <attr name="y" type="s16" val="19"/>
+</obj>
+
+<obj class="Point" id="3 FSMaction-2-FSMactionFileLogbook">
+ <attr name="x" type="s16" val="35"/>
+ <attr name="y" type="s16" val="78"/>
+</obj>
+
+<obj class="Point" id="3 FSMconfiguration-2-FSMaction-via-actions">
+ <attr name="x" type="s16" val="34"/>
+ <attr name="y" type="s16" val="79"/>
+</obj>
+
+<obj class="Point" id="3 FSMconfiguration-2-FSMsequence-via-command_sequences">
+ <attr name="x" type="s16" val="27"/>
+ <attr name="y" type="s16" val="163"/>
+</obj>
+
+<obj class="Point" id="3 FSMconfiguration-2-FSMtransition-via-transitions">
+ <attr name="x" type="s16" val="21"/>
+ <attr name="y" type="s16" val="146"/>
+</obj>
+
+<obj class="Point" id="3 FSMconfiguration-2-FSMxTransition-via-post_transitions">
+ <attr name="x" type="s16" val="34"/>
+ <attr name="y" type="s16" val="267"/>
+</obj>
+
+<obj class="Point" id="3 FSMconfiguration-2-FSMxTransition-via-pre_transitions">
+ <attr name="x" type="s16" val="34"/>
+ <attr name="y" type="s16" val="299"/>
+</obj>
+
+<obj class="Point" id="3 FSMsequence-2-FSMCommand-via-sequence">
+ <attr name="x" type="s16" val="31"/>
+ <attr name="y" type="s16" val="251"/>
+</obj>
+
+<obj class="Point" id="3 RCApplication-2-FSMconfiguration-via-fsm">
+ <attr name="x" type="s16" val="61"/>
+ <attr name="y" type="s16" val="19"/>
+</obj>
+
+<obj class="Point" id="4 FSMaction-2-FSMactionFileLogbook">
+ <attr name="x" type="s16" val="35"/>
+ <attr name="y" type="s16" val="12"/>
+</obj>
+
+<obj class="Point" id="4 FSMconfiguration-2-FSMaction-via-actions">
+ <attr name="x" type="s16" val="34"/>
+ <attr name="y" type="s16" val="17"/>
+</obj>
+
+<obj class="Point" id="4 FSMconfiguration-2-FSMsequence-via-command_sequences">
+ <attr name="x" type="s16" val="27"/>
+ <attr name="y" type="s16" val="12"/>
+</obj>
+
+<obj class="Point" id="4 FSMconfiguration-2-FSMtransition-via-transitions">
+ <attr name="x" type="s16" val="21"/>
+ <attr name="y" type="s16" val="17"/>
+</obj>
+
+<obj class="Point" id="4 FSMconfiguration-2-FSMxTransition-via-post_transitions">
+ <attr name="x" type="s16" val="34"/>
+ <attr name="y" type="s16" val="21"/>
+</obj>
+
+<obj class="Point" id="4 FSMconfiguration-2-FSMxTransition-via-pre_transitions">
+ <attr name="x" type="s16" val="34"/>
+ <attr name="y" type="s16" val="21"/>
+</obj>
+
+<obj class="Point" id="4 FSMsequence-2-FSMCommand-via-sequence">
+ <attr name="x" type="s16" val="31"/>
+ <attr name="y" type="s16" val="17"/>
+</obj>
+
+<obj class="Point" id="4 RCApplication-2-FSMconfiguration-via-fsm">
+ <attr name="x" type="s16" val="61"/>
+ <attr name="y" type="s16" val="17"/>
+</obj>
+
+<obj class="View" id="Unknown">
+ <attr name="drawing area x margin" type="u16" val="6"/>
+ <attr name="drawing area y margin" type="u16" val="4"/>
+ <attr name="font x margin" type="u16" val="3"/>
+ <attr name="font y margin" type="u16" val="2"/>
+ <attr name="font name" type="string" val="-adobe-helvetica-medium-r-normal--12-120-75-75-p-67-iso8859-1"/>
+ <attr name="aggregation sign size" type="u16" val="18"/>
+ <attr name="generalization sign size" type="u16" val="16"/>
+</obj>
+
+</oks-data>

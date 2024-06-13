@@ -63,7 +63,7 @@
 
 <oks-data>
 
-<info name="" type="" num-of-items="208" oks-format="data" oks-version="oks-08-03-04-11-g3f5bde7 built &quot;Feb 21 2023&quot;" created-by="glehmann" created-on="lxplus928.cern.ch" creation-time="20240107T163146" last-modified-by="glehmann" last-modified-on="lxplus928.cern.ch" last-modification-time="20240107T163146"/>
+<info name="" type="" num-of-items="202" oks-format="data" oks-version="oks-08-03-04-11-g3f5bde7 built &quot;Feb 21 2023&quot;" created-by="glehmann" created-on="np04-srv-024.cern.ch" creation-time="20240611T124723" last-modified-by="glehmann" last-modified-on="np04-srv-024.cern.ch" last-modification-time="20240611T124723"/>
 
 <obj class="ALink" id="Application-2-Service-via-exposes_service">
  <attr name="Name" type="string" val="exposes_service"/>
@@ -161,18 +161,6 @@
  </rel>
 </obj>
 
-<obj class="ALink" id="NetworkDevice-2-NetworkInterface-via-network">
- <attr name="Name" type="string" val="network"/>
- <rel name="From" class="Class" id="NetworkDevice"/>
- <rel name="To" class="Class" id="NetworkInterface"/>
- <rel name="Points">
-  <ref class="Point" id="1 NetworkDevice-2-NetworkInterface-via-network"/>
-  <ref class="Point" id="2 NetworkDevice-2-NetworkInterface-via-network"/>
-  <ref class="Point" id="3 NetworkDevice-2-NetworkInterface-via-network"/>
-  <ref class="Point" id="4 NetworkDevice-2-NetworkInterface-via-network"/>
- </rel>
-</obj>
-
 <obj class="ALink" id="PhysicalHost-2-HostComponent-via-contains">
  <attr name="Name" type="string" val="contains"/>
  <rel name="From" class="Class" id="PhysicalHost"/>
@@ -255,18 +243,6 @@
   <ref class="Point" id="2 Session-2-DetectorConfig-via-detector_configuration"/>
   <ref class="Point" id="3 Session-2-DetectorConfig-via-detector_configuration"/>
   <ref class="Point" id="4 Session-2-DetectorConfig-via-detector_configuration"/>
- </rel>
-</obj>
-
-<obj class="ALink" id="Session-2-ReadoutMap-via-readout_map">
- <attr name="Name" type="string" val="readout_map"/>
- <rel name="From" class="Class" id="Session"/>
- <rel name="To" class="Class" id="ReadoutMap"/>
- <rel name="Points">
-  <ref class="Point" id="1 Session-2-ReadoutMap-via-readout_map"/>
-  <ref class="Point" id="2 Session-2-ReadoutMap-via-readout_map"/>
-  <ref class="Point" id="3 Session-2-ReadoutMap-via-readout_map"/>
-  <ref class="Point" id="4 Session-2-ReadoutMap-via-readout_map"/>
  </rel>
 </obj>
 
@@ -373,8 +349,8 @@
 </obj>
 
 <obj class="Class" id="DetectorConfig">
- <attr name="x" type="s16" val="1047"/>
- <attr name="y" type="s16" val="28"/>
+ <attr name="x" type="s16" val="1054"/>
+ <attr name="y" type="s16" val="15"/>
 </obj>
 
 <obj class="Class" id="HostComponent">
@@ -388,13 +364,13 @@
 </obj>
 
 <obj class="Class" id="NetworkDevice">
- <attr name="x" type="s16" val="976"/>
- <attr name="y" type="s16" val="631"/>
+ <attr name="x" type="s16" val="979"/>
+ <attr name="y" type="s16" val="619"/>
 </obj>
 
 <obj class="Class" id="NetworkInterface">
- <attr name="x" type="s16" val="1173"/>
- <attr name="y" type="s16" val="586"/>
+ <attr name="x" type="s16" val="1009"/>
+ <attr name="y" type="s16" val="453"/>
 </obj>
 
 <obj class="Class" id="PhysicalHost">
@@ -417,11 +393,6 @@
  <attr name="y" type="s16" val="326"/>
 </obj>
 
-<obj class="Class" id="ReadoutMap">
- <attr name="x" type="s16" val="1216"/>
- <attr name="y" type="s16" val="427"/>
-</obj>
-
 <obj class="Class" id="ResourceBase">
  <attr name="x" type="s16" val="732"/>
  <attr name="y" type="s16" val="163"/>
@@ -438,8 +409,8 @@
 </obj>
 
 <obj class="Class" id="Service">
- <attr name="x" type="s16" val="94"/>
- <attr name="y" type="s16" val="350"/>
+ <attr name="x" type="s16" val="89"/>
+ <attr name="y" type="s16" val="331"/>
 </obj>
 
 <obj class="Class" id="Session">
@@ -571,6 +542,17 @@
  </rel>
 </obj>
 
+<obj class="GLink" id="NetworkInterface-2-NetworkDevice">
+ <rel name="From" class="Class" id="NetworkInterface"/>
+ <rel name="To" class="Class" id="NetworkDevice"/>
+ <rel name="Points">
+  <ref class="Point" id="1 NetworkInterface-2-NetworkDevice"/>
+  <ref class="Point" id="2 NetworkInterface-2-NetworkDevice"/>
+  <ref class="Point" id="3 NetworkInterface-2-NetworkDevice"/>
+  <ref class="Point" id="4 NetworkInterface-2-NetworkDevice"/>
+ </rel>
+</obj>
+
 <obj class="GLink" id="ResourceBase-2-ResourceSet">
  <rel name="From" class="Class" id="ResourceBase"/>
  <rel name="To" class="Class" id="ResourceSet"/>
@@ -697,9 +679,9 @@
  <attr name="y" type="s16" val="38"/>
 </obj>
 
-<obj class="Point" id="1 NetworkDevice-2-NetworkInterface-via-network">
- <attr name="x" type="s16" val="71"/>
- <attr name="y" type="s16" val="24"/>
+<obj class="Point" id="1 NetworkInterface-2-NetworkDevice">
+ <attr name="x" type="s16" val="66"/>
+ <attr name="y" type="s16" val="92"/>
 </obj>
 
 <obj class="Point" id="1 PhysicalHost-2-HostComponent-via-contains">
@@ -743,11 +725,6 @@
 <obj class="Point" id="1 Session-2-DetectorConfig-via-detector_configuration">
  <attr name="x" type="s16" val="196"/>
  <attr name="y" type="s16" val="105"/>
-</obj>
-
-<obj class="Point" id="1 Session-2-ReadoutMap-via-readout_map">
- <attr name="x" type="s16" val="204"/>
- <attr name="y" type="s16" val="146"/>
 </obj>
 
 <obj class="Point" id="1 Session-2-ResourceBase-via-disabled">
@@ -872,9 +849,9 @@
  <attr name="y" type="s16" val="679"/>
 </obj>
 
-<obj class="Point" id="2 NetworkDevice-2-NetworkInterface-via-network">
- <attr name="x" type="s16" val="71"/>
- <attr name="y" type="s16" val="656"/>
+<obj class="Point" id="2 NetworkInterface-2-NetworkDevice">
+ <attr name="x" type="s16" val="66"/>
+ <attr name="y" type="s16" val="624"/>
 </obj>
 
 <obj class="Point" id="2 PhysicalHost-2-HostComponent-via-contains">
@@ -917,12 +894,7 @@
 
 <obj class="Point" id="2 Session-2-DetectorConfig-via-detector_configuration">
  <attr name="x" type="s16" val="196"/>
- <attr name="y" type="s16" val="142"/>
-</obj>
-
-<obj class="Point" id="2 Session-2-ReadoutMap-via-readout_map">
- <attr name="x" type="s16" val="204"/>
- <attr name="y" type="s16" val="392"/>
+ <attr name="y" type="s16" val="178"/>
 </obj>
 
 <obj class="Point" id="2 Session-2-ResourceBase-via-disabled">
@@ -1049,9 +1021,9 @@
  <attr name="y" type="s16" val="679"/>
 </obj>
 
-<obj class="Point" id="3 NetworkDevice-2-NetworkInterface-via-network">
- <attr name="x" type="s16" val="38"/>
- <attr name="y" type="s16" val="656"/>
+<obj class="Point" id="3 NetworkInterface-2-NetworkDevice">
+ <attr name="x" type="s16" val="32"/>
+ <attr name="y" type="s16" val="624"/>
 </obj>
 
 <obj class="Point" id="3 PhysicalHost-2-HostComponent-via-contains">
@@ -1096,11 +1068,7 @@
 
 <obj class="Point" id="3 Session-2-DetectorConfig-via-detector_configuration">
  <attr name="x" type="s16" val="134"/>
- <attr name="y" type="s16" val="142"/>
-</obj>
-
-<obj class="Point" id="3 Session-2-ReadoutMap-via-readout_map">
- <attr name="y" type="s16" val="392"/>
+ <attr name="y" type="s16" val="178"/>
 </obj>
 
 <obj class="Point" id="3 Session-2-ResourceBase-via-disabled">
@@ -1227,9 +1195,9 @@
  <attr name="y" type="s16" val="21"/>
 </obj>
 
-<obj class="Point" id="4 NetworkDevice-2-NetworkInterface-via-network">
- <attr name="x" type="s16" val="38"/>
- <attr name="y" type="s16" val="30"/>
+<obj class="Point" id="4 NetworkInterface-2-NetworkDevice">
+ <attr name="x" type="s16" val="32"/>
+ <attr name="y" type="s16" val="12"/>
 </obj>
 
 <obj class="Point" id="4 PhysicalHost-2-HostComponent-via-contains">
@@ -1275,10 +1243,6 @@
 <obj class="Point" id="4 Session-2-DetectorConfig-via-detector_configuration">
  <attr name="x" type="s16" val="134"/>
  <attr name="y" type="s16" val="21"/>
-</obj>
-
-<obj class="Point" id="4 Session-2-ReadoutMap-via-readout_map">
- <attr name="y" type="s16" val="8"/>
 </obj>
 
 <obj class="Point" id="4 Session-2-ResourceBase-via-disabled">
