@@ -175,11 +175,6 @@
   <relationship name="parameters" class-type="Variable" low-cc="zero" high-cc="many" is-composite="yes" is-exclusive="no" is-dependent="no"/>
  </class>
 
- <class name="FSMactionFileLogbook">
-  <superclass name="FSMaction"/>
-  <attribute name="file_name" type="string" is-not-null="yes"/>
- </class>
-
  <class name="FSMconfiguration">
   <attribute name="states" type="string" is-multi-value="yes" init-value="&quot;initial&quot;,&quot;configured&quot;" is-not-null="yes"/>
   <attribute name="initial_state" type="string" init-value="initial" is-not-null="yes"/>
