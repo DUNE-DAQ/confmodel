@@ -29,6 +29,10 @@
 #include "conffwk/ConfigObject.hpp"
 #include "conffwk/Configuration.hpp"
 #include "conffwk/Schema.hpp"
+#include "confmodel/DetDataSender.hpp"
+#include "confmodel/DetDataReceiver.hpp"
+#include "confmodel/DetectorToDaqConnection.hpp"
+#include "confmodel/DetectorStream.hpp"
 
 #include <list>
 #include <set>
@@ -316,4 +320,60 @@ const std::vector<std::string> RCApplication::construct_commandline_parameters(
     return ret;
 }
 
+
+std::vector<const confmodel::DetDataSender*> DetectorToDaqConnection::get_senders() const {
+  std::vector<const confmodel::DetDataSender*> senders;
+
+  for ( auto d2d_res : this->get_contains() ) {
+      auto s = d2d_res->cast<confmodel::DetDataSender>();
+      if ( s == nullptr ) 
+        continue;
+
+      senders.push_back(s);
+  }
+
+  return senders;
+}
+
+
+const confmodel::DetDataReceiver* DetectorToDaqConnection::get_receiver() const {
+
+  std::vector<const confmodel::DetDataReceiver*> receivers;
+
+  for ( auto d2d_res : this->get_contains() ) {
+      auto r = d2d_res->cast<confmodel::DetDataReceiver>();
+      if ( r == nullptr ) 
+        continue;
+
+      receivers.push_back(r);
+  }
+
+  if (receivers.size() != 1) {
+      throw(ConfigurationError(ERS_HERE, "DetectorToDaqConnection : expected 1 receiver in D2d conection {name of connection}, found {number found}"));
+  }
+
+  // Receiver identified
+  return receivers.at(0);
+
+}
+
+
+std::vector<const confmodel::DetectorStream*> DetectorToDaqConnection::get_streams() const {
+
+  std::vector<const confmodel::DetectorStream*> streams;
+    // Loop over senders
+    for (auto sender : this->get_senders()) {
+      // loop over streams
+      for (auto stream_res : sender->get_contains()) {
+        auto stream = stream_res->cast<confmodel::DetectorStream>();
+        if ( !stream ) {
+          throw(ConfigurationError(ERS_HERE, "DetectorToDaqConnection : Non-stream object '"+stream_res->UID()+"' found in DetDataSender '"+stream_res->UID()+"'"));
+        }
+        
+        streams.push_back(stream->cast<confmodel::DetectorStream>());
+      }
+    }
+
+  return streams;
+}
 }
