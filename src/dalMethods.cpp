@@ -325,11 +325,24 @@ std::vector<const confmodel::DetDataSender*> DetectorToDaqConnection::get_sender
   std::vector<const confmodel::DetDataSender*> senders;
 
   for ( auto d2d_res : this->get_contains() ) {
-      auto s = d2d_res->cast<confmodel::DetDataSender>();
-      if ( s == nullptr ) 
-        continue;
-
-      senders.push_back(s);
+      // Maybe senders not in a resource set so check for direct containment
+      auto sender = d2d_res->cast<confmodel::DetDataSender>();
+      if ( sender != nullptr ) {
+          senders.push_back(sender);
+      }
+      else {
+          // Look for a resource set containing senders 
+          auto rs = d2d_res->cast<confmodel::ResourceSet>();
+          if (rs != nullptr) {
+              // Look for senders in resource set
+              for (auto res : rs->get_contains()) {
+                  auto sender = res->cast<confmodel::DetDataSender>();
+                  if ( sender != nullptr ) {
+                      senders.push_back(sender);
+                  }
+              }
+          }
+      }
   }
 
   return senders;
