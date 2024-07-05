@@ -77,15 +77,15 @@
  </rel>
 </obj>
 
-<obj class="ALink" id="Application-2-VariableBase-via-applicationEnvironment">
- <attr name="Name" type="string" val="applicationEnvironment"/>
+<obj class="ALink" id="Application-2-VariableBase-via-application_environment">
+ <attr name="Name" type="string" val="application_environment"/>
  <rel name="From" class="Class" id="Application"/>
  <rel name="To" class="Class" id="VariableBase"/>
  <rel name="Points">
-  <ref class="Point" id="1 Application-2-VariableBase-via-applicationEnvironment"/>
-  <ref class="Point" id="2 Application-2-VariableBase-via-applicationEnvironment"/>
-  <ref class="Point" id="3 Application-2-VariableBase-via-applicationEnvironment"/>
-  <ref class="Point" id="4 Application-2-VariableBase-via-applicationEnvironment"/>
+  <ref class="Point" id="1 Application-2-VariableBase-via-application_environment"/>
+  <ref class="Point" id="2 Application-2-VariableBase-via-application_environment"/>
+  <ref class="Point" id="3 Application-2-VariableBase-via-application_environment"/>
+  <ref class="Point" id="4 Application-2-VariableBase-via-application_environment"/>
  </rel>
 </obj>
 
@@ -616,7 +616,7 @@
  <attr name="y" type="s16" val="51"/>
 </obj>
 
-<obj class="Point" id="1 Application-2-VariableBase-via-applicationEnvironment">
+<obj class="Point" id="1 Application-2-VariableBase-via-application_environment">
  <attr name="x" type="s16" val="141"/>
  <attr name="y" type="s16" val="51"/>
 </obj>
@@ -786,7 +786,7 @@
  <attr name="y" type="s16" val="242"/>
 </obj>
 
-<obj class="Point" id="2 Application-2-VariableBase-via-applicationEnvironment">
+<obj class="Point" id="2 Application-2-VariableBase-via-application_environment">
  <attr name="x" type="s16" val="141"/>
  <attr name="y" type="s16" val="61"/>
 </obj>
@@ -957,7 +957,7 @@
  <attr name="y" type="s16" val="242"/>
 </obj>
 
-<obj class="Point" id="3 Application-2-VariableBase-via-applicationEnvironment">
+<obj class="Point" id="3 Application-2-VariableBase-via-application_environment">
  <attr name="x" type="s16" val="68"/>
  <attr name="y" type="s16" val="61"/>
 </obj>
@@ -1131,7 +1131,7 @@
  <attr name="y" type="s16" val="21"/>
 </obj>
 
-<obj class="Point" id="4 Application-2-VariableBase-via-applicationEnvironment">
+<obj class="Point" id="4 Application-2-VariableBase-via-application_environment">
  <attr name="x" type="s16" val="68"/>
  <attr name="y" type="s16" val="12"/>
 </obj>
