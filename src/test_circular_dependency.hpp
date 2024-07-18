@@ -2,15 +2,15 @@
 #define _daq_core_test_circular_dependency_H_
 
 
-#include "coredal/util.hpp"
+#include "confmodel/util.hpp"
 
 namespace dunedaq {
-  namespace oksdbinterfaces {
+  namespace conffwk {
     class DalObject;
   }
 }
 
-namespace dunedaq::coredal {
+namespace dunedaq::confmodel {
 
     class TestCircularDependency {
 
@@ -18,7 +18,7 @@ namespace dunedaq::coredal {
 
       public:
 
-        TestCircularDependency(const char * goal, const dunedaq::oksdbinterfaces::DalObject * first_object) :
+        TestCircularDependency(const char * goal, const dunedaq::conffwk::DalObject * first_object) :
             p_goal(goal), p_index(0)
         {
           p_objects[p_index++] = first_object;
@@ -27,8 +27,8 @@ namespace dunedaq::coredal {
 
       private:
 
-        /// \throw dunedaq::coredal::FoundCircularDependency
-        void push(const dunedaq::oksdbinterfaces::DalObject * object);
+        /// \throw dunedaq::confmodel::FoundCircularDependency
+        void push(const dunedaq::conffwk::DalObject * object);
 
         void
         pop()
@@ -43,7 +43,7 @@ namespace dunedaq::coredal {
 
         const char * p_goal;
         unsigned int p_index;
-        const dunedaq::oksdbinterfaces::DalObject * p_objects[p_limit];
+        const dunedaq::conffwk::DalObject * p_objects[p_limit];
 
     };
 
@@ -51,7 +51,7 @@ namespace dunedaq::coredal {
 
       public:
 
-        AddTestOnCircularDependency(TestCircularDependency& fuse, const dunedaq::oksdbinterfaces::DalObject * obj) : p_fuse(fuse) { p_fuse.push(obj); }
+        AddTestOnCircularDependency(TestCircularDependency& fuse, const dunedaq::conffwk::DalObject * obj) : p_fuse(fuse) { p_fuse.push(obj); }
         ~AddTestOnCircularDependency() { p_fuse.pop(); }
 
 
@@ -59,7 +59,7 @@ namespace dunedaq::coredal {
 
         TestCircularDependency& p_fuse;
     };
-} // dunedaq::coredal
+} // dunedaq::confmodel
 
 
 #endif

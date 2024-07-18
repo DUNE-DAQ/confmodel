@@ -1,23 +1,23 @@
 #include "logging/Logging.hpp"
 
-#include "oksdbinterfaces/Configuration.hpp"
+#include "conffwk/Configuration.hpp"
 
-#include "coredal/Component.hpp"
-#include "coredal/DaqApplication.hpp"
-#include "coredal/DaqModule.hpp"
-#include "coredal/ResourceSet.hpp"
-#include "coredal/Segment.hpp"
-#include "coredal/Session.hpp"
+#include "confmodel/Component.hpp"
+#include "confmodel/DaqApplication.hpp"
+#include "confmodel/DaqModule.hpp"
+#include "confmodel/ResourceSet.hpp"
+#include "confmodel/Segment.hpp"
+#include "confmodel/Session.hpp"
 
 #include <iostream>
 #include <string>
 
 using namespace dunedaq;
 
-void listApps(const coredal::Session* session) {
+void listApps(const confmodel::Session* session) {
   for (auto app : session->get_all_applications()) {
     std::cout << "Application: " << app->UID();
-    auto res = app->cast<coredal::ResourceSet>();
+    auto res = app->cast<confmodel::ResourceSet>();
     if (res) {
       if (res->disabled(*session)) {
         std::cout << "<disabled>";
@@ -31,7 +31,7 @@ void listApps(const coredal::Session* session) {
         }
       }
     }
-    auto daqApp = app->cast<coredal::DaqApplication>();
+    auto daqApp = app->cast<confmodel::DaqApplication>();
     if (daqApp) {
       std::cout << " Modules:";
       for (auto mod : daqApp->get_modules()) {
@@ -50,11 +50,11 @@ int main(int argc, char* argv[]) {
 
   dunedaq::logging::Logging::setup();
 
-  std::string confimpl = "oksconfig:" + std::string(argv[2]);
-  auto confdb = new oksdbinterfaces::Configuration(confimpl);
+  std::string confimpl = "oksconflibs:" + std::string(argv[2]);
+  auto confdb = new conffwk::Configuration(confimpl);
 
   std::string sessionName(argv[1]);
-  auto session = confdb->get<coredal::Session>(sessionName);
+  auto session = confdb->get<confmodel::Session>(sessionName);
   if (session == nullptr) {
     std::cerr << "Session " << sessionName << " not found in database\n";
     return -1;
@@ -82,7 +82,7 @@ int main(int argc, char* argv[]) {
   listApps(session);
 
   std::cout << "======\nNow trying to set enabled  \n";
-  std::set<const coredal::Component*> enable;
+  std::set<const confmodel::Component*> enable;
   for (auto item : disabled) {
     enable.insert(item);
   }

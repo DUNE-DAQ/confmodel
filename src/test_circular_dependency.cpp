@@ -1,9 +1,9 @@
-#include "oksdbinterfaces/DalObject.hpp"
+#include "conffwk/DalObject.hpp"
 
 #include "test_circular_dependency.hpp"
 
 void
-dunedaq::coredal::TestCircularDependency::push(const dunedaq::oksdbinterfaces::DalObject * object)
+dunedaq::confmodel::TestCircularDependency::push(const dunedaq::conffwk::DalObject * object)
 {
   if(p_index < p_limit) {
     p_objects[p_index++] = object;
@@ -15,6 +15,6 @@ dunedaq::coredal::TestCircularDependency::push(const dunedaq::oksdbinterfaces::D
       s << p_objects[i];
     }
 
-    throw dunedaq::coredal::FoundCircularDependency(ERS_HERE, p_limit, p_goal, s.str());
+    throw dunedaq::confmodel::FoundCircularDependency(ERS_HERE, p_limit, p_goal, s.str());
   }
 }

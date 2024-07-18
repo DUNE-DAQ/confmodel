@@ -1,4 +1,4 @@
-# coredal
+# confmodel
 This package contains the 'core' schema for the DUNE daq OKS configuration.
 
   ![schema](schema.png)
@@ -16,25 +16,24 @@ disabling a **Segment** disables all of its nested **Segment**s.
 
 The **Application** class has attibutes defining the application's
  `application_name` (executable name) and `commandline_parameters`. Its
- `applicationEnvironment` relationship lists environment variables needed by the
+ `application_environment` relationship lists environment variables needed by the
  application in addition to those defined by the **Session**. An
- [example Python script](https://github.com/DUNE-DAQ/coredal/blob/develop/scripts/app_environment.py)
+ [example Python script](https://github.com/DUNE-DAQ/confmodel/blob/develop/scripts/app_environment.py)
  that prints out the environment for enabled applications in the
  **Session** is provided in the `scripts` directory.
 
-## ReadoutMap
+## Readout Map
 
  ![ReadoutMap schema](ReadoutMap.png)
 
- The **ReadoutMap** included here is currently a direct translation
-from the jsonnet schema in the `daqconf` package with the addition of
-a grouping class **ReadoutGroup**.
+The detector to DAQ connections are described using different types of **Resources**. Each **DetectorToDaqConnection** contains one **ResourceSetAND** containing one or more **DetDataSender**s and one **DetDataReceiver**. The **DetectorToDaqConnection** is a **ResourceSetOR**, meaning that if either the receiver or all the senders are disabled, then also the connection is disabled. 
 
- The **DROStreamConf** class inherits from **ResourceBase** allowing
-individual streams to be disabled.  **DROStreamConfs** are grouped
-into **ReadoutGroups** which inherit from **ResourceSetAND** so if all
-streams in a group are disabled the group itself is disabled.
+Each **DetDataSender** contains a set of **DetectorStream**s, which consist of a **Resource** associated to one **GeoId**.
 
+## Finite State Machines
+Each controller (**RCApplication**) uses one **FSMConfiguration** object that describes action, trasnisions and sequences.
+
+ ![FSM schema](fsm.png)
 
 ## Notes
 

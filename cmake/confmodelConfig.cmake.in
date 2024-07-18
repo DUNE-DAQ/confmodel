@@ -4,10 +4,10 @@
 include(CMakeFindDependencyMacro)
 
 find_dependency(okssystem)
-find_dependency(genconfig)
+find_dependency(oksdalgen)
 find_dependency(ers)
 find_dependency(logging)
-find_dependency(oksdbinterfaces)
+find_dependency(conffwk)
 find_package(nlohmann_json)
 
 # Figure out whether or not this dependency is an installed package or

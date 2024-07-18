@@ -9,27 +9,27 @@
 #include "pybind11/pybind11.h"
 #include "pybind11/stl.h"
 
-#include "coredal/DaqApplication.hpp"
-#include "coredal/HostComponent.hpp"
+#include "confmodel/DaqApplication.hpp"
+#include "confmodel/HostComponent.hpp"
 
 namespace py = pybind11;
 
-namespace dunedaq::coredal::python {
+namespace dunedaq::confmodel::python {
 
 extern void
 register_dal_methods(py::module&);
 
-PYBIND11_MODULE(_daq_coredal_py, m)
+PYBIND11_MODULE(_daq_confmodel_py, m)
 {
 
-  m.doc() = "C++ implementation of the coredal modules";
+  m.doc() = "C++ implementation of the confmodel modules";
 #if 0
-  py::class_<dunedaq::coredal::DaqApplication>(m,"DaqApplication")
-    .def(py::init<oksdbinterfaces::Configuration& , const oksdbinterfaces::ConfigObject&>())
-    .def("get_used_hostresources", &dunedaq::coredal::DaqApplication::get_used_hostresources);
-  py::class_<dunedaq::coredal::HostComponent>(m,"HostComponent");
+  py::class_<dunedaq::confmodel::DaqApplication>(m,"DaqApplication")
+    .def(py::init<conffwk::Configuration& , const conffwk::ConfigObject&>())
+    .def("get_used_hostresources", &dunedaq::confmodel::DaqApplication::get_used_hostresources);
+  py::class_<dunedaq::confmodel::HostComponent>(m,"HostComponent");
 #endif
   register_dal_methods(m);
 }
 
-} // namespace dunedaq::coredal::python
+} // namespace dunedaq::confmodel::python

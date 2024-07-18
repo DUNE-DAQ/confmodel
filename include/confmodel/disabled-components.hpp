@@ -4,18 +4,18 @@
 #include <string>
 #include <vector>
 
-#include "oksdbinterfaces/Configuration.hpp"
-#include "oksdbinterfaces/ConfigAction.hpp"
+#include "conffwk/Configuration.hpp"
+#include "conffwk/ConfigAction.hpp"
 
-#include "coredal/Component.hpp"
+#include "confmodel/Component.hpp"
 
-namespace dunedaq::coredal {
+namespace dunedaq::confmodel {
 
     class Session;
     class ResourceSet;
     // class Segment;
 
-    class DisabledComponents : public dunedaq::oksdbinterfaces::ConfigAction
+    class DisabledComponents : public dunedaq::conffwk::ConfigAction
     {
 
       friend class Session;
@@ -32,15 +32,15 @@ namespace dunedaq::coredal {
         }
       };
 
-      dunedaq::oksdbinterfaces::Configuration& m_db;
+      dunedaq::conffwk::Configuration& m_db;
       Session* m_session;
 
       unsigned long m_num_of_slr_enabled_resources;
       unsigned long m_num_of_slr_disabled_resources;
 
       std::set<const std::string *, SortStringPtr> m_disabled;
-      std::set<const dunedaq::coredal::Component *> m_user_disabled;
-      std::set<const dunedaq::coredal::Component *> m_user_enabled;
+      std::set<const dunedaq::confmodel::Component *> m_user_disabled;
+      std::set<const dunedaq::confmodel::Component *> m_user_enabled;
 
       void
       __clear() noexcept
@@ -54,13 +54,13 @@ namespace dunedaq::coredal {
 
     public:
 
-      DisabledComponents(dunedaq::oksdbinterfaces::Configuration& db, Session* session);
+      DisabledComponents(dunedaq::conffwk::Configuration& db, Session* session);
 
       virtual
       ~DisabledComponents();
 
       void
-      notify(std::vector<dunedaq::oksdbinterfaces::ConfigurationChange *>& /*changes*/) noexcept;
+      notify(std::vector<dunedaq::conffwk::ConfigurationChange *>& /*changes*/) noexcept;
 
       void
       load() noexcept;
@@ -69,7 +69,7 @@ namespace dunedaq::coredal {
       unload() noexcept;
 
       void
-      update(const dunedaq::oksdbinterfaces::ConfigObject& obj, const std::string& name) noexcept;
+      update(const dunedaq::conffwk::ConfigObject& obj, const std::string& name) noexcept;
 
       void
       reset() noexcept;
@@ -81,26 +81,26 @@ namespace dunedaq::coredal {
       }
 
       void
-      disable(const dunedaq::coredal::Component& c)
+      disable(const dunedaq::confmodel::Component& c)
       {
         m_disabled.insert(&c.UID());
       }
 
       bool
-      is_enabled(const dunedaq::coredal::Component* c) {
+      is_enabled(const dunedaq::confmodel::Component* c) {
         return (m_disabled.find(&c->UID()) == m_disabled.end());
       }
 
       void
-      disable_children(const dunedaq::coredal::ResourceSet&);
+      disable_children(const dunedaq::confmodel::ResourceSet&);
 
       void
-      disable_children(const dunedaq::coredal::Segment&);
+      disable_children(const dunedaq::confmodel::Segment&);
 
       static unsigned long
-      get_num_of_slr_resources(const dunedaq::coredal::Session& p);
+      get_num_of_slr_resources(const dunedaq::confmodel::Session& p);
 
     };
-} // namespace dunedaq::coredal
+} // namespace dunedaq::confmodel
 
 #endif // DUNEDAQDAL_DISABLED_COMPONENTS_H
