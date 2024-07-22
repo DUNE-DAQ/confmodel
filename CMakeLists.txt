@@ -20,6 +20,7 @@ daq_oks_codegen(dunedaq.schema.xml)
 
 daq_add_library(dalMethods.cpp
   test_circular_dependency.cpp disabled-components.cpp
+  SubstituteEnvironment.cpp
   LINK_LIBRARIES conffwk::conffwk okssystem::okssystem
   logging::logging nlohmann_json::nlohmann_json)
 
@@ -28,6 +29,8 @@ daq_add_application(listApps list_apps.cxx
   LINK_LIBRARIES confmodel conffwk::conffwk)
 
 daq_add_application(disable_test disable_test.cxx TEST
+  LINK_LIBRARIES confmodel conffwk::conffwk logging::logging)
+daq_add_application(showVars showVars.cpp TEST
   LINK_LIBRARIES confmodel conffwk::conffwk logging::logging)
 ##############################################################################
 
