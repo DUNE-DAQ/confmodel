@@ -15,6 +15,14 @@
 #include "confmodel/VirtualHost.hpp"
 
 namespace dunedaq {
+
+  ERS_DECLARE_ISSUE(
+		    confmodel,
+		    InvalidOpMonFile,
+		    file_name << " is an invalid name for the opmon output",
+		    ((std::string)file_name)
+		    )
+  
   ERS_DECLARE_ISSUE(
     confmodel,
     ConfigurationError,
@@ -125,11 +133,17 @@ namespace confmodel {
             + std::to_string(opmon_service->get_port())
             + opmon_service->get_path();
 
-        if (opmon_service->get_protocol() == "file")
-            opmon_uri =
+        if (opmon_service->get_protocol() == "file") {
+	  auto file_name = opmon_service->get_path();
+	  auto dot_pos = file_name.find('.');
+	  if ( dot_pos ==  std::string::npos )
+	    throw InvalidOpMonFile(ERS_HERE, file_name);
+	  file_name.insert(dot_pos, '_' + app->UID());
+	  opmon_uri =
             opmon_service->get_protocol()
             + "://"
-            + opmon_service->get_path();
+            + file_name;
+	}
 
         const std::string configuration_uri = confdb.get_impl_spec();
 
