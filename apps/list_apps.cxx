@@ -81,20 +81,39 @@ void process_segment(const confmodel::Session* session,
 int main(int argc, char* argv[]) {
   dunedaq::logging::Logging::setup();
 
-  if (argc < 3) {
-    std::cout << "Usage: " << argv[0] << " session database-file\n";
+  if (argc < 2) {
+    std::cout << "Usage: " << argv[0] << " [session] database-file\n";
     return 0;
   }
-  std::string confimpl = "oksconflibs:" + std::string(argv[2]);
+
+  int filearg = 1;
+  if (argc == 3) {
+    filearg = 2;
+  }
+  std::string confimpl = "oksconflibs:" + std::string(argv[filearg]);
   auto confdb = new conffwk::Configuration(confimpl);
 
-  std::string sessionName(argv[1]);
-  auto session = confdb->get<confmodel::Session>(sessionName);
+  std::string sessionName;
+  if (argc == 3) {
+    sessionName = std::string(argv[1]);
+  }
+  else {
+    std::vector<conffwk::ConfigObject> session_obj;
+    confdb->get("Session", session_obj);
+    if (session_obj.size() == 0) {
+      std::cerr << "Can't find any Sessions in database\n";
+      return -1;
+    }
+    sessionName = session_obj[0].UID();
+  }
+  const confmodel::Session* session;
+  session = confdb->get<confmodel::Session>(sessionName);
   if (session==nullptr) {
     std::cerr << "Session " << sessionName << " not found in database\n";
     return -1;
   }
 
+  std::cout << "Applications in Session: " << sessionName << "\n";
   std::set<std::string> disabled_objects;
   for (auto object : session->get_disabled()) {
     TLOG_DEBUG(11) << object->UID() << " is in disabled list of Session";
