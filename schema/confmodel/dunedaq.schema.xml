@@ -84,11 +84,11 @@
 
  <class name="Action">
   <attribute name="method_name" type="string" is-not-null="yes"/>
-   <attribute name="module" type="string" is-not-null="no"/>
+   <attribute name="module" type="class" is-not-null="yes" init-value="DaqModule"/>
  </class>
 
  <class name="ActionPlan" description="A set of parallel steps for an application to carry out a command">
-  <relationship name="steps" class-type="ActionStep" low-cc="zero" high-cc="many" is-composite="no" is-exclusive="no" is-dependent="no"/>
+  <relationship name="steps" class-type="ActionStep" low-cc="zero" high-cc="many" is-composite="no" is-exclusive="no" is-dependent="no" ordered="yes"/>
  </class>
 
  <class name="ActionStep">
