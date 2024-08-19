@@ -93,9 +93,9 @@ int main(int argc, char* argv[]) {
   std::string confimpl = "oksconflibs:" + std::string(argv[filearg]);
   auto confdb = new conffwk::Configuration(confimpl);
 
-  std::string sessionName;
+  std::vector<std::string> sessionList;
   if (argc == 3) {
-    sessionName = std::string(argv[1]);
+    sessionList.emplace_back(std::string(argv[1]));
   }
   else {
     std::vector<conffwk::ConfigObject> session_obj;
@@ -104,21 +104,32 @@ int main(int argc, char* argv[]) {
       std::cerr << "Can't find any Sessions in database\n";
       return -1;
     }
-    sessionName = session_obj[0].UID();
-  }
-  const confmodel::Session* session;
-  session = confdb->get<confmodel::Session>(sessionName);
-  if (session==nullptr) {
-    std::cerr << "Session " << sessionName << " not found in database\n";
-    return -1;
+    for (auto obj : session_obj) {
+      sessionList.push_back(obj.UID());
+    }
   }
 
-  std::cout << "Applications in Session: " << sessionName << "\n";
-  std::set<std::string> disabled_objects;
-  for (auto object : session->get_disabled()) {
-    TLOG_DEBUG(11) << object->UID() << " is in disabled list of Session";
-    disabled_objects.insert(object->UID());
-  }
+  std::string separator{};
+  for (const auto& sessionName : sessionList) {
+    const confmodel::Session* session;
+    session = confdb->get<confmodel::Session>(sessionName);
+    if (session==nullptr) {
+      std::cerr << "Session " << sessionName << " not found in database\n";
+      return -1;
+    }
 
-  process_segment (session, session->get_segment(), disabled_objects, "");
+    std::cout << separator << "      Applications in Session: "
+              << sessionName << "\n";
+    std::set<std::string> disabled_objects;
+    for (auto object : session->get_disabled()) {
+      TLOG_DEBUG(11) << object->UID() << " is in disabled list of Session";
+      disabled_objects.insert(object->UID());
+    }
+
+    process_segment (session, session->get_segment(),
+                     disabled_objects,
+                     "");
+    separator =
+      "\n   ----------------------------------------------\n\n";
+  }
 }
