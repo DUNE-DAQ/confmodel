@@ -88,6 +88,7 @@
  </class>
 
  <class name="ActionPlan" description="A set of parallel steps for an application to carry out a command">
+   <relationship name="fsm" class-type="FSMCommand" low-cc="one" high-cc="one" is-composite="no" is-exclusive="no" is-dependent="no"/>
   <relationship name="steps" class-type="ActionStep" low-cc="zero" high-cc="many" is-composite="no" is-exclusive="no" is-dependent="no" ordered="yes"/>
  </class>
 
