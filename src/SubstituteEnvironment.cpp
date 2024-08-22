@@ -28,10 +28,11 @@ void SubstituteEnvironment::convert(std::string& value,
     else {
       std::ostringstream text;
       text << "substitution failed for parameter \'" << std::string(value, p_start, p_end - p_start + subs_end.size()) << '\'';
-      throw dunedaq::conffwk::Generic(ERS_HERE, text.str().c_str());
+      //throw dunedaq::conffwk::Generic(ERS_HERE, text.str().c_str());
+      ers::warning(dunedaq::conffwk::Generic(ERS_HERE, text.str().c_str()));
     }
     pos = p_start + 1;
   }
 }
 
-} // namespace
+} // namespace dunedaq::confmodel
