@@ -348,7 +348,8 @@
 
  <class name="StorageDevice">
   <superclass name="HostComponent"/>
-  <attribute name="storage" description="Amount of disk storage available for output data on this host in GB" type="u32" init-value="0" is-not-null="yes"/>
+  <attribute name="data_path" description="Filesystem path where output data should be written" type="string" init-value="." is-not-null="yes"/>
+  <attribute name="quota" description="Amount of disk storage available for output data on this host in GB (negative numbers mean unlimited)" type="float" init-value="-1" is-not-null="yes"/>
  </class>
 
  <class name="Variable" description="A Variable associates a value with string name. It is used for process environment and database strings substitution.">
