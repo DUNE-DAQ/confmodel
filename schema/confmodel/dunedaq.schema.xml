@@ -83,6 +83,7 @@
 <info name="" type="" num-of-items="48" oks-format="schema" oks-version="862f2957270" created-by="jcfree" created-on="mu2edaq13.fnal.gov" creation-time="20230123T223700" last-modified-by="eflumerf" last-modified-on="ironvirt9.mshome.net" last-modification-time="20240829T165707"/>
 
  <class name="ActionPlan" description="A set of parallel steps for an application to carry out a command">
+  <attribute name="execution_policy" type="enum" description="How the application should execute steps of the action plan" range="modules-in-parallel,modules-in-series" init-value="modules-in-parallel"/>
   <relationship name="command" class-type="FSMCommand" low-cc="one" high-cc="one" is-composite="no" is-exclusive="no" is-dependent="no"/>
   <relationship name="steps" class-type="DaqModulesGroup" low-cc="zero" high-cc="many" is-composite="no" is-exclusive="no" is-dependent="no"/>
  </class>
@@ -353,11 +354,6 @@
   <method name="set_enabled" description="Dynamically enable these persistently disabled components. It will be taken into account by disabled() algorithm of the Component class. This information is not committed to the database and will be overwritten by next set_enabled() call or erased by any config action (DB load, unload, reload).">
    <method-implementation language="c++" prototype="void set_enabled(const std::set&lt;const dunedaq::confmodel::Component *&gt;&amp; objs) const" body=""/>
   </method>
- </class>
-
- <class name="SmartActionPlan" description="A set of parallel steps for an application to carry out a command">
-  <superclass name="ActionPlan"/>
-  <relationship name="steps" class-type="DaqModulesGroupByType" low-cc="zero" high-cc="many" is-composite="no" is-exclusive="no" is-dependent="no"/>
  </class>
 
  <class name="StorageDevice">
