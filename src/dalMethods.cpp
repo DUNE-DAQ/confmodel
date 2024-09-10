@@ -157,11 +157,27 @@ dunedaq::confmodel::Component::get_parents(
 
 // ========================================================================
 
-static std::vector<const Application*> getSegmentApps(const Segment* segment) {
-  auto apps = segment->get_applications();
+  static std::vector<const Application*> getSegmentApps(const Segment* segment,
+                                                        const Session* session,
+                                                        bool enabled_only) {
+  std::vector<const Application*> apps;
+  auto segapps = segment->get_applications();
+  if (enabled_only) {
+    for (auto app : segapps) {
+      auto comp = app->cast<Component>();
+      if (comp == nullptr || !comp->disabled(*session)) {
+        apps.insert(apps.end(), app);
+      }
+    }
+  }
+  else {
+    apps.swap(segapps);
+  }
   for (auto seg : segment->get_segments()) {
-    auto segapps = getSegmentApps(seg);
-    apps.insert(apps.end(), segapps.begin(),segapps.end());
+    if (!enabled_only || !seg->disabled(*session)) {
+      auto segapps = getSegmentApps(seg, session, enabled_only);
+      apps.insert(apps.end(), segapps.begin(),segapps.end());
+    }
   }
   return apps;
 }
@@ -169,7 +185,15 @@ static std::vector<const Application*> getSegmentApps(const Segment* segment) {
 std::vector<const Application*>
 Session::get_all_applications() const {
   std::vector<const Application*> apps;
-  auto segapps = getSegmentApps(m_segment);
+  auto segapps = getSegmentApps(m_segment, this, false);
+  apps.insert(apps.end(), segapps.begin(),segapps.end());
+  return apps;
+}
+
+std::vector<const Application*>
+Session::get_enabled_applications() const {
+  std::vector<const Application*> apps;
+  auto segapps = getSegmentApps(m_segment, this, true);
   apps.insert(apps.end(), segapps.begin(),segapps.end());
   return apps;
 }
