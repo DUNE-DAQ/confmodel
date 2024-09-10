@@ -80,7 +80,13 @@
 
 <oks-schema>
 
-<info name="" type="" num-of-items="44" oks-format="schema" oks-version="862f2957270" created-by="jcfree" created-on="mu2edaq13.fnal.gov" creation-time="20230123T223700" last-modified-by="thea" last-modified-on="np04-srv-031.cern.ch" last-modification-time="20240611T131922"/>
+<info name="" type="" num-of-items="48" oks-format="schema" oks-version="862f2957270" created-by="jcfree" created-on="mu2edaq13.fnal.gov" creation-time="20230123T223700" last-modified-by="eflumerf" last-modified-on="ironvirt9.mshome.net" last-modification-time="20240829T165707"/>
+
+ <class name="ActionPlan" description="A set of parallel steps for an application to carry out a command">
+  <attribute name="execution_policy" type="enum" description="How the application should execute steps of the action plan" range="modules-in-parallel,modules-in-series" init-value="modules-in-parallel"/>
+  <relationship name="command" class-type="FSMCommand" low-cc="one" high-cc="one" is-composite="no" is-exclusive="no" is-dependent="no"/>
+  <relationship name="steps" class-type="DaqModulesGroup" low-cc="zero" high-cc="many" is-composite="no" is-exclusive="no" is-dependent="no"/>
+ </class>
 
  <class name="Application" description="A software executable" is-abstract="yes">
   <attribute name="application_name" description="Name of the application binary to run." type="string" is-not-null="yes"/>
@@ -117,6 +123,7 @@
   <superclass name="Application"/>
   <attribute name="application_name" description="Name of the application binary to run." type="string" init-value="daq_application" is-not-null="yes"/>
   <relationship name="modules" class-type="DaqModule" low-cc="zero" high-cc="many" is-composite="no" is-exclusive="no" is-dependent="no"/>
+  <relationship name="action_plans" class-type="ActionPlan" low-cc="zero" high-cc="many" is-composite="no" is-exclusive="no" is-dependent="no"/>
   <method name="get_used_hostresources" description="Get the set of all HostComponents used by this application">
    <method-implementation language="c++" prototype=" std::set&lt;const dunedaq::confmodel::HostComponent*&gt; get_used_hostresources() const" body=""/>
   </method>
@@ -129,6 +136,19 @@
   <relationship name="inputs" description="List of connections to/from this module" class-type="Connection" low-cc="zero" high-cc="many" is-composite="yes" is-exclusive="no" is-dependent="yes"/>
   <relationship name="outputs" description="Output connections from this module" class-type="Connection" low-cc="zero" high-cc="many" is-composite="yes" is-exclusive="no" is-dependent="yes"/>
   <relationship name="used_resources" class-type="HostComponent" low-cc="zero" high-cc="many" is-composite="yes" is-exclusive="no" is-dependent="yes"/>
+ </class>
+
+ <class name="DaqModulesGroup" description="Represents a group of DAQ Modules that can run commands in parallel as one of the steps of an ActionPlan." is-abstract="yes">
+ </class>
+
+ <class name="DaqModulesGroupById">
+  <superclass name="DaqModulesGroup"/>
+  <relationship name="modules" class-type="DaqModule" low-cc="one" high-cc="many" is-composite="no" is-exclusive="no" is-dependent="no"/>
+ </class>
+
+ <class name="DaqModulesGroupByType">
+  <superclass name="DaqModulesGroup"/>
+  <attribute name="modules" type="class" is-multi-value="yes"/>
  </class>
 
  <class name="DetDataReceiver" is-abstract="yes">
