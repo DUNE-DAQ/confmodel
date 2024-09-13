@@ -106,14 +106,6 @@ const std::vector<std::string> construct_commandline_parameters_appfwk(
                                   ":" +
                                   std::to_string(control_service->get_port());
 
-  const dunedaq::confmodel::Application *opmon_app = nullptr;
-  for (auto const *ia : session->get_infrastructure_applications())
-    if (ia->castable("OpMonService"))
-      opmon_app = ia;
-
-  if (opmon_app == nullptr)
-    throw NoOpmonInfrastructure(ERS_HERE, session->UID());
-
   const std::string configuration_uri = confdb.get_impl_spec();
 
   return {
