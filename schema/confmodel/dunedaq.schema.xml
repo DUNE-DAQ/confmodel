@@ -80,7 +80,7 @@
 
 <oks-schema>
 
-<info name="" type="" num-of-items="49" oks-format="schema" oks-version="862f2957270" created-by="jcfree" created-on="mu2edaq13.fnal.gov" creation-time="20230123T223700" last-modified-by="maroda" last-modified-on="np04-srv-015.cern.ch" last-modification-time="20240911T153344"/>
+<info name="" type="" num-of-items="48" oks-format="schema" oks-version="862f2957270" created-by="jcfree" created-on="mu2edaq13.fnal.gov" creation-time="20230123T223700" last-modified-by="maroda" last-modified-on="np04-srv-015.cern.ch" last-modification-time="20240913T081225"/>
 
  <class name="ActionPlan" description="A set of parallel steps for an application to carry out a command">
   <attribute name="execution_policy" description="How the application should execute steps of the action plan" type="enum" range="modules-in-parallel,modules-in-series" init-value="modules-in-parallel"/>
@@ -265,10 +265,6 @@
   <method name="get_interval" description="obtain the interval casted in seconds">
    <method-implementation language="C++" prototype="std::chrono::seconds get_interval() const " body="BEGIN_HEADER_PROLOGUE&#xA;#include &lt;chrono&gt;&#xA;END_HEADER_PROLOGUE&#xA;&#xA;return std::chrono::seconds(get_interval_s());"/>
   </method>
- </class>
-
- <class name="OpMonService">
-  <superclass name="Application"/>
  </class>
 
  <class name="OpMonURI">
