@@ -13,6 +13,7 @@
 #include "confmodel/DaqApplication.hpp"
 #include "confmodel/DaqModule.hpp"
 #include "confmodel/Jsonable.hpp"
+#include "confmodel/OpMonURI.hpp"
 #include "confmodel/PhysicalHost.hpp"
 #include "confmodel/RCApplication.hpp"
 #include "confmodel/Resource.hpp"
@@ -413,4 +414,20 @@ std::vector<const confmodel::DetectorStream*> DetectorToDaqConnection::get_strea
 
   return streams;
 }
+
+std::string OpMonURI::get_URI( const std::string & app ) const {
+
+  auto type = get_type();
+  if ( type == "file" ) { 
+    return type + "://" + get_path();
+  }
+  
+  if ( type == "stream" ) {
+    return type + "://" + get_path();
+  }
+  
+  return "stdout://";  
 }
+
+}
+

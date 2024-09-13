@@ -80,10 +80,10 @@
 
 <oks-schema>
 
-<info name="" type="" num-of-items="48" oks-format="schema" oks-version="862f2957270" created-by="jcfree" created-on="mu2edaq13.fnal.gov" creation-time="20230123T223700" last-modified-by="eflumerf" last-modified-on="ironvirt9.mshome.net" last-modification-time="20240829T165707"/>
+<info name="" type="" num-of-items="48" oks-format="schema" oks-version="862f2957270" created-by="jcfree" created-on="mu2edaq13.fnal.gov" creation-time="20230123T223700" last-modified-by="maroda" last-modified-on="np04-srv-015.cern.ch" last-modification-time="20240913T081225"/>
 
  <class name="ActionPlan" description="A set of parallel steps for an application to carry out a command">
-  <attribute name="execution_policy" type="enum" description="How the application should execute steps of the action plan" range="modules-in-parallel,modules-in-series" init-value="modules-in-parallel"/>
+  <attribute name="execution_policy" description="How the application should execute steps of the action plan" type="enum" range="modules-in-parallel,modules-in-series" init-value="modules-in-parallel"/>
   <relationship name="command" class-type="FSMCommand" low-cc="one" high-cc="one" is-composite="no" is-exclusive="no" is-dependent="no"/>
   <relationship name="steps" class-type="DaqModulesGroup" low-cc="zero" high-cc="many" is-composite="no" is-exclusive="no" is-dependent="no"/>
  </class>
@@ -94,6 +94,7 @@
   <relationship name="application_environment" description="Define process environment for this application." class-type="VariableBase" low-cc="zero" high-cc="many" is-composite="no" is-exclusive="no" is-dependent="no"/>
   <relationship name="runs_on" description="VirtualHost to run this application on" class-type="VirtualHost" low-cc="one" high-cc="one" is-composite="yes" is-exclusive="no" is-dependent="yes"/>
   <relationship name="exposes_service" description="Services exposed i.e. provided by this application" class-type="Service" low-cc="zero" high-cc="many" is-composite="yes" is-exclusive="no" is-dependent="yes"/>
+  <relationship name="opmon_conf" description="description of the monitoring behaviour in the application" class-type="OpMonConf" low-cc="one" high-cc="one" is-composite="no" is-exclusive="no" is-dependent="no"/>
   <method name="parse_commandline_parameters" description="Get the CLA for the application">
    <method-implementation language="c++" prototype=" const std::vector&lt;std::string&gt; parse_commandline_parameters() const" body=""/>
   </method>
@@ -258,8 +259,20 @@
   <attribute name="network_name" description="Name of network on this interface  Control or Data" type="enum" range="Control,Data" init-value="Control" is-not-null="yes"/>
  </class>
 
- <class name="OpMonService">
-  <superclass name="Application"/>
+ <class name="OpMonConf">
+  <attribute name="level" description="SystemOpMonLevel" type="u32" init-value="4294967295" is-not-null="yes"/>
+  <attribute name="interval_s" description="interval in seconds between the collection of monitoring data in an application" type="u32" range="0..100" init-value="5" is-not-null="yes"/>
+  <method name="get_interval" description="obtain the interval casted in seconds">
+   <method-implementation language="C++" prototype="std::chrono::seconds get_interval() const " body="BEGIN_HEADER_PROLOGUE&#xA;#include &lt;chrono&gt;&#xA;END_HEADER_PROLOGUE&#xA;&#xA;return std::chrono::seconds(get_interval_s());"/>
+  </method>
+ </class>
+
+ <class name="OpMonURI">
+  <attribute name="path" description="property used to generate the final URI" type="string"/>
+  <attribute name="type" description="type of the OpMonFacility" type="enum" range="stdout,file,stream" init-value="stdout" is-not-null="yes"/>
+  <method name="get_URI" description="generate the opmon facility URI for the specified application">
+   <method-implementation language="C++" prototype="std::string get_URI( const std::string &amp; app ) const" body=""/>
+  </method>
  </class>
 
  <class name="PhysicalHost">
@@ -345,6 +358,7 @@
   <relationship name="segment" description="List of configuration Segments that form this Session" class-type="Segment" low-cc="one" high-cc="one" is-composite="yes" is-exclusive="no" is-dependent="yes"/>
   <relationship name="infrastructure_applications" class-type="Application" low-cc="zero" high-cc="many" is-composite="yes" is-exclusive="no" is-dependent="yes"/>
   <relationship name="detector_configuration" class-type="DetectorConfig" low-cc="one" high-cc="one" is-composite="no" is-exclusive="no" is-dependent="no"/>
+  <relationship name="opmon_uri" description="Configuration for the OpMon facilities used across the session" class-type="OpMonURI" low-cc="one" high-cc="one" is-composite="yes" is-exclusive="no" is-dependent="yes"/>
   <method name="get_all_applications" description="Returns applications defined in the Session and all of its Segments.">
    <method-implementation language="c++" prototype="std::vector&lt;const dunedaq::confmodel::Application *&gt; get_all_applications() const" body=""/>
   </method>
