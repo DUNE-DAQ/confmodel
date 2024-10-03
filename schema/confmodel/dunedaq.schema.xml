@@ -164,6 +164,7 @@
   <attribute name="tpg_channel_map" description="Trigger Primitive channel map" type="string" init-value="PD2HDChannelMap" is-not-null="yes"/>
   <attribute name="clock_speed_hz" type="u32" init-value="62500000" is-not-null="yes"/>
   <attribute name="op_env" description="Operational environment " type="string" init-value="swtest" is-not-null="yes"/>
+  <attribute name="offline_data_stream" description="The data stream value that we send to offline." type="string" init-value="cosmics" is-not-null="yes"/>
  </class>
 
  <class name="DetectorStream">
