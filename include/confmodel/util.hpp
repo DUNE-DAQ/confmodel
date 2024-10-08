@@ -11,7 +11,7 @@
 #include "confmodel/PhysicalHost.hpp"
 #include "confmodel/Segment.hpp"
 #include "confmodel/Service.hpp"
-#include "confmodel/Session.hpp"
+#include "confmodel/System.hpp"
 #include "confmodel/VirtualHost.hpp"
 
 namespace dunedaq {
@@ -37,38 +37,38 @@ ERS_DECLARE_ISSUE_BASE(
 namespace confmodel {
 
 /**
- *  \brief Get session object.
+ *  \brief Get system object.
  *
- *  The algorithm %is searching the session object by given name.
+ *  The algorithm %is searching the system object by given name.
  *  If the name %is empty, then the algorithm takes the name from
- *  the TDAQ_SESSION environment variable.<BR>
+ *  the DUNEDAQ_SYSTEM environment variable.<BR>
  *
  *  The last parameter of the algorithm can be used to optimise performance
  *  of the DAL in case if a database server config implementation %is used.
  *  The parameter defines how many layers of objects referenced by given
- *  session object should be read into client's config cache together with
- *  session object during single network operation. For example:
- *  - if the parameter %is 0, then only session object %is read;
- *  - if the parameter %is 1, then session and first layer segment objects are
+ *  system object should be read into client's config cache together with
+ *  system object during single network operation. For example:
+ *  - if the parameter %is 0, then only system object %is read;
+ *  - if the parameter %is 1, then system and first layer segment objects are
  * read;
- *  - if the parameter %is 2, then session, segments of first and second layers,
+ *  - if the parameter %is 2, then system, segments of first and second layers,
  * and application/resources of first layer segments objects are read;
  *  - if the parameter %is 10, then mostly probable all objects referenced by
- * given session object are read.<BR>
+ * given system object are read.<BR>
  *
  *  The parameters of the algorithm are:
  *  \param conf      the configuration object with loaded database
- *  \param name      the name of the session to be loaded (if empty,
- * TDAQ_SESSION variable %is used) \param rlevel    optional parameter to
+ *  \param name      the name of the system to be loaded (if empty,
+ * DUNEDAQ_SYSTEM variable %is used) \param rlevel    optional parameter to
  * optimise performance ("the references level") \param rclasses  optional
  * parameter to optimise performance ("names of classes which objects are
  * cached")
  *
- *  \return Returns the pointer to the session object if found, or 0.
+ *  \return Returns the pointer to the system object if found, or 0.
  */
 
-const dunedaq::confmodel::Session *
-get_session(dunedaq::conffwk::Configuration &conf, const std::string &name,
+const dunedaq::confmodel::System *
+get_system(dunedaq::conffwk::Configuration &conf, const std::string &name,
             unsigned long rlevel = 10,
             const std::vector<std::string> *rclasses = nullptr);
 
@@ -89,7 +89,7 @@ void add_json_value(conffwk::ConfigObject &obj, std::string &name,
 template <typename T>
 const std::vector<std::string> construct_commandline_parameters_appfwk(
     const T *app, const conffwk::Configuration &confdb,
-    const dunedaq::confmodel::Session *session) {
+    const dunedaq::confmodel::System *system) {
 
   const dunedaq::confmodel::Service *control_service = nullptr;
 
@@ -128,8 +128,8 @@ ERS_DECLARE_ISSUE_BASE(confmodel, BadApplicationInfo, AlgorithmError,
                            << app_id << "\' from the database: " << message,
                        , ((std::string)app_id)((std::string)message))
 
-ERS_DECLARE_ISSUE_BASE(confmodel, BadSessionID, AlgorithmError,
-                       "There is no session object with UID = \"" << name
+ERS_DECLARE_ISSUE_BASE(confmodel, BadSystemID, AlgorithmError,
+                       "There is no system object with UID = \"" << name
                                                                   << '\"',
                        , ((std::string)name))
 
@@ -155,11 +155,11 @@ ERS_DECLARE_ISSUE_BASE(confmodel, NoDefaultHost, AlgorithmError,
 
 ERS_DECLARE_ISSUE_BASE(
     confmodel, NoTemplateAppHost, AlgorithmError,
-    "Both session default and segment default hosts are not defined for "
+    "Both system default and segment default hosts are not defined for "
     "template application \'"
         << app_id << "\' from segment \'" << seg_id
         << "\' (will use localhost, that may cause problems presenting info in "
-           "IGUI for distributed session).",
+           "IGUI for distributed system).",
     , ((std::string)app_id)((std::string)seg_id))
 
 ERS_DECLARE_ISSUE_BASE(confmodel, BadTag, AlgorithmError,
