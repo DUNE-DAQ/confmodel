@@ -222,63 +222,63 @@
  </rel>
 </obj>
 
-<obj class="ALink" id="Session-2-Application-via-infrastructure_applications">
+<obj class="ALink" id="System-2-Application-via-infrastructure_applications">
  <attr name="Name" type="string" val="infrastructure_applications"/>
- <rel name="From" class="Class" id="Session"/>
+ <rel name="From" class="Class" id="System"/>
  <rel name="To" class="Class" id="Application"/>
  <rel name="Points">
-  <ref class="Point" id="1 Session-2-Application-via-infrastructure_applications"/>
-  <ref class="Point" id="2 Session-2-Application-via-infrastructure_applications"/>
-  <ref class="Point" id="3 Session-2-Application-via-infrastructure_applications"/>
-  <ref class="Point" id="4 Session-2-Application-via-infrastructure_applications"/>
+  <ref class="Point" id="1 System-2-Application-via-infrastructure_applications"/>
+  <ref class="Point" id="2 System-2-Application-via-infrastructure_applications"/>
+  <ref class="Point" id="3 System-2-Application-via-infrastructure_applications"/>
+  <ref class="Point" id="4 System-2-Application-via-infrastructure_applications"/>
  </rel>
 </obj>
 
-<obj class="ALink" id="Session-2-DetectorConfig-via-detector_configuration">
+<obj class="ALink" id="System-2-DetectorConfig-via-detector_configuration">
  <attr name="Name" type="string" val="detector_configuration"/>
- <rel name="From" class="Class" id="Session"/>
+ <rel name="From" class="Class" id="System"/>
  <rel name="To" class="Class" id="DetectorConfig"/>
  <rel name="Points">
-  <ref class="Point" id="1 Session-2-DetectorConfig-via-detector_configuration"/>
-  <ref class="Point" id="2 Session-2-DetectorConfig-via-detector_configuration"/>
-  <ref class="Point" id="3 Session-2-DetectorConfig-via-detector_configuration"/>
-  <ref class="Point" id="4 Session-2-DetectorConfig-via-detector_configuration"/>
+  <ref class="Point" id="1 System-2-DetectorConfig-via-detector_configuration"/>
+  <ref class="Point" id="2 System-2-DetectorConfig-via-detector_configuration"/>
+  <ref class="Point" id="3 System-2-DetectorConfig-via-detector_configuration"/>
+  <ref class="Point" id="4 System-2-DetectorConfig-via-detector_configuration"/>
  </rel>
 </obj>
 
-<obj class="ALink" id="Session-2-ResourceBase-via-disabled">
+<obj class="ALink" id="System-2-ResourceBase-via-disabled">
  <attr name="Name" type="string" val="disabled"/>
- <rel name="From" class="Class" id="Session"/>
+ <rel name="From" class="Class" id="System"/>
  <rel name="To" class="Class" id="ResourceBase"/>
  <rel name="Points">
-  <ref class="Point" id="1 Session-2-ResourceBase-via-disabled"/>
-  <ref class="Point" id="2 Session-2-ResourceBase-via-disabled"/>
-  <ref class="Point" id="3 Session-2-ResourceBase-via-disabled"/>
-  <ref class="Point" id="4 Session-2-ResourceBase-via-disabled"/>
+  <ref class="Point" id="1 System-2-ResourceBase-via-disabled"/>
+  <ref class="Point" id="2 System-2-ResourceBase-via-disabled"/>
+  <ref class="Point" id="3 System-2-ResourceBase-via-disabled"/>
+  <ref class="Point" id="4 System-2-ResourceBase-via-disabled"/>
  </rel>
 </obj>
 
-<obj class="ALink" id="Session-2-Segment-via-segment">
+<obj class="ALink" id="System-2-Segment-via-segment">
  <attr name="Name" type="string" val="segment"/>
- <rel name="From" class="Class" id="Session"/>
+ <rel name="From" class="Class" id="System"/>
  <rel name="To" class="Class" id="Segment"/>
  <rel name="Points">
-  <ref class="Point" id="1 Session-2-Segment-via-segment"/>
-  <ref class="Point" id="2 Session-2-Segment-via-segment"/>
-  <ref class="Point" id="3 Session-2-Segment-via-segment"/>
-  <ref class="Point" id="4 Session-2-Segment-via-segment"/>
+  <ref class="Point" id="1 System-2-Segment-via-segment"/>
+  <ref class="Point" id="2 System-2-Segment-via-segment"/>
+  <ref class="Point" id="3 System-2-Segment-via-segment"/>
+  <ref class="Point" id="4 System-2-Segment-via-segment"/>
  </rel>
 </obj>
 
-<obj class="ALink" id="Session-2-VariableBase-via-environment">
+<obj class="ALink" id="System-2-VariableBase-via-environment">
  <attr name="Name" type="string" val="environment"/>
- <rel name="From" class="Class" id="Session"/>
+ <rel name="From" class="Class" id="System"/>
  <rel name="To" class="Class" id="VariableBase"/>
  <rel name="Points">
-  <ref class="Point" id="1 Session-2-VariableBase-via-environment"/>
-  <ref class="Point" id="2 Session-2-VariableBase-via-environment"/>
-  <ref class="Point" id="3 Session-2-VariableBase-via-environment"/>
-  <ref class="Point" id="4 Session-2-VariableBase-via-environment"/>
+  <ref class="Point" id="1 System-2-VariableBase-via-environment"/>
+  <ref class="Point" id="2 System-2-VariableBase-via-environment"/>
+  <ref class="Point" id="3 System-2-VariableBase-via-environment"/>
+  <ref class="Point" id="4 System-2-VariableBase-via-environment"/>
  </rel>
 </obj>
 
@@ -413,7 +413,7 @@
  <attr name="y" type="s16" val="331"/>
 </obj>
 
-<obj class="Class" id="Session">
+<obj class="Class" id="System">
  <attr name="x" type="s16" val="1012"/>
  <attr name="y" type="s16" val="173"/>
 </obj>
@@ -717,27 +717,27 @@
  <attr name="y" type="s16" val="32"/>
 </obj>
 
-<obj class="Point" id="1 Session-2-Application-via-infrastructure_applications">
+<obj class="Point" id="1 System-2-Application-via-infrastructure_applications">
  <attr name="x" type="s16" val="204"/>
  <attr name="y" type="s16" val="146"/>
 </obj>
 
-<obj class="Point" id="1 Session-2-DetectorConfig-via-detector_configuration">
+<obj class="Point" id="1 System-2-DetectorConfig-via-detector_configuration">
  <attr name="x" type="s16" val="196"/>
  <attr name="y" type="s16" val="105"/>
 </obj>
 
-<obj class="Point" id="1 Session-2-ResourceBase-via-disabled">
+<obj class="Point" id="1 System-2-ResourceBase-via-disabled">
  <attr name="x" type="s16" val="95"/>
  <attr name="y" type="s16" val="105"/>
 </obj>
 
-<obj class="Point" id="1 Session-2-Segment-via-segment">
+<obj class="Point" id="1 System-2-Segment-via-segment">
  <attr name="x" type="s16" val="204"/>
  <attr name="y" type="s16" val="105"/>
 </obj>
 
-<obj class="Point" id="1 Session-2-VariableBase-via-environment">
+<obj class="Point" id="1 System-2-VariableBase-via-environment">
  <attr name="x" type="s16" val="16"/>
  <attr name="y" type="s16" val="105"/>
 </obj>
@@ -887,27 +887,27 @@
  <attr name="y" type="s16" val="54"/>
 </obj>
 
-<obj class="Point" id="2 Session-2-Application-via-infrastructure_applications">
+<obj class="Point" id="2 System-2-Application-via-infrastructure_applications">
  <attr name="x" type="s16" val="204"/>
  <attr name="y" type="s16" val="248"/>
 </obj>
 
-<obj class="Point" id="2 Session-2-DetectorConfig-via-detector_configuration">
+<obj class="Point" id="2 System-2-DetectorConfig-via-detector_configuration">
  <attr name="x" type="s16" val="196"/>
  <attr name="y" type="s16" val="178"/>
 </obj>
 
-<obj class="Point" id="2 Session-2-ResourceBase-via-disabled">
+<obj class="Point" id="2 System-2-ResourceBase-via-disabled">
  <attr name="x" type="s16" val="95"/>
  <attr name="y" type="s16" val="190"/>
 </obj>
 
-<obj class="Point" id="2 Session-2-Segment-via-segment">
+<obj class="Point" id="2 System-2-Segment-via-segment">
  <attr name="x" type="s16" val="204"/>
  <attr name="y" type="s16" val="316"/>
 </obj>
 
-<obj class="Point" id="2 Session-2-VariableBase-via-environment">
+<obj class="Point" id="2 System-2-VariableBase-via-environment">
  <attr name="x" type="s16" val="16"/>
  <attr name="y" type="s16" val="48"/>
 </obj>
@@ -1061,27 +1061,27 @@
  <attr name="y" type="s16" val="54"/>
 </obj>
 
-<obj class="Point" id="3 Session-2-Application-via-infrastructure_applications">
+<obj class="Point" id="3 System-2-Application-via-infrastructure_applications">
  <attr name="x" type="s16" val="47"/>
  <attr name="y" type="s16" val="248"/>
 </obj>
 
-<obj class="Point" id="3 Session-2-DetectorConfig-via-detector_configuration">
+<obj class="Point" id="3 System-2-DetectorConfig-via-detector_configuration">
  <attr name="x" type="s16" val="134"/>
  <attr name="y" type="s16" val="178"/>
 </obj>
 
-<obj class="Point" id="3 Session-2-ResourceBase-via-disabled">
+<obj class="Point" id="3 System-2-ResourceBase-via-disabled">
  <attr name="x" type="s16" val="22"/>
  <attr name="y" type="s16" val="190"/>
 </obj>
 
-<obj class="Point" id="3 Session-2-Segment-via-segment">
+<obj class="Point" id="3 System-2-Segment-via-segment">
  <attr name="x" type="s16" val="58"/>
  <attr name="y" type="s16" val="316"/>
 </obj>
 
-<obj class="Point" id="3 Session-2-VariableBase-via-environment">
+<obj class="Point" id="3 System-2-VariableBase-via-environment">
  <attr name="x" type="s16" val="108"/>
  <attr name="y" type="s16" val="48"/>
 </obj>
@@ -1235,27 +1235,27 @@
  <attr name="y" type="s16" val="32"/>
 </obj>
 
-<obj class="Point" id="4 Session-2-Application-via-infrastructure_applications">
+<obj class="Point" id="4 System-2-Application-via-infrastructure_applications">
  <attr name="x" type="s16" val="47"/>
  <attr name="y" type="s16" val="17"/>
 </obj>
 
-<obj class="Point" id="4 Session-2-DetectorConfig-via-detector_configuration">
+<obj class="Point" id="4 System-2-DetectorConfig-via-detector_configuration">
  <attr name="x" type="s16" val="134"/>
  <attr name="y" type="s16" val="21"/>
 </obj>
 
-<obj class="Point" id="4 Session-2-ResourceBase-via-disabled">
+<obj class="Point" id="4 System-2-ResourceBase-via-disabled">
  <attr name="x" type="s16" val="22"/>
  <attr name="y" type="s16" val="12"/>
 </obj>
 
-<obj class="Point" id="4 Session-2-Segment-via-segment">
+<obj class="Point" id="4 System-2-Segment-via-segment">
  <attr name="x" type="s16" val="58"/>
  <attr name="y" type="s16" val="12"/>
 </obj>
 
-<obj class="Point" id="4 Session-2-VariableBase-via-environment">
+<obj class="Point" id="4 System-2-VariableBase-via-environment">
  <attr name="x" type="s16" val="108"/>
  <attr name="y" type="s16" val="12"/>
 </obj>

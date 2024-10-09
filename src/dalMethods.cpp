@@ -20,7 +20,7 @@
 #include "confmodel/ResourceSetAND.hpp"
 #include "confmodel/ResourceSetOR.hpp"
 #include "confmodel/Segment.hpp"
-#include "confmodel/Session.hpp"
+#include "confmodel/System.hpp"
 #include "confmodel/Service.hpp"
 #include "confmodel/VirtualHost.hpp"
 
@@ -132,7 +132,7 @@ check_segment(
 
 void
 dunedaq::confmodel::Component::get_parents(
-  const dunedaq::confmodel::Session& session,
+  const dunedaq::confmodel::System& system,
   std::list<std::vector<const dunedaq::confmodel::Component *>>& parents) const
 {
   const ConfigObjectImpl * obj_impl = config_object().implementation();
@@ -140,15 +140,15 @@ dunedaq::confmodel::Component::get_parents(
   const bool is_segment = castable(dunedaq::confmodel::Segment::s_class_name);
 
   try {
-    dunedaq::confmodel::TestCircularDependency cd_fuse("component parents", &session);
+    dunedaq::confmodel::TestCircularDependency cd_fuse("component parents", &system);
 
-    // check session's segment
-    check_segment(parents, session.get_segment(), obj_impl, is_segment,
+    // check system's segment
+    check_segment(parents, system.get_segment(), obj_impl, is_segment,
                   cd_fuse);
 
 
     if (parents.empty()) {
-      TLOG_DEBUG(1) <<  "cannot find segment/resource path(s) between Component " << this << " and session " << &session << " objects (check this object is linked with the session as a segment or a resource)" ;
+      TLOG_DEBUG(1) <<  "cannot find segment/resource path(s) between Component " << this << " and system " << &system << " objects (check this object is linked with the system as a segment or a resource)" ;
     }
   }
   catch (ers::Issue & ex) {
@@ -159,14 +159,14 @@ dunedaq::confmodel::Component::get_parents(
 // ========================================================================
 
   static std::vector<const Application*> getSegmentApps(const Segment* segment,
-                                                        const Session* session,
+                                                        const System* system,
                                                         bool enabled_only) {
   std::vector<const Application*> apps;
   auto segapps = segment->get_applications();
   if (enabled_only) {
     for (auto app : segapps) {
       auto comp = app->cast<Component>();
-      if (comp == nullptr || !comp->disabled(*session)) {
+      if (comp == nullptr || !comp->disabled(*system)) {
         apps.insert(apps.end(), app);
       }
     }
@@ -175,8 +175,8 @@ dunedaq::confmodel::Component::get_parents(
     apps.swap(segapps);
   }
   for (auto seg : segment->get_segments()) {
-    if (!enabled_only || !seg->disabled(*session)) {
-      auto segapps = getSegmentApps(seg, session, enabled_only);
+    if (!enabled_only || !seg->disabled(*system)) {
+      auto segapps = getSegmentApps(seg, system, enabled_only);
       apps.insert(apps.end(), segapps.begin(),segapps.end());
     }
   }
@@ -184,7 +184,7 @@ dunedaq::confmodel::Component::get_parents(
 }
 
 std::vector<const Application*>
-Session::get_all_applications() const {
+System::get_all_applications() const {
   std::vector<const Application*> apps;
   auto segapps = getSegmentApps(m_segment, this, false);
   apps.insert(apps.end(), segapps.begin(),segapps.end());
@@ -192,7 +192,7 @@ Session::get_all_applications() const {
 }
 
 std::vector<const Application*>
-Session::get_enabled_applications() const {
+System::get_enabled_applications() const {
   std::vector<const Application*> apps;
   auto segapps = getSegmentApps(m_segment, this, true);
   apps.insert(apps.end(), segapps.begin(),segapps.end());
@@ -311,14 +311,14 @@ nlohmann::json Jsonable::to_json(bool direct_only) const {
 
 const std::vector<std::string> DaqApplication::construct_commandline_parameters(
   const conffwk::Configuration& confdb,
-  const dunedaq::confmodel::Session* session) const {
+  const dunedaq::confmodel::System* system) const {
 
-    return construct_commandline_parameters_appfwk<dunedaq::confmodel::DaqApplication>(this, confdb, session);
+    return construct_commandline_parameters_appfwk<dunedaq::confmodel::DaqApplication>(this, confdb, system);
 }
 
 const std::vector<std::string> RCApplication::construct_commandline_parameters(
   const conffwk::Configuration& confdb,
-  const dunedaq::confmodel::Session* session) const {
+  const dunedaq::confmodel::System* system) const {
 
     const std::string configuration_uri = confdb.get_impl_spec();
     const dunedaq::confmodel::Service* control_service = nullptr;
@@ -341,7 +341,7 @@ const std::vector<std::string> RCApplication::construct_commandline_parameters(
     ret.push_back(configuration_uri);
     ret.push_back(control_uri);
     ret.push_back(UID());
-    ret.push_back(session->UID());
+    ret.push_back(system->UID());
     return ret;
 }
 

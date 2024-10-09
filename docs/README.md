@@ -3,7 +3,7 @@ This package contains the 'core' schema for the DUNE daq OKS configuration.
 
   ![schema](schema.png)
 
-The top level of the schema is the **Session** which defines some global
+The top level of the schema is the **System** which defines some global
 DAQ parameters and has a relationship to a single top-level **Segment**.
 It also has a list of disabled Resources. It is intended that parts of
 the DAQ system that are not required in the current run are simply
@@ -17,10 +17,10 @@ disabling a **Segment** disables all of its nested **Segment**s.
 The **Application** class has attibutes defining the application's
  `application_name` (executable name) and `commandline_parameters`. Its
  `application_environment` relationship lists environment variables needed by the
- application in addition to those defined by the **Session**. An
+ application in addition to those defined by the **System**. An
  [example Python script](https://github.com/DUNE-DAQ/confmodel/blob/develop/scripts/app_environment.py)
  that prints out the environment for enabled applications in the
- **Session** is provided in the `scripts` directory.
+ **System** is provided in the `scripts` directory.
 
 ## Readout Map
 

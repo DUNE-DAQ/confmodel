@@ -7,7 +7,7 @@
 #include "confmodel/DaqModule.hpp"
 #include "confmodel/ResourceSet.hpp"
 #include "confmodel/Segment.hpp"
-#include "confmodel/Session.hpp"
+#include "confmodel/System.hpp"
 
 #include <iostream>
 //#include <set>
@@ -16,12 +16,12 @@
 using namespace dunedaq;
 
 
-void process_segment(const confmodel::Session* session,
+void process_segment(const confmodel::System* system,
                      const confmodel::Segment* segment,
                      const std::set<std::string>& disabled_objects,
                      std::string spacer) {
   std::cout << spacer << "Segment " << segment->UID();
-  bool segment_disabled = segment->disabled(*session);
+  bool segment_disabled = segment->disabled(*system);
   std::string reason = "";
   if (segment_disabled) {
     std::cout << " disabled";
@@ -29,7 +29,7 @@ void process_segment(const confmodel::Session* session,
   }
   std::cout << "\n";
   for (auto subseg : segment->get_segments()) {
-    process_segment (session, subseg, disabled_objects, spacer+"  ");
+    process_segment (system, subseg, disabled_objects, spacer+"  ");
   }
 
   for (auto app : segment->get_applications()) {
@@ -38,7 +38,7 @@ void process_segment(const confmodel::Session* session,
     if (!disabled) {
       auto rset = app->cast<confmodel::ResourceSet>();
       if (rset) {
-        if (rset->disabled(*session)) {
+        if (rset->disabled(*system)) {
           disabled = true;
           if (disabled_objects.find(app->UID()) != disabled_objects.end()) {
             reason = "directly";
@@ -51,7 +51,7 @@ void process_segment(const confmodel::Session* session,
         std::string seperator = "";
         for (auto mod : rset->get_contains()) {
           std::cout << seperator << mod->UID();
-          if (mod->disabled(*session)) {
+          if (mod->disabled(*system)) {
             std::cout << "<disabled ";
             if (disabled_objects.find(mod->UID()) == disabled_objects.end()) {
               std::cout << "in";
@@ -82,7 +82,7 @@ int main(int argc, char* argv[]) {
   dunedaq::logging::Logging::setup();
 
   if (argc < 2) {
-    std::cout << "Usage: " << argv[0] << " [session] database-file\n";
+    std::cout << "Usage: " << argv[0] << " [system] database-file\n";
     return 0;
   }
 
@@ -93,40 +93,40 @@ int main(int argc, char* argv[]) {
   std::string confimpl = "oksconflibs:" + std::string(argv[filearg]);
   auto confdb = new conffwk::Configuration(confimpl);
 
-  std::vector<std::string> sessionList;
+  std::vector<std::string> systemList;
   if (argc == 3) {
-    sessionList.emplace_back(std::string(argv[1]));
+    systemList.emplace_back(std::string(argv[1]));
   }
   else {
-    std::vector<conffwk::ConfigObject> session_obj;
-    confdb->get("Session", session_obj);
-    if (session_obj.size() == 0) {
-      std::cerr << "Can't find any Sessions in database\n";
+    std::vector<conffwk::ConfigObject> system_obj;
+    confdb->get("System", system_obj);
+    if (system_obj.size() == 0) {
+      std::cerr << "Can't find any Systems in database\n";
       return -1;
     }
-    for (auto obj : session_obj) {
-      sessionList.push_back(obj.UID());
+    for (auto obj : system_obj) {
+      systemList.push_back(obj.UID());
     }
   }
 
   std::string separator{};
-  for (const auto& sessionName : sessionList) {
-    const confmodel::Session* session;
-    session = confdb->get<confmodel::Session>(sessionName);
-    if (session==nullptr) {
-      std::cerr << "Session " << sessionName << " not found in database\n";
+  for (const auto& systemName : systemList) {
+    const confmodel::System* system;
+    system = confdb->get<confmodel::System>(systemName);
+    if (system==nullptr) {
+      std::cerr << "System " << systemName << " not found in database\n";
       return -1;
     }
 
-    std::cout << separator << "      Applications in Session: "
-              << sessionName << "\n";
+    std::cout << separator << "      Applications in System: "
+              << systemName << "\n";
     std::set<std::string> disabled_objects;
-    for (auto object : session->get_disabled()) {
-      TLOG_DEBUG(11) << object->UID() << " is in disabled list of Session";
+    for (auto object : system->get_disabled()) {
+      TLOG_DEBUG(11) << object->UID() << " is in disabled list of System";
       disabled_objects.insert(object->UID());
     }
 
-    process_segment (session, session->get_segment(),
+    process_segment (system, system->get_segment(),
                      disabled_objects,
                      "");
     separator =
