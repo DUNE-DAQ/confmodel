@@ -260,7 +260,7 @@
 
  <class name="NetworkInterface">
   <attribute name="mac_address" description="Destination MAC address on readout host" type="string" init-value="00:00:00:00:00:00" is-not-null="yes"/>
-  <attribute name="ip_address" description="IP address in form a.b.c.d" type="string"/>
+  <attribute name="ip_address" description="IP address in form a.b.c.d" type="string" is-multi-value="yes"/>
   <attribute name="interface_name" description="Name of interface e.g. eth0 or eno1" type="string"/>
   <attribute name="network_mask" description="Network mask in for a.b.c.d" type="string"/>
   <attribute name="network_name" description="Name of network on this interface  Control or Data" type="enum" range="Control,Data" init-value="Control" is-not-null="yes"/>
