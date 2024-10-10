@@ -346,6 +346,13 @@
   <attribute name="path" type="string"/>
  </class>
 
+ <class name="ControlService">
+  <attribute name="protocol" type="string" init-value="tcp" is-not-null="yes"/>
+  <attribute name="port" type="u16" init-value="5000"/>
+  <attribute name="eth_device_name" type="string"/>
+  <attribute name="path" type="string"/>
+ </class>
+
  <class name="Session">
   <attribute name="description" description="A description of the session." type="string"/>
   <attribute name="use_connectivity_server" description="If set publish and lookup connection information in the connectivity server. If not all information will be provided by the configuration database." type="bool" init-value="true" is-not-null="yes"/>

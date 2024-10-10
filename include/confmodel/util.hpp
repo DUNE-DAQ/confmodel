@@ -29,10 +29,19 @@ ERS_DECLARE_ISSUE_BASE(
 ERS_DECLARE_ISSUE_BASE(
     confmodel, NoControlServiceDefined, ConfigurationError,
     "The control service has not been set up for the application " + app_name +
-        " you need to define a service called " + app_name + "_control",
+        " you need to refer to a ControlService in exposes_services"
     , ((std::string)app_name)
 
+
+ERS_DECLARE_ISSUE_BASE(
+    confmodel, MultipleControlServiceDefined, ConfigurationError,
+    "Application " + app_name + " has " + std::to_string(n_control_services) +
+        " control services defined, but only one is allowed"
+    , ((std::string)app_name, n_control_services)
+
 )
+
+
 
 namespace confmodel {
 
@@ -93,13 +102,18 @@ const std::vector<std::string> construct_commandline_parameters_appfwk(
 
   const dunedaq::confmodel::Service *control_service = nullptr;
 
+  size_t n_control_services = 0;
   for (auto const *as : app->get_exposes_service())
-    if (as->UID() ==
-        app->UID() + "_control") // unclear this is the best way to do this.
+    if (as->class_name() == "ControlService") {
       control_service = as;
+      n_control_services++;
+    }
 
   if (control_service == nullptr)
     throw NoControlServiceDefined(ERS_HERE, app->UID());
+
+  if (n_control_services>1)
+    throw MultipleControlServiceDefined(ERS_HERE, UID(), n_control_services);
 
   const std::string control_uri = control_service->get_protocol() + "://" +
                                   app->get_runs_on()->get_runs_on()->UID() +
