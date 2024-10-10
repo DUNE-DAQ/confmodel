@@ -79,7 +79,6 @@ void process_segment(const confmodel::Session* session,
 }
 
 int main(int argc, char* argv[]) {
-  dunedaq::logging::Logging::setup();
 
   if (argc < 2) {
     std::cout << "Usage: " << argv[0] << " [session] database-file\n";
@@ -108,6 +107,8 @@ int main(int argc, char* argv[]) {
       sessionList.push_back(obj.UID());
     }
   }
+  dunedaq::logging::Logging::setup(sessionList[0], "list-apps"
+  );
 
   std::string separator{};
   for (const auto& sessionName : sessionList) {
