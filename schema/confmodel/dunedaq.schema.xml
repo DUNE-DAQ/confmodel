@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="ASCII"?>
+<?xml version="1.0" encoding="us-ascii"?>
 
 <!-- oks-schema version 2.2 -->
 
@@ -122,8 +122,8 @@
 
  <class name="ConnectivityService">
   <attribute name="interval_ms" description="Interval between publishes and polls of connectivity service information" type="u32" init-value="2000" is-not-null="yes"/>
+  <attribute name="host" description="Connectivity service Host" type="string" init-value="localhost" is-not-null="yes"/>
   <relationship name="service" description="Connectivity service Service definition" class-type="Service" low-cc="one" high-cc="one" is-composite="no" is-exclusive="no" is-dependent="no"/>
-  <relationship name="host" description="Connectivity service Host" class-type="PhysicalHost" low-cc="one" high-cc="one" is-composite="no" is-exclusive="no" is-dependent="no"/>
  </class>
 
  <class name="DaqApplication">
