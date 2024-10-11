@@ -323,6 +323,8 @@ const std::vector<std::string> RCApplication::construct_commandline_parameters(
     const std::string configuration_uri = confdb.get_impl_spec();
     const dunedaq::confmodel::Service* control_service = nullptr;
 
+    const std::string controller_log_level = session->get_controller_log_level();
+
     for (auto const* as: get_exposes_service())
       if (as->UID() == UID()+"_control") // unclear this is the best way to do this.
         control_service = as;
@@ -337,7 +339,7 @@ const std::vector<std::string> RCApplication::construct_commandline_parameters(
       + ":"
       + std::to_string(control_service->get_port());
 
-    std::vector<std::string> ret = {};
+    std::vector<std::string> ret = { "-l", controller_log_level };
     ret.push_back(configuration_uri);
     ret.push_back(control_uri);
     ret.push_back(UID());
