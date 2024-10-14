@@ -109,6 +109,10 @@ const std::vector<std::string> construct_commandline_parameters_appfwk(
   const std::string configuration_uri = confdb.get_impl_spec();
 
   return {
+      "-s",
+      session->UID(),
+      "--name",
+      app->UID(),
       "-c",
       control_uri,
       "--configurationService",
