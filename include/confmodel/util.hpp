@@ -110,7 +110,7 @@ const std::vector<std::string> construct_commandline_parameters_appfwk(
 
   return {
       "-s",
-      session->UID(),
+      system->UID(),
       "--name",
       app->UID(),
       "-c",
