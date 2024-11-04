@@ -84,7 +84,7 @@
 
  <class name="ActionPlan" description="A set of parallel steps for an application to carry out a command">
   <attribute name="execution_policy" description="How the application should execute steps of the action plan" type="enum" range="modules-in-parallel,modules-in-series" init-value="modules-in-parallel"/>
-  <relationship name="command" class-type="FSMCommand" low-cc="one" high-cc="one" is-composite="no" is-exclusive="no" is-dependent="no"/>
+  <relationship name="command" class-type="FSMtransition" low-cc="one" high-cc="one" is-composite="no" is-exclusive="no" is-dependent="no"/>
   <relationship name="steps" class-type="DaqModulesGroup" low-cc="zero" high-cc="many" is-composite="no" is-exclusive="no" is-dependent="no"/>
  </class>
 
@@ -215,13 +215,13 @@
   <attribute name="source" description="Source state" type="string" is-not-null="yes"/>
   <attribute name="dest" description="Destination state" type="string" is-not-null="yes"/>
   <attribute name="rcif_schema" description="RCIF Schema used" type="string" is-not-null="no" />
-  <attribute name="n_retries" description="Number of time to retry transition" type="int" is-not-null="no">
+  <attribute name="n_retries" description="Number of time to retry transition" type="u8" is-not-null="no"/>
  </class>
 
  <class name="PrePostFSMTransitions">
-  <relationship name="transition" description="The main transition that this pre/post transition applies to" class-type="FSMTransition" is-not-null="yes"/>
-  <relationship name="order" class-type="RCApplicationAction" is-composite="yes" is-not-null="yes"/>
-  <relationship name="mandatory" class-type="RCApplicationAction" is-composite="yes"/ is-not-null="no">
+  <relationship name="transition" description="The main transition that this pre/post transition applies to" class-type="FSMtransition" is-exclusive="no" is-dependent="no"/>
+  <relationship name="order" class-type="RCApplicationAction" is-composite="yes" is-exclusive="no" is-dependent="yes"/>
+  <relationship name="mandatory" class-type="RCApplicationAction" is-composite="yes" is-exclusive="no" is-dependent="no"/>
  </class>
 
 
