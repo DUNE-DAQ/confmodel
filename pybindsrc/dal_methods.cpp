@@ -14,7 +14,7 @@
 #include "confmodel/DaqApplication.hpp"
 #include "confmodel/HostComponent.hpp"
 #include "confmodel/RCApplication.hpp"
-#include "confmodel/Session.hpp"
+#include "confmodel/System.hpp"
 
 
 #include <sstream>
@@ -34,41 +34,41 @@ namespace dunedaq::confmodel::python {
 
 
   std::vector<ObjectLocator>
-  session_get_all_applications(const Configuration& db,
-                               const std::string& session_name) {
-    auto session=const_cast<Configuration&>(db).get<Session>(session_name);
+  system_get_all_applications(const Configuration& db,
+                               const std::string& system_name) {
+    auto system=const_cast<Configuration&>(db).get<System>(system_name);
     std::vector<ObjectLocator> apps;
-    for (auto app : session->get_all_applications()) {
+    for (auto app : system->get_all_applications()) {
       apps.push_back({app->UID(),app->class_name()});
     }
     return apps;
   }
 
   std::vector<ObjectLocator>
-  session_get_enabled_applications(const Configuration& db,
-                                   const std::string& session_name) {
-    auto session=const_cast<Configuration&>(db).get<Session>(session_name);
+  system_get_enabled_applications(const Configuration& db,
+                                   const std::string& system_name) {
+    auto system=const_cast<Configuration&>(db).get<System>(system_name);
     std::vector<ObjectLocator> apps;
-    for (auto app : session->get_enabled_applications()) {
+    for (auto app : system->get_enabled_applications()) {
       apps.push_back({app->UID(),app->class_name()});
     }
     return apps;
   }
 
   void
-  session_set_disabled(const Configuration& db,
-                       const std::string& session_name,
+  system_set_disabled(const Configuration& db,
+                       const std::string& system_name,
                        const std::vector<std::string>& comps) {
-    auto session=const_cast<Configuration&>(db).get<Session>(session_name);
+    auto system=const_cast<Configuration&>(db).get<System>(system_name);
     std::set<const Component*> objs;
     for (auto comp: comps) {
       auto obj=const_cast<Configuration&>(db).get<Component>(comp);
       objs.insert(obj);
     }
-    session->set_disabled(objs);
+    system->set_disabled(objs);
   }
 
-  bool component_disabled(const Configuration& db, const std::string& session_id, const std::string& component_id) {
+  bool component_disabled(const Configuration& db, const std::string& system_id, const std::string& component_id) {
     try {
       ConfigObject object;
       const_cast<Configuration&>(db).get("Component", component_id, object);
@@ -77,22 +77,22 @@ namespace dunedaq::confmodel::python {
       return false;
     }
     const dunedaq::confmodel::Component* component_ptr = const_cast<Configuration&>(db).get<dunedaq::confmodel::Component>(component_id);
-    const dunedaq::confmodel::Session* session_ptr = const_cast<Configuration&>(db).get<dunedaq::confmodel::Session>(session_id);
+    const dunedaq::confmodel::System* system_ptr = const_cast<Configuration&>(db).get<dunedaq::confmodel::System>(system_id);
 
-    return component_ptr->disabled(*session_ptr);
+    return component_ptr->disabled(*system_ptr);
   }
 
 
   std::vector<std::vector<ObjectLocator>> component_get_parents(const Configuration& db,
-                                                                const std::string& session_id,
+                                                                const std::string& system_id,
                                                                 const std::string& component_id) {
     const dunedaq::confmodel::Component* component_ptr = const_cast<Configuration&>(db).get<dunedaq::confmodel::Component>(component_id);
-    const dunedaq::confmodel::Session* session_ptr = const_cast<Configuration&>(db).get<dunedaq::confmodel::Session>(session_id);
+    const dunedaq::confmodel::System* system_ptr = const_cast<Configuration&>(db).get<dunedaq::confmodel::System>(system_id);
 
     std::list<std::vector<const dunedaq::confmodel::Component*>> parents;
     std::vector<std::vector<ObjectLocator>> parent_ids;
 
-    component_ptr->get_parents(*session_ptr, parents);
+    component_ptr->get_parents(*system_ptr, parents);
 
     for (const auto& parent : parents) {
       std::vector<ObjectLocator> parents_components;
@@ -116,19 +116,19 @@ namespace dunedaq::confmodel::python {
   }
 
   std::vector<std::string> daq_application_construct_commandline_parameters(const Configuration& db,
-                                                                            const std::string& session_id,
+                                                                            const std::string& system_id,
                                                                             const std::string& app_id) {
     const auto* app = const_cast<Configuration&>(db).get<dunedaq::confmodel::DaqApplication>(app_id);
-    const auto* session = const_cast<Configuration&>(db).get<dunedaq::confmodel::Session>(session_id);
-    return app->construct_commandline_parameters(db, session);
+    const auto* system = const_cast<Configuration&>(db).get<dunedaq::confmodel::System>(system_id);
+    return app->construct_commandline_parameters(db, system);
   }
 
   std::vector<std::string> rc_application_construct_commandline_parameters(const Configuration& db,
-                                                                           const std::string& session_id,
+                                                                           const std::string& system_id,
                                                                            const std::string& app_id) {
     const auto* app = const_cast<Configuration&>(db).get<dunedaq::confmodel::RCApplication>(app_id);
-    const auto* session = const_cast<Configuration&>(db).get<dunedaq::confmodel::Session>(session_id);
-    return app->construct_commandline_parameters(db, session);
+    const auto* system = const_cast<Configuration&>(db).get<dunedaq::confmodel::System>(system_id);
+    return app->construct_commandline_parameters(db, system);
   }
 void
 register_dal_methods(py::module& m)
@@ -139,9 +139,9 @@ register_dal_methods(py::module& m)
     .def_readonly("class_name", &ObjectLocator::class_name)
     ;
 
-  m.def("session_get_all_applications", &session_get_all_applications, "Get list of ALL applications (regardless of enabled/disabled state) in the requested session");
-  m.def("session_get_enabled_applications", &session_get_enabled_applications, "Get list of enabled applications in the requested session");
-  m.def("session_set_disabled", &session_set_disabled, "Temporarily disable Components in the requested session");
+  m.def("system_get_all_applications", &system_get_all_applications, "Get list of ALL applications (regardless of enabled/disabled state) in the requested system");
+  m.def("system_get_enabled_applications", &system_get_enabled_applications, "Get list of enabled applications in the requested system");
+  m.def("system_set_disabled", &system_set_disabled, "Temporarily disable Components in the requested system");
 
   m.def("component_disabled", &component_disabled, "Determine if a Component-derived object (e.g. a Segment) has been disabled");
   m.def("component_get_parents", &component_get_parents, "Get the Component-derived class instances of the parent(s) of the Component-derived object in question");

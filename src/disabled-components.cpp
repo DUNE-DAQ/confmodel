@@ -3,7 +3,7 @@
 #include "confmodel/ResourceSetAND.hpp"
 #include "confmodel/ResourceSetOR.hpp"
 #include "confmodel/Segment.hpp"
-#include "confmodel/Session.hpp"
+#include "confmodel/System.hpp"
 #include "confmodel/util.hpp"
 #include "confmodel/disabled-components.hpp"
 
@@ -15,9 +15,9 @@ using namespace dunedaq::conffwk;
 using namespace dunedaq::confmodel;
 
 DisabledComponents::DisabledComponents(Configuration& db,
- Session* session) :
+ System* system) :
   m_db(db),
-  m_session(session),
+  m_system(system),
   m_num_of_slr_enabled_resources(0),
   m_num_of_slr_disabled_resources(0)
 {
@@ -34,28 +34,28 @@ DisabledComponents::~DisabledComponents()
 void
 DisabledComponents::notify(std::vector<ConfigurationChange *>& /*changes*/) noexcept
 {
-  TLOG_DEBUG(2) <<  "reset session components because of notification callback on object " << (void *)this ;
+  TLOG_DEBUG(2) <<  "reset system components because of notification callback on object " << (void *)this ;
   __clear();
 }
 
 void
 DisabledComponents::load() noexcept
 {
-  TLOG_DEBUG(2) <<  "reset session components because of configuration load on object " << (void *)this ;
+  TLOG_DEBUG(2) <<  "reset system components because of configuration load on object " << (void *)this ;
   __clear();
 }
 
 void
 DisabledComponents::unload() noexcept
 {
-  TLOG_DEBUG(2) <<  "reset session components because of configuration unload on object " << (void *)this ;
+  TLOG_DEBUG(2) <<  "reset system components because of configuration unload on object " << (void *)this ;
   __clear();
 }
 
 void
 DisabledComponents::update(const ConfigObject& obj, const std::string& name) noexcept
 {
-  TLOG_DEBUG(2) <<  "reset session components because of configuration update (obj = " << obj << ", name = \'" << name << "\') on object " << (void *)this ;
+  TLOG_DEBUG(2) <<  "reset system components because of configuration update (obj = " << obj << ", name = \'" << name << "\') on object " << (void *)this ;
   __clear();
 }
 
@@ -95,7 +95,7 @@ DisabledComponents::disable_children(const Segment& segment)
 }
 
 void
-Session::set_disabled(const std::set<const Component *>& objs) const
+System::set_disabled(const std::set<const Component *>& objs) const
 {
   m_disabled_components.m_user_disabled.clear();
 
@@ -108,7 +108,7 @@ Session::set_disabled(const std::set<const Component *>& objs) const
 }
 
 void
-Session::set_enabled(const std::set<const Component *>& objs) const
+System::set_enabled(const std::set<const Component *>& objs) const
 {
   m_disabled_components.m_user_enabled.clear();
 
@@ -187,10 +187,10 @@ static void fill(
 }
 
 
-  // fill data from session
+  // fill data from system
 
 static void fill(
-  const Session& session,
+  const System& system,
   std::vector<const ResourceSetOR *>& rs_or,
   std::vector<const ResourceSetAND *>& rs_and,
   TestCircularDependency& cd_fuse
@@ -213,7 +213,7 @@ static void fill(
     }
 #endif
 
-  auto seg = session.get_segment();
+  auto seg = system.get_segment();
   AddTestOnCircularDependency add_fuse_test(cd_fuse, seg);
   fill(*seg, rs_or, rs_and, cd_fuse);
 }
@@ -221,43 +221,43 @@ static void fill(
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 bool
-Component::disabled(const Session& session) const
+Component::disabled(const System& system) const
 {
-  TLOG_DEBUG( 6) << "Session UID: " << session.UID() << " this->UID()=" << UID();
-  // fill disabled (e.g. after session changes)
+  TLOG_DEBUG( 6) << "System UID: " << system.UID() << " this->UID()=" << UID();
+  // fill disabled (e.g. after system changes)
 
-  if (session.m_disabled_components.size() == 0) {
-    if (session.get_disabled().empty() && 
-        session.m_disabled_components.m_user_disabled.empty()) {
-      TLOG_DEBUG( 6) << "Session has no disabled components";
-      return false;  // the session has no disabled components
+  if (system.m_disabled_components.size() == 0) {
+    if (system.get_disabled().empty() && 
+        system.m_disabled_components.m_user_disabled.empty()) {
+      TLOG_DEBUG( 6) << "System has no disabled components";
+      return false;  // the system has no disabled components
     }
     else {
-      // get two lists of all session's resource-set-or and resource-set-and
+      // get two lists of all system's resource-set-or and resource-set-and
       // also test any circular dependencies between segments and resource sets
-      TestCircularDependency cd_fuse("component \'is-disabled\' status", &session);
+      TestCircularDependency cd_fuse("component \'is-disabled\' status", &system);
       std::vector<const ResourceSetOR *> rs_or;
       std::vector<const ResourceSetAND *> rs_and;
-      fill(session, rs_or, rs_and, cd_fuse);
+      fill(system, rs_or, rs_and, cd_fuse);
 
       // calculate explicitly and implicitly (nested) disabled components
       {
         std::vector<const Component *> vector_of_disabled;
-        vector_of_disabled.reserve(session.get_disabled().size() + session.m_disabled_components.m_user_disabled.size());
+        vector_of_disabled.reserve(system.get_disabled().size() + system.m_disabled_components.m_user_disabled.size());
 
         // add user disabled components, if any
-        for (auto & i : session.m_disabled_components.m_user_disabled) {
+        for (auto & i : system.m_disabled_components.m_user_disabled) {
           vector_of_disabled.push_back(i);
           TLOG_DEBUG(6) <<  "disable component " << i->UID() << " because it is explicitly disabled by user" ;
         }
 
-        // add session-disabled components ignoring explicitly enabled by user
-        for (auto & i : session.get_disabled()) {
-          TLOG_DEBUG(6) <<  "check component " << i->UID() << " explicitly disabled in session" ;
+        // add system-disabled components ignoring explicitly enabled by user
+        for (auto & i : system.get_disabled()) {
+          TLOG_DEBUG(6) <<  "check component " << i->UID() << " explicitly disabled in system" ;
 
-          if (session.m_disabled_components.m_user_enabled.find(i) == session.m_disabled_components.m_user_enabled.end()) {
+          if (system.m_disabled_components.m_user_enabled.find(i) == system.m_disabled_components.m_user_enabled.end()) {
             vector_of_disabled.push_back(i);
-            TLOG_DEBUG(6) <<  "disable component " << i->UID() << " because it is not explicitly enabled in session" ;
+            TLOG_DEBUG(6) <<  "disable component " << i->UID() << " because it is not explicitly enabled in system" ;
           }
           else {
             TLOG_DEBUG(6) <<  "skip component " << i->UID() << " because it is enabled by user" ;
@@ -266,49 +266,49 @@ Component::disabled(const Session& session) const
 
         // fill set of explicitly and implicitly (segment/resource-set containers) disabled components
         for (auto & i : vector_of_disabled) {
-          session.m_disabled_components.disable(*i);
+          system.m_disabled_components.disable(*i);
 
           if (const ResourceSet * rs = i->cast<ResourceSet>()) {
-            session.m_disabled_components.disable_children(*rs);
+            system.m_disabled_components.disable_children(*rs);
           }
           else if (const Segment * seg = i->cast<Segment>()) {
             TLOG_DEBUG(6) << "Disabling children of segment " << seg->UID();
-            session.m_disabled_components.disable_children(*seg);
+            system.m_disabled_components.disable_children(*seg);
           }
         }
       }
 
       for (unsigned long count = 1; true; ++count) {
-        const unsigned long num(session.m_disabled_components.size());
+        const unsigned long num(system.m_disabled_components.size());
 
         TLOG_DEBUG(6) <<  "before auto-disabling iteration " << count << " the number of disabled components is " << num ;
 
-        TLOG_DEBUG(6) <<  "Session has " << rs_or.size() << " resourceSetORs";
+        TLOG_DEBUG(6) <<  "System has " << rs_or.size() << " resourceSetORs";
         for (const auto& i : rs_or) {
-          if (session.m_disabled_components.is_enabled(i)) {
+          if (system.m_disabled_components.is_enabled(i)) {
             // check ANY child is disabled
             TLOG_DEBUG(6) << "ResourceSetOR " << i->UID() << " contains " << i->get_contains().size() << " resources";
             for (auto & i2 : i->get_contains()) {
-              if (!session.m_disabled_components.is_enabled(i2)) {
+              if (!system.m_disabled_components.is_enabled(i2)) {
                 TLOG_DEBUG(6) <<  "disable resource-set-OR " << i->UID() << " because it's child " << i2 << " is disabled" ;
-                session.m_disabled_components.disable(*i);
-                session.m_disabled_components.disable_children(*i);
+                system.m_disabled_components.disable(*i);
+                system.m_disabled_components.disable_children(*i);
                 break;
               }
             }
           }
         }
 
-        TLOG_DEBUG(6) <<  "Session has " << rs_and.size() << " resourceSetANDs";
+        TLOG_DEBUG(6) <<  "System has " << rs_and.size() << " resourceSetANDs";
         for (const auto& j : rs_and) {
-          if (session.m_disabled_components.is_enabled(j)) {
+          if (system.m_disabled_components.is_enabled(j)) {
             const std::vector<const ResourceBase*> &resources = j->get_contains();
             TLOG_DEBUG(6) << "Checking " << resources.size() << " ResourceSetAND resources";
             if (!resources.empty()) {
               // check ANY child is enabled
               bool found_enabled = false;
               for (auto & j2 : resources) {
-                if (session.m_disabled_components.is_enabled(j2)) {
+                if (system.m_disabled_components.is_enabled(j2)) {
                   found_enabled = true;
                   TLOG_DEBUG(6) << "Found enabled resource " << j2->UID();
                   break;
@@ -316,14 +316,14 @@ Component::disabled(const Session& session) const
               }
               if (found_enabled == false) {
                 TLOG_DEBUG(6) <<  "disable resource-set-AND " << j->UID() << " because all it's children are disabled" ;
-                session.m_disabled_components.disable(*j);
-                session.m_disabled_components.disable_children(*j);
+                system.m_disabled_components.disable(*j);
+                system.m_disabled_components.disable_children(*j);
               }
             }
           }
         }
 
-        if (session.m_disabled_components.size() == num) {
+        if (system.m_disabled_components.size() == num) {
           TLOG_DEBUG(6) <<  "after " << count << " iteration(s) auto-disabling algorithm found no newly disabled sets, exiting loop ..." ;
           break;
         }
@@ -337,13 +337,13 @@ Component::disabled(const Session& session) const
     }
   }
 
-  bool result(!session.m_disabled_components.is_enabled(this));
+  bool result(!system.m_disabled_components.is_enabled(this));
   TLOG_DEBUG( 6) <<  "disabled(" << this << ")  (UID=" << UID() << ") returns " << std::boolalpha << result  ;
   return result;
 }
 
 unsigned long
-DisabledComponents::get_num_of_slr_resources(const Session& session)
+DisabledComponents::get_num_of_slr_resources(const System& system)
 {
-  return (session.m_disabled_components.m_num_of_slr_enabled_resources + session.m_disabled_components.m_num_of_slr_disabled_resources);
+  return (system.m_disabled_components.m_num_of_slr_enabled_resources + system.m_disabled_components.m_num_of_slr_disabled_resources);
 }

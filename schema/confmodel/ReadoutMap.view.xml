@@ -89,15 +89,15 @@
  </rel>
 </obj>
 
-<obj class="ALink" id="Session-2-ResourceBase-via-disabled">
+<obj class="ALink" id="System-2-ResourceBase-via-disabled">
  <attr name="Name" type="string" val="disabled"/>
- <rel name="From" class="Class" id="Session"/>
+ <rel name="From" class="Class" id="System"/>
  <rel name="To" class="Class" id="ResourceBase"/>
  <rel name="Points">
-  <ref class="Point" id="1 Session-2-ResourceBase-via-disabled"/>
-  <ref class="Point" id="2 Session-2-ResourceBase-via-disabled"/>
-  <ref class="Point" id="3 Session-2-ResourceBase-via-disabled"/>
-  <ref class="Point" id="4 Session-2-ResourceBase-via-disabled"/>
+  <ref class="Point" id="1 System-2-ResourceBase-via-disabled"/>
+  <ref class="Point" id="2 System-2-ResourceBase-via-disabled"/>
+  <ref class="Point" id="3 System-2-ResourceBase-via-disabled"/>
+  <ref class="Point" id="4 System-2-ResourceBase-via-disabled"/>
  </rel>
 </obj>
 
@@ -151,7 +151,7 @@
  <attr name="y" type="s16" val="120"/>
 </obj>
 
-<obj class="Class" id="Session">
+<obj class="Class" id="System">
  <attr name="x" type="s16" val="100"/>
  <attr name="y" type="s16" val="158"/>
 </obj>
@@ -294,7 +294,7 @@
  <attr name="y" type="s16" val="24"/>
 </obj>
 
-<obj class="Point" id="1 Session-2-ResourceBase-via-disabled">
+<obj class="Point" id="1 System-2-ResourceBase-via-disabled">
  <attr name="x" type="s16" val="204"/>
  <attr name="y" type="s16" val="146"/>
 </obj>
@@ -349,7 +349,7 @@
  <attr name="y" type="s16" val="134"/>
 </obj>
 
-<obj class="Point" id="2 Session-2-ResourceBase-via-disabled">
+<obj class="Point" id="2 System-2-ResourceBase-via-disabled">
  <attr name="x" type="s16" val="204"/>
  <attr name="y" type="s16" val="242"/>
 </obj>
@@ -404,7 +404,7 @@
  <attr name="y" type="s16" val="134"/>
 </obj>
 
-<obj class="Point" id="3 Session-2-ResourceBase-via-disabled">
+<obj class="Point" id="3 System-2-ResourceBase-via-disabled">
  <attr name="y" type="s16" val="242"/>
 </obj>
 
@@ -458,7 +458,7 @@
  <attr name="y" type="s16" val="8"/>
 </obj>
 
-<obj class="Point" id="4 Session-2-ResourceBase-via-disabled">
+<obj class="Point" id="4 System-2-ResourceBase-via-disabled">
  <attr name="y" type="s16" val="8"/>
 </obj>
 

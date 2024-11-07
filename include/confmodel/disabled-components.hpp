@@ -11,14 +11,14 @@
 
 namespace dunedaq::confmodel {
 
-    class Session;
+    class System;
     class ResourceSet;
     // class Segment;
 
     class DisabledComponents : public dunedaq::conffwk::ConfigAction
     {
 
-      friend class Session;
+      friend class System;
       friend class Component;
 
     private:
@@ -33,7 +33,7 @@ namespace dunedaq::confmodel {
       };
 
       dunedaq::conffwk::Configuration& m_db;
-      Session* m_session;
+      System* m_system;
 
       unsigned long m_num_of_slr_enabled_resources;
       unsigned long m_num_of_slr_disabled_resources;
@@ -54,7 +54,7 @@ namespace dunedaq::confmodel {
 
     public:
 
-      DisabledComponents(dunedaq::conffwk::Configuration& db, Session* session);
+      DisabledComponents(dunedaq::conffwk::Configuration& db, System* system);
 
       virtual
       ~DisabledComponents();
@@ -98,7 +98,7 @@ namespace dunedaq::confmodel {
       disable_children(const dunedaq::confmodel::Segment&);
 
       static unsigned long
-      get_num_of_slr_resources(const dunedaq::confmodel::Session& p);
+      get_num_of_slr_resources(const dunedaq::confmodel::System& p);
 
     };
 } // namespace dunedaq::confmodel
