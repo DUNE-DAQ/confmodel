@@ -201,7 +201,7 @@
 
  <class name="FSM">
   <method name="get_states" description="Get all states use in the FSM">
-   <method-implementation language="C++" prototype="std::vector<std::string> get_states() const" body=""/>
+   <method-implementation language="C++" prototype="std::set<std::string> get_states() const" body=""/>
   </method>
   <attribute name="initial_state" type="string" init-value="initial" is-not-null="yes"/>
   <relationship name="transitions" class-type="FSMTransitionBase" low-cc="one" high-cc="many" is-composite="yes" is-exclusive="no" is-dependent="no"/>
