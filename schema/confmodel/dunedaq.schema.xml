@@ -84,7 +84,7 @@
 
  <class name="ActionPlan" description="A set of parallel steps for an application to carry out a command">
   <attribute name="execution_policy" description="How the application should execute steps of the action plan" type="enum" range="modules-in-parallel,modules-in-series" init-value="modules-in-parallel"/>
-  <relationship name="command" class-type="FSMtransition" low-cc="one" high-cc="one" is-composite="no" is-exclusive="no" is-dependent="no"/>
+  <relationship name="command" class-type="FSMTransition" low-cc="one" high-cc="one" is-composite="no" is-exclusive="no" is-dependent="no"/>
   <relationship name="steps" class-type="DaqModulesGroup" low-cc="zero" high-cc="many" is-composite="no" is-exclusive="no" is-dependent="no"/>
  </class>
 
@@ -197,11 +197,12 @@
   <attribute name="commands" type="string" is-multi-value="yes"/>
   <relationship name="parameters" class-type="Variable" low-cc="zero" high-cc="many" is-composite="yes" is-exclusive="no" is-dependent="no"/>
   <attribute name="mandatory" description="Is this transition mandatory" type="bool" is-not-null="no"/>
-
  </class>
 
  <class name="FSM">
-  <attribute name="states" type="string" is-multi-value="yes" init-value="&quot;initial&quot;,&quot;configured&quot;" is-not-null="yes"/>
+  <method name="get_states" description="Get all states use in the FSM">
+   <method-implementation language="C++" prototype="std::vector<std::string> get_states() const" body=""/>
+  </method>
   <attribute name="initial_state" type="string" init-value="initial" is-not-null="yes"/>
   <relationship name="transitions" class-type="FSMTransitionBase" low-cc="one" high-cc="many" is-composite="yes" is-exclusive="no" is-dependent="no"/>
  </class>
@@ -209,12 +210,12 @@
  <class name="FSMTransitionBase">
  </class>
 
- <class name="FSMsequence">
+ <class name="FSMTransitionSet">
   <superclass name="FSMTransitionBase"/>
-  <relationship name="sequence" class-type="FSMtransition" low-cc="one" high-cc="many" is-composite="yes" is-exclusive="no" is-dependent="no"/>
+  <relationship name="sequence" class-type="FSMTransition" low-cc="one" high-cc="many" is-composite="yes" is-exclusive="no" is-dependent="no"/>
  </class>
 
- <class name="FSMtransition">
+ <class name="FSMTransition">
   <superclass name="FSMTransitionBase"/>
   <attribute name="source" description="Source state" type="string" is-not-null="yes"/>
   <attribute name="dest" description="Destination state" type="string" is-not-null="yes"/>
@@ -223,7 +224,7 @@
  </class>
 
  <class name="PrePostFSMTransitions">
-  <relationship name="transition" description="The main transition that this pre/post transition applies to" class-type="FSMtransition" is-exclusive="no" is-dependent="no"/>
+  <relationship name="transition" description="The main transition that this pre/post transition applies to" class-type="FSMTransition" is-exclusive="no" is-dependent="no"/>
   <relationship name="order" class-type="RCApplicationAction" is-composite="yes" is-exclusive="no" is-dependent="yes"/>
  </class>
 

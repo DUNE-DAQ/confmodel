@@ -23,6 +23,12 @@
 #include "confmodel/Session.hpp"
 #include "confmodel/Service.hpp"
 #include "confmodel/VirtualHost.hpp"
+#include "confmodel/FSM.hpp"
+#include "confmodel/FSMTransitionBase.hpp"
+#include "confmodel/FSMTransition.hpp"
+#include "confmodel/FSMTransitionSet.hpp"
+
+
 
 #include "test_circular_dependency.hpp"
 
@@ -38,6 +44,8 @@
 #include <list>
 #include <set>
 #include <iostream>
+#include <vector>
+#include <string>
 
 // Stolen from ATLAS dal package
 using namespace dunedaq::conffwk;
@@ -431,5 +439,29 @@ std::string OpMonURI::get_URI( const std::string & app ) const {
   return "stdout://";  
 }
 
+
+std::vector<std::string> FSM::get_states() const{
+  std::vector<std::string> states = {};
+  // Assuming it's a transition
+  // Loop over all transitions, not they can be individual or sequential
+  for(auto transition : this->get_transitions()){
+    if transition.className() == "FSMTransition"{
+      auto transition_cast = transition->cast<FSMTransition>();
+
+      states.push_back(transition_cast->get_source());
+      states.push_back(transition_cast->get_dest());
+    }
+    // Assuming it's a sequence [yes this really ought to be split up more but I'm lazy]
+    else{
+      auto transition_sequence_cast = transition->cast<FSMTransitionSequence>();
+      for(auto sequential_transition : transition_sequence_cast->get_sequence()){
+        states.push_back(sequential-transition->get_source());
+        states.push_back(sequential-transition->get_dest());
+  
+      }
+    }
+  }
+  return states;
 }
 
+}
