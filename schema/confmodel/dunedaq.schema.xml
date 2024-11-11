@@ -8,7 +8,7 @@
   <!ELEMENT info EMPTY>
   <!ATTLIST info
       name CDATA #IMPLIED
-      type CDATA #IMPLIED
+      type CDATA #IMPLIEDx
       num-of-items CDATA #REQUIRED
       oks-format CDATA #FIXED "schema"
       oks-version CDATA #REQUIRED
@@ -194,24 +194,28 @@
  </class>
 
  <class name="RCApplicationAction">
-  <attribute name="name" type="string" is-not-null="yes"/>
   <attribute name="commands" type="string" is-multi-value="yes"/>
   <relationship name="parameters" class-type="Variable" low-cc="zero" high-cc="many" is-composite="yes" is-exclusive="no" is-dependent="no"/>
+  <attribute name="mandatory" description="Is this transition mandatory" type="bool" is-not-null="no"/>
+
  </class>
 
  <class name="FSM">
   <attribute name="states" type="string" is-multi-value="yes" init-value="&quot;initial&quot;,&quot;configured&quot;" is-not-null="yes"/>
   <attribute name="initial_state" type="string" init-value="initial" is-not-null="yes"/>
-  <relationship name="transitions" class-type="FSMtransition" low-cc="one" high-cc="many" is-composite="yes" is-exclusive="no" is-dependent="no"/>
-  <relationship name="command_sequences" class-type="FSMsequence" low-cc="zero" high-cc="many" is-composite="yes" is-exclusive="no" is-dependent="no"/>
+  <relationship name="transitions" class-type="FSMTransitionBase" low-cc="one" high-cc="many" is-composite="yes" is-exclusive="no" is-dependent="no"/>
+ </class>
+
+ <class name="FSMTransitionBase">
  </class>
 
  <class name="FSMsequence">
-  <attribute name="name" type="string" is-multi-value="yes" is-not-null="yes"/>
+  <superclass name="FSMTransitionBase"/>
   <relationship name="sequence" class-type="FSMtransition" low-cc="one" high-cc="many" is-composite="yes" is-exclusive="no" is-dependent="no"/>
  </class>
 
  <class name="FSMtransition">
+  <superclass name="FSMTransitionBase"/>
   <attribute name="source" description="Source state" type="string" is-not-null="yes"/>
   <attribute name="dest" description="Destination state" type="string" is-not-null="yes"/>
   <attribute name="rcif_schema" description="RCIF Schema used" type="string" is-not-null="no" />
@@ -221,9 +225,7 @@
  <class name="PrePostFSMTransitions">
   <relationship name="transition" description="The main transition that this pre/post transition applies to" class-type="FSMtransition" is-exclusive="no" is-dependent="no"/>
   <relationship name="order" class-type="RCApplicationAction" is-composite="yes" is-exclusive="no" is-dependent="yes"/>
-  <relationship name="mandatory" class-type="RCApplicationAction" is-composite="yes" is-exclusive="no" is-dependent="no"/>
  </class>
-
 
  <class name="GeoId" description="The location of a stream, in detector geographical coordinates.">
   <attribute name="detector_id" type="u32" is-not-null="yes"/>
