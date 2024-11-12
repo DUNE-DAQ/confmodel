@@ -224,7 +224,7 @@
  </class>
 
  <class name="PrePostFSMTransitions">
-  <relationship name="transition" description="The main transition that this pre/post transition applies to" class-type="FSMTransition" is-exclusive="no" is-dependent="no"/>
+  <relationship name="transition" description="The main transition that this pre/post transition applies to" class-type="FSMTransitionBase" is-exclusive="no" is-dependent="no"/>
   <relationship name="order" class-type="RCApplicationAction" is-composite="yes" is-exclusive="no" is-dependent="yes"/>
  </class>
 
