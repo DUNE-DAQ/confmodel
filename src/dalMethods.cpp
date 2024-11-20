@@ -365,7 +365,7 @@ std::vector<const confmodel::DetDataSender*> DetectorToDaqConnection::get_sender
           senders.push_back(sender);
       }
       else {
-          // Look for a resource set containing senders 
+          // Look for a resource set containing senders
           auto rs = d2d_res->cast<confmodel::ResourceSet>();
           if (rs != nullptr) {
               // Look for senders in resource set
@@ -389,7 +389,7 @@ const confmodel::DetDataReceiver* DetectorToDaqConnection::get_receiver() const 
 
   for ( auto d2d_res : this->get_contains() ) {
       auto r = d2d_res->cast<confmodel::DetDataReceiver>();
-      if ( r == nullptr ) 
+      if ( r == nullptr )
         continue;
 
       receivers.push_back(r);
@@ -416,7 +416,7 @@ std::vector<const confmodel::DetectorStream*> DetectorToDaqConnection::get_strea
         if ( !stream ) {
           throw(ConfigurationError(ERS_HERE, "DetectorToDaqConnection : Non-stream object '"+stream_res->UID()+"' found in DetDataSender '"+stream_res->UID()+"'"));
         }
-        
+
         streams.push_back(stream->cast<confmodel::DetectorStream>());
       }
     }
@@ -424,24 +424,23 @@ std::vector<const confmodel::DetectorStream*> DetectorToDaqConnection::get_strea
   return streams;
 }
 
-std::string OpMonURI::get_URI( const std::string & app ) const {
+std::string OpMonURI::get_URI( const std::string & ) const {
 
   auto type = get_type();
-  if ( type == "file" ) { 
+  if ( type == "file" ) {
     return type + "://" + get_path();
   }
-  
+
   if ( type == "stream" ) {
     return type + "://" + get_path();
   }
-  
-  return "stdout://";  
+
+  return "stdout://";
 }
 
 
 std::set<std::string> FSM::get_states() const{
   std::set<std::string> states = {};
-  // Assuming it's a transition
   // Loop over all transitions, not they can be individual or sequential
   for(auto transition : this->get_transitions()){
     if(transition->class_name() == "FSMTransition"){
@@ -450,14 +449,16 @@ std::set<std::string> FSM::get_states() const{
       states.insert(transition_cast->get_source());
       states.insert(transition_cast->get_dest());
     }
-    // Assuming it's a sequence [yes this really ought to be split up more but I'm lazy]
-    else{
+    else if (transition->class_name() == "FSMTransitionSet"){
       auto transition_sequence_cast = transition->cast<FSMTransitionSet>();
       for(auto sequential_transition : transition_sequence_cast->get_sequence()){
         states.insert(sequential_transition->get_source());
         states.insert(sequential_transition->get_dest());
-  
+
       }
+    }
+    else {
+      TLOG() << "Transition type not recognized, the get_states may return the correct states";
     }
   }
   return states;
