@@ -15,6 +15,7 @@
 #include "confmodel/HostComponent.hpp"
 #include "confmodel/RCApplication.hpp"
 #include "confmodel/Session.hpp"
+#include "confmodel/FSM.hpp"
 
 
 #include <sstream>
@@ -130,6 +131,13 @@ namespace dunedaq::confmodel::python {
     const auto* session = const_cast<Configuration&>(db).get<dunedaq::confmodel::Session>(session_id);
     return app->construct_commandline_parameters(db, session);
   }
+
+  std::set<std::string> get_states(const Configuration& db,
+                                   const std::string& fsm_id) {
+    const auto* fsm = const_cast<Configuration&>(db).get<dunedaq::confmodel::FSM>(fsm_id);
+    return fsm->get_states();
+  }
+
 void
 register_dal_methods(py::module& m)
 {
@@ -148,6 +156,7 @@ register_dal_methods(py::module& m)
   m.def("daqapp_get_used_resources", &daq_application_get_used_hostresources, "Get list of HostResources used by DAQApplication");
   m.def("daq_application_construct_commandline_parameters", &daq_application_construct_commandline_parameters, "Get a version of the command line agruments parsed");
   m.def("rc_application_construct_commandline_parameters", &rc_application_construct_commandline_parameters, "Get a version of the command line agruments parsed");
+  m.def("get_states", &get_states, "Get the states of the FSM");
 }
 
 } // namespace dunedaq::confmodel::python
