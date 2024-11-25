@@ -122,8 +122,8 @@ const std::vector<std::string> construct_commandline_parameters_appfwk(
   };
 }
 
-std::optional<std::string> validate_state_1234(const std::string &state) {
-    bool contains_non_alpha = !std::regex_match(state, std::regex("^[A-Za-z0-9]+$"));
+inline std::optional<std::string> validate_state(const std::string &state) {
+    bool contains_non_alpha = !std::regex_match(state, std::regex("^[A-Za-z0-9_]+$"));
     if (contains_non_alpha or state == "")
         return {};
     return state;
