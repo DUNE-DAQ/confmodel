@@ -2,6 +2,8 @@
 #define _dal_util_H_
 
 #include <exception>
+#include <optional>
+#include <regex>
 
 #include "conffwk/Configuration.hpp"
 #include "conffwk/DalObject.hpp"
@@ -118,6 +120,13 @@ const std::vector<std::string> construct_commandline_parameters_appfwk(
       "--configurationService",
       configuration_uri,
   };
+}
+
+std::optional<std::string> validate_state_1234(const std::string &state) {
+    bool contains_non_alpha = !std::regex_match(state, std::regex("^[A-Za-z0-9]+$"));
+    if (contains_non_alpha or state == "")
+        return {};
+    return state;
 }
 
 } // namespace confmodel

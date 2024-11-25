@@ -446,15 +446,21 @@ std::set<std::string> FSM::get_states() const{
     if(transition->class_name() == "FSMTransition"){
       auto transition_cast = transition->cast<FSMTransition>();
 
-      states.insert(transition_cast->get_source());
-      states.insert(transition_cast->get_dest());
+      if (auto state = validate_state_1234(transition_cast->get_source()))
+        states.insert(state.value());
+
+      if (auto state = validate_state_1234(transition_cast->get_dest()))
+        states.insert(state.value());
     }
     else if (transition->class_name() == "FSMTransitionSet"){
       auto transition_sequence_cast = transition->cast<FSMTransitionSet>();
       for(auto sequential_transition : transition_sequence_cast->get_sequence()){
-        states.insert(sequential_transition->get_source());
-        states.insert(sequential_transition->get_dest());
 
+        if (auto state = validate_state_1234(sequential_transition->get_source()))
+          states.insert(state.value());
+
+        if (auto state = validate_state_1234(sequential_transition->get_dest()))
+          states.insert(state.value());
       }
     }
     else {
