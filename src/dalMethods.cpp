@@ -311,14 +311,16 @@ nlohmann::json Jsonable::to_json(bool direct_only) const {
 
 const std::vector<std::string> DaqApplication::construct_commandline_parameters(
   const conffwk::Configuration& confdb,
-  const dunedaq::confmodel::Session* session) const {
+  const dunedaq::confmodel::Session* session,
+  const std::string &session_name) const {
 
-    return construct_commandline_parameters_appfwk<dunedaq::confmodel::DaqApplication>(this, confdb, session);
+    return construct_commandline_parameters_appfwk<dunedaq::confmodel::DaqApplication>(this, confdb, session, session_name);
 }
 
 const std::vector<std::string> RCApplication::construct_commandline_parameters(
   const conffwk::Configuration& confdb,
-  const dunedaq::confmodel::Session* session) const {
+  const dunedaq::confmodel::Session* session,
+  const std::string &session_name) const {
 
     const std::string configuration_uri = confdb.get_impl_spec();
     const dunedaq::confmodel::Service* control_service = nullptr;
@@ -348,6 +350,7 @@ const std::vector<std::string> RCApplication::construct_commandline_parameters(
     ret.push_back(control_uri);
     ret.push_back(UID());
     ret.push_back(session->UID());
+    ret.push_back(session_name);
     return ret;
 }
 

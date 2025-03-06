@@ -98,8 +98,10 @@ void add_json_value(conffwk::ConfigObject &obj, std::string &name,
 
 template <typename T>
 const std::vector<std::string> construct_commandline_parameters_appfwk(
-    const T *app, const conffwk::Configuration &confdb,
-    const dunedaq::confmodel::Session *session) {
+    const T *app,
+    const conffwk::Configuration &confdb,
+    const dunedaq::confmodel::Session *session,
+    const std::string &session_name) {
 
   const dunedaq::confmodel::Service *control_service = nullptr;
 
@@ -122,8 +124,10 @@ const std::vector<std::string> construct_commandline_parameters_appfwk(
   const std::string configuration_uri = confdb.get_impl_spec();
 
   return {
-      "-s",
+      "-ci",
       session->UID(),
+      "-s",
+      session_name,
       "--name",
       app->UID(),
       "-c",

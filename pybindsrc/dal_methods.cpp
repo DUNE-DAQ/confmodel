@@ -117,18 +117,20 @@ namespace dunedaq::confmodel::python {
 
   std::vector<std::string> daq_application_construct_commandline_parameters(const Configuration& db,
                                                                             const std::string& session_id,
-                                                                            const std::string& app_id) {
+                                                                            const std::string& app_id,
+                                                                            const std::string& session_name) {
     const auto* app = const_cast<Configuration&>(db).get<dunedaq::confmodel::DaqApplication>(app_id);
     const auto* session = const_cast<Configuration&>(db).get<dunedaq::confmodel::Session>(session_id);
-    return app->construct_commandline_parameters(db, session);
+    return app->construct_commandline_parameters(db, session, session_name);
   }
 
   std::vector<std::string> rc_application_construct_commandline_parameters(const Configuration& db,
                                                                            const std::string& session_id,
-                                                                           const std::string& app_id) {
+                                                                           const std::string& app_id,
+                                                                           const std::string& session_name) {
     const auto* app = const_cast<Configuration&>(db).get<dunedaq::confmodel::RCApplication>(app_id);
     const auto* session = const_cast<Configuration&>(db).get<dunedaq::confmodel::Session>(session_id);
-    return app->construct_commandline_parameters(db, session);
+    return app->construct_commandline_parameters(db, session, session_name);
   }
 void
 register_dal_methods(py::module& m)
