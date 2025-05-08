@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="us-ascii"?>
+<?xml version="1.0" encoding="ASCII"?>
 
 <!-- oks-schema version 2.2 -->
 
@@ -80,7 +80,7 @@
 
 <oks-schema>
 
-<info name="" type="" num-of-items="49" oks-format="schema" oks-version="862f2957270" created-by="jcfree" created-on="mu2edaq13.fnal.gov" creation-time="20230123T223700" last-modified-by="eflumerf" last-modified-on="ironvirt9.mshome.net" last-modification-time="20241009T202839"/>
+<info name="" type="" num-of-items="49" oks-format="schema" oks-version="862f2957270" created-by="jcfree" created-on="mu2edaq13.fnal.gov" creation-time="20230123T223700" last-modified-by="gjc" last-modified-on="latitude" last-modification-time="20250210T130651"/>
 
  <class name="ActionPlan" description="A set of parallel steps for an application to carry out a command">
   <attribute name="execution_policy" description="How the application should execute steps of the action plan" type="enum" range="modules-in-parallel,modules-in-series" init-value="modules-in-parallel"/>
@@ -91,7 +91,7 @@
  <class name="Application" description="A software executable" is-abstract="yes">
   <attribute name="application_name" description="Name of the application binary to run." type="string" is-not-null="yes"/>
   <attribute name="commandline_parameters" description="command line parameters to add when starting the application" type="string" is-multi-value="yes"/>
-  <attribute name="log_path" description="Where the applications, controllers and infrastructure applications stdout/err go. This take precedence over the Session's log_path. If none of them is set, PWD is used." type="string" is-not-null="no"/>
+  <attribute name="log_path" description="Where the applications, controllers and infrastructure applications stdout/err go. This take precedence over the Session&apos;s log_path. If none of them is set, PWD is used." type="string"/>
   <relationship name="application_environment" description="Define process environment for this application." class-type="VariableBase" low-cc="zero" high-cc="many" is-composite="no" is-exclusive="no" is-dependent="no"/>
   <relationship name="runs_on" description="VirtualHost to run this application on" class-type="VirtualHost" low-cc="one" high-cc="one" is-composite="yes" is-exclusive="no" is-dependent="yes"/>
   <relationship name="exposes_service" description="Services exposed i.e. provided by this application" class-type="Service" low-cc="zero" high-cc="many" is-composite="yes" is-exclusive="no" is-dependent="yes"/>
@@ -110,7 +110,7 @@
   </method>
  </class>
 
- <class name="Connection" is-abstract="yes">
+ <class name="Connection" description="Abstract class describing an interprocess (or infraprocesss)  communication connection" is-abstract="yes">
   <attribute name="data_type" description="String identifying the data that travel through this connection. This can be used to match up the endpoints of this connection." type="string" is-not-null="yes"/>
   <attribute name="send_timeout_ms" description="Timeout in ms for sending on this connection" type="u32" init-value="10" is-not-null="yes"/>
   <attribute name="recv_timeout_ms" description="Timeout in ms for receiving on this connection" type="u32" init-value="10" is-not-null="yes"/>
@@ -141,9 +141,10 @@
  </class>
 
  <class name="DaqModule" description="A plugin module for the app framework" is-abstract="yes">
-  <relationship name="inputs" description="List of connections to/from this module" class-type="Connection" low-cc="zero" high-cc="many" is-composite="yes" is-exclusive="no" is-dependent="yes"/>
-  <relationship name="outputs" description="Output connections from this module" class-type="Connection" low-cc="zero" high-cc="many" is-composite="yes" is-exclusive="no" is-dependent="yes"/>
   <relationship name="used_resources" class-type="HostComponent" low-cc="zero" high-cc="many" is-composite="yes" is-exclusive="no" is-dependent="yes"/>
+  <method name="get_connections" description="Get objects derived from Connection from all relationships">
+   <method-implementation language="c++" prototype="std::vector&lt;const Connection*&gt; get_connections() const" body=""/>
+  </method>
  </class>
 
  <class name="DaqModulesGroup" description="Represents a group of DAQ Modules that can run commands in parallel as one of the steps of an ActionPlan." is-abstract="yes">
@@ -367,6 +368,7 @@
   <attribute name="data_rate_slowdown_factor" description="&quot;Factor by which to suppress data generation." type="u32" init-value="1" is-not-null="yes"/>
   <attribute name="rte_script" description="Path to a script for setting up the runtime environment for DAQ applications" type="string"/>
   <attribute name="controller_log_level" description="Log level to use for drunc controllers" type="enum" range="CRITICAL,ERROR,WARNING,INFO,DEBUG" init-value="INFO" is-not-null="yes"/>
+  <attribute name="log_path" description="Where the applications, controllers and infrastructure applications stdout/err go. This is overwritten by the Application&apos;s log_path. If none of them is set, PWD is used." type="string"/>
   <relationship name="connectivity_service" description="Configuration for the Connectivity Service lookups" class-type="ConnectivityService" low-cc="zero" high-cc="one" is-composite="no" is-exclusive="no" is-dependent="no"/>
   <relationship name="environment" description="Define process environment for any application run in given session." class-type="VariableBase" low-cc="zero" high-cc="many" is-composite="no" is-exclusive="no" is-dependent="no"/>
   <relationship name="disabled" description="Resources that should not participate in the current run" class-type="ResourceBase" low-cc="zero" high-cc="many" is-composite="yes" is-exclusive="no" is-dependent="yes"/>
@@ -374,7 +376,6 @@
   <relationship name="infrastructure_applications" class-type="Application" low-cc="zero" high-cc="many" is-composite="yes" is-exclusive="no" is-dependent="yes"/>
   <relationship name="detector_configuration" class-type="DetectorConfig" low-cc="one" high-cc="one" is-composite="no" is-exclusive="no" is-dependent="no"/>
   <relationship name="opmon_uri" description="Configuration for the OpMon facilities used across the session" class-type="OpMonURI" low-cc="one" high-cc="one" is-composite="yes" is-exclusive="no" is-dependent="yes"/>
-  <attribute name="log_path" description="Where the applications, controllers and infrastructure applications stdout/err go. This is overwritten by the Application's log_path. If none of them is set, PWD is used." type="string" is-not-null="no"/>
   <method name="get_all_applications" description="Returns applications defined in the Session and all of its Segments.">
    <method-implementation language="c++" prototype="std::vector&lt;const dunedaq::confmodel::Application *&gt; get_all_applications() const" body=""/>
   </method>

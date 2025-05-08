@@ -10,6 +10,7 @@
 
 #include "confmodel/Application.hpp"
 #include "confmodel/Component.hpp"
+#include "confmodel/Connection.hpp"
 #include "confmodel/DaqApplication.hpp"
 #include "confmodel/DaqModule.hpp"
 #include "confmodel/Jsonable.hpp"
@@ -288,7 +289,7 @@ nlohmann::json get_json_config(conffwk::Configuration& confdb,
       }
       else {
         TLOG_DBG(9) << "Relationship " << rel_name << " is multi value. "
-                    << "Getting attibutes for relationship.";
+                    << "Getting attributes for relationship.";
         std::vector<ConfigObject> rel_vec;
         obj.get(rel_name, rel_vec);
         std::vector<json> configs;
@@ -430,7 +431,7 @@ std::vector<const confmodel::DetectorStream*> DetectorToDaqConnection::get_strea
   return streams;
 }
 
-std::string OpMonURI::get_URI( const std::string & app ) const {
+std::string OpMonURI::get_URI( const std::string & /*app*/ ) const {
 
   auto type = get_type();
   if ( type == "file" ) {
@@ -444,5 +445,35 @@ std::string OpMonURI::get_URI( const std::string & app ) const {
   return "stdout://";
 }
 
+std::vector<const Connection*> DaqModule::get_connections() const {
+  std::vector<const Connection*> connections;
+  auto class_info = p_db.get_class_info(class_name());
+  for (auto rel : class_info.p_relationships) {
+    if (rel.p_type == "Connection") {
+      if (rel.p_cardinality == cardinality_t::zero_or_one ||
+          rel.p_cardinality == cardinality_t::only_one) {
+        ConfigObject rel_obj;
+        auto ob = const_cast<ConfigObject*> (&p_obj);
+        ob->get(rel.p_name, rel_obj);
+        if (!rel_obj.is_null()) {
+          connections.push_back(p_db.get<Connection>(rel_obj.UID()));
+        }
+        else {
+          TLOG_DBG(9) << "Relationship is empty";
+        }
+      }
+      else {
+        std::vector<ConfigObject> rel_vec;
+        auto ob = const_cast<ConfigObject*> (&p_obj);
+        ob->get(rel.p_name, rel_vec);
+        for (auto rel_obj : rel_vec) {
+          connections.push_back(p_db.get<Connection>(rel_obj.UID()));
+        }
+      }
+    }
+  }
+  return connections;
 }
+
+}  // namespace dunedaq::confmodel
 
