@@ -14,13 +14,10 @@ are controlled by a single controller. A **Segment** may contain other
 nested **Segment**s. A **Segment** is a Resource that can be enabled/disabled,
 disabling a **Segment** disables all of its nested **Segment**s.
 
-The **Application** class has attibutes defining the application's
+The **Application** class is an abstract base class for applications. It has attributes defining the application's
  `application_name` (executable name) and `commandline_parameters`. Its
  `application_environment` relationship lists environment variables needed by the
- application in addition to those defined by the **Session**. An
- [example Python script](https://github.com/DUNE-DAQ/confmodel/blob/develop/scripts/app_environment.py)
- that prints out the environment for enabled applications in the
- **Session** is provided in the `scripts` directory.
+ application in addition to those defined by the **Session**.
 
 
 ## Resources and ResourceSets
@@ -39,7 +36,7 @@ contained objects.
 
 **ResourceSet** is an abstract container of **Resource**s (actually items
 inheriting from **ResourceBase**) which can be disabled together. It
-is itself a Resource (so can be nested). It defines a pure virtual method `get_resources()` to get the list of contained resources. Developers should implement this method to extract any resources that need to be considered for determining the disabled state of the set from among the class's relationships.
+is itself a Resource (so can be nested). It defines a pure virtual method `get_resources()` to get the list of contained resources. Developers should implement this method to extract any resources that need to be considered for determining the disabled state of the set from among the class's relationships.  The class may have relationships to other Resource derived objects that will be ignored for the disabled check.
 
 **ResourceSetDisableAND** is a container of **Resource**s which will
 be disabled if *all* of its **Resource**s are disabled. It provides a
