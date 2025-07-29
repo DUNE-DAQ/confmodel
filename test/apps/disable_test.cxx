@@ -2,7 +2,7 @@
 
 #include "conffwk/Configuration.hpp"
 
-#include "confmodel/Component.hpp"
+#include "confmodel/ResourceBase.hpp"
 #include "confmodel/DaqApplication.hpp"
 #include "confmodel/DaqModule.hpp"
 #include "confmodel/ResourceSet.hpp"
@@ -48,12 +48,14 @@ int main(int argc, char* argv[]) {
     return 0;
   }
 
-  dunedaq::logging::Logging::setup();
-
   std::string confimpl = "oksconflibs:" + std::string(argv[2]);
   auto confdb = new conffwk::Configuration(confimpl);
 
   std::string sessionName(argv[1]);
+
+  
+  dunedaq::logging::Logging::setup(sessionName, "disable-test");
+
   auto session = confdb->get<confmodel::Session>(sessionName);
   if (session == nullptr) {
     std::cerr << "Session " << sessionName << " not found in database\n";
@@ -82,7 +84,7 @@ int main(int argc, char* argv[]) {
   listApps(session);
 
   std::cout << "======\nNow trying to set enabled  \n";
-  std::set<const confmodel::Component*> enable;
+  std::set<const confmodel::ResourceBase*> enable;
   for (auto item : disabled) {
     enable.insert(item);
   }
