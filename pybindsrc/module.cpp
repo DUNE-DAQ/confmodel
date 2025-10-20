@@ -19,7 +19,7 @@ namespace dunedaq::confmodel::python {
 extern void
 register_dal_methods(py::module&);
 
-PYBIND11_MODULE(_daq_confmodel_py, m)
+PYBIND11_MODULE(_daq_confmodel_dal_py, m)
 {
 
   m.doc() = "C++ implementation of the confmodel modules";

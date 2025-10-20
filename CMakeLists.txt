@@ -28,7 +28,7 @@ daq_add_application(jsonable_test jsonable_test.cxx TEST
 
 
 # See https://dune-daq-sw.readthedocs.io/en/latest/packages/daq-cmake/#daq_add_python_bindings
-daq_add_python_bindings(*.cpp LINK_LIBRARIES confmodel_dal)
+daq_add_python_bindings(*.cpp DAL )
 
 
 ##############################################################################
