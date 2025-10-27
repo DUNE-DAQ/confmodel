@@ -22,10 +22,10 @@ The **Application** class has attributes defining the application's
 ## Resources and ResourceSets
 
 **Resource** is an abstract class describing an item that can be
-disabled directly. It has the method `is_disabled()` which can be called
+disabled directly. It has the method `is_disabled(const dunedaq::confmodel::ResourceTree& session)` which can be called
 by application code to determine if the object should be considered
-disabled for this session. The [disabling logic](#the-resource-disabled-logic) calls the virtual
-`compute_disabled_state()` method to determine the state of the Resource. The
+disabled for this session (Session is a subclass of ResourceTree). The [disabling logic](#the-resource-disabled-logic) calls the virtual
+`compute_disabled_state(const std::set<std::string>& disabled_resources)` method to determine the state of the Resource, the disabled_resources argument is a list of UIDs of all the Resources that have been disabled so far. The
 implementation provided by the base class just checks that the object
 itself is not in the list of disabled objects. Derived classes can
 re-implement this method with whatever logic is needed to determine the
@@ -34,7 +34,7 @@ provides an implementation that ANDs together the state of all of its
 contained objects. 
 
 **ResourceSet** is an abstract container of **Resource**s which can be disabled together. It
-is itself a Resource (so can be nested). It defines a pure virtual method `contained_resources()` to get the list of contained resources. Developers should implement this method to extract any resources that need to be considered for determining the disabled state of the set from among the class's relationships. The class may have relationships to other Resource derived
+is itself a Resource (so can be nested). It defines a pure virtual method `contained_resources()` which returns a vector of pointers to 'contained' resources. Developers should implement this method to extract any resources that need to be considered for determining the disabled state of the set from among the class's relationships. The class may have relationships to other Resource derived
 objects that will be ignored for the disabled check.
 
 **ResourceSetDisableAND** is a container of **Resource**s which will
