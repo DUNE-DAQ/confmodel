@@ -156,6 +156,20 @@ namespace dunedaq::confmodel::python {
     return streams;
   }
 
+  std::vector<std::string>
+  resourceset_contains(const Configuration& db,
+                       const std::string& res_id) {
+    std::vector<std::string> resources;
+    auto res_set = const_cast<Configuration&>(db)
+      .get<dunedaq::confmodel::ResourceSet>(res_id);
+    if (res_set != nullptr) {
+      for (auto res: res_set->contained_resources()) {
+        resources.push_back(res->UID());
+      }
+    }
+    return resources;
+  }
+
 
 void
 register_dal_methods(py::module& m)
@@ -178,6 +192,7 @@ register_dal_methods(py::module& m)
   m.def("d2d_receiver", &d2d_receiver, "Get receiver associated with DetectorToDaqConnection");
   m.def("d2d_senders", &d2d_senders, "Get senders associated with DetectorToDaqConnection");
   m.def("d2d_streams", &d2d_streams, "Get streams associated with DetectorToDaqConnection");
+  m.def("resourceset_contains", &resourceset_contains, "Get contained Resources from ResourceSet");
 }
 
 } // namespace dunedaq::confmodel::python
