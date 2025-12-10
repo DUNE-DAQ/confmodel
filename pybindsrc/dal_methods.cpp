@@ -38,9 +38,9 @@ namespace dunedaq::confmodel::python {
 
 
   std::vector<ObjectLocator>
-  session_get_all_applications(const Configuration& db,
+  session_get_all_applications(Configuration& db,
                                const std::string& session_name) {
-    auto session=const_cast<Configuration&>(db).get<Session>(session_name);
+    auto session=db.get<Session>(session_name);
     std::vector<ObjectLocator> apps;
     for (auto app : session->all_applications()) {
       apps.push_back({app->UID(),app->class_name()});
@@ -49,9 +49,9 @@ namespace dunedaq::confmodel::python {
   }
 
   std::vector<ObjectLocator>
-  session_get_enabled_applications(const Configuration& db,
+  session_get_enabled_applications(Configuration& db,
                                    const std::string& session_name) {
-    auto session=const_cast<Configuration&>(db).get<Session>(session_name);
+    auto session=db.get<Session>(session_name);
     std::vector<ObjectLocator> apps;
     for (auto app : session->enabled_applications()) {
       apps.push_back({app->UID(),app->class_name()});
@@ -59,11 +59,11 @@ namespace dunedaq::confmodel::python {
     return apps;
   }
 
-  bool component_disabled(const Configuration& db,
+  bool component_disabled(Configuration& db,
                           const std::string& session_id,
                           const std::string& component_id) {
-    const dunedaq::confmodel::Session* session_ptr = const_cast<Configuration&>(db).get<dunedaq::confmodel::Session>(session_id);
-    const dunedaq::confmodel::Resource* component_ptr = const_cast<Configuration&>(db).get<dunedaq::confmodel::Resource>(component_id);
+    const dunedaq::confmodel::Session* session_ptr = db.get<dunedaq::confmodel::Session>(session_id);
+    const dunedaq::confmodel::Resource* component_ptr = db.get<dunedaq::confmodel::Resource>(component_id);
     if (component_ptr == nullptr) {
       return false;
     }
@@ -71,11 +71,11 @@ namespace dunedaq::confmodel::python {
   }
 
 
-  std::vector<std::vector<ObjectLocator>> component_get_parents(const Configuration& db,
+  std::vector<std::vector<ObjectLocator>> component_get_parents(Configuration& db,
                                                                 const std::string& session_id,
                                                                 const std::string& component_id) {
-    const dunedaq::confmodel::Session* session_ptr = const_cast<Configuration&>(db).get<dunedaq::confmodel::Session>(session_id);
-    const dunedaq::confmodel::Resource* component_ptr = const_cast<Configuration&>(db).get<dunedaq::confmodel::Resource>(component_id);
+    const dunedaq::confmodel::Session* session_ptr = db.get<dunedaq::confmodel::Session>(session_id);
+    const dunedaq::confmodel::Resource* component_ptr = db.get<dunedaq::confmodel::Resource>(component_id);
 
     std::list<std::vector<const dunedaq::confmodel::Resource*>> parents;
     std::vector<std::vector<ObjectLocator>> parent_ids;
@@ -94,8 +94,8 @@ namespace dunedaq::confmodel::python {
     return parent_ids;
   }
 
-  std::vector<std::string> daq_application_get_used_hostresources(const Configuration& db, const std::string& app_id) {
-    auto app = const_cast<Configuration&>(db).get<dunedaq::confmodel::DaqApplication>(app_id);
+  std::vector<std::string> daq_application_get_used_hostresources(Configuration& db, const std::string& app_id) {
+    auto app = db.get<dunedaq::confmodel::DaqApplication>(app_id);
     std::vector<std::string> resources;
     for (auto res : app->get_used_hostresources()) {
       resources.push_back(res->UID());
@@ -103,11 +103,11 @@ namespace dunedaq::confmodel::python {
     return resources;
   }
 
-  std::vector<std::string> daq_application_construct_commandline_parameters(const Configuration& db,
+  std::vector<std::string> daq_application_construct_commandline_parameters(Configuration& db,
                                                                             const std::string& session_id,
                                                                             const std::string& app_id) {
-    const auto* app = const_cast<Configuration&>(db).get<dunedaq::confmodel::DaqApplication>(app_id);
-    const auto* session = const_cast<Configuration&>(db).get<dunedaq::confmodel::Session>(session_id);
+    const auto* app = db.get<dunedaq::confmodel::DaqApplication>(app_id);
+    const auto* session = db.get<dunedaq::confmodel::Session>(session_id);
     return app->construct_commandline_parameters(db, session);
   }
 
@@ -120,21 +120,19 @@ namespace dunedaq::confmodel::python {
   }
 
 
-  std::string d2d_receiver(const Configuration& db,
+  std::string d2d_receiver(Configuration& db,
                            const std::string& d2d_id) {
-    const auto* d2d = const_cast<Configuration&>(db)
-      .get<dunedaq::confmodel::DetectorToDaqConnection>(d2d_id);
+    const auto* d2d = db.get<dunedaq::confmodel::DetectorToDaqConnection>(d2d_id);
     if (d2d == nullptr) {
       return "";
     }
     return d2d->receiver()->UID();
   }
 
-  std::vector<std::string> d2d_senders(const Configuration& db,
+  std::vector<std::string> d2d_senders(Configuration& db,
                                        const std::string& d2d_id) {
     std::vector<std::string> senders;
-    const auto* d2d = const_cast<Configuration&>(db)
-      .get<dunedaq::confmodel::DetectorToDaqConnection>(d2d_id);
+    const auto* d2d = db.get<dunedaq::confmodel::DetectorToDaqConnection>(d2d_id);
     if (d2d != nullptr) {
       for (auto sender: d2d->senders()) {
         senders.push_back(sender->UID());
@@ -143,11 +141,10 @@ namespace dunedaq::confmodel::python {
     return senders;
   }
 
-  std::vector<std::string> d2d_streams(const Configuration& db,
+  std::vector<std::string> d2d_streams(Configuration& db,
                                        const std::string& d2d_id) {
     std::vector<std::string> streams;
-    const auto* d2d = const_cast<Configuration&>(db)
-      .get<dunedaq::confmodel::DetectorToDaqConnection>(d2d_id);
+    const auto* d2d = db.get<dunedaq::confmodel::DetectorToDaqConnection>(d2d_id);
     if (d2d != nullptr) {
       for (auto stream: d2d->streams()) {
         streams.push_back(stream->UID());
@@ -157,11 +154,10 @@ namespace dunedaq::confmodel::python {
   }
 
   std::vector<std::string>
-  resourceset_contains(const Configuration& db,
+  resourceset_contains(Configuration& db,
                        const std::string& res_id) {
     std::vector<std::string> resources;
-    auto res_set = const_cast<Configuration&>(db)
-      .get<dunedaq::confmodel::ResourceSet>(res_id);
+    auto res_set = db.get<dunedaq::confmodel::ResourceSet>(res_id);
     if (res_set != nullptr) {
       for (auto res: res_set->contained_resources()) {
         resources.push_back(res->UID());
