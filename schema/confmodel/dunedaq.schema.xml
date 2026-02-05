@@ -80,7 +80,7 @@
 
 <oks-schema>
 
-<info name="" type="" num-of-items="49" oks-format="schema" oks-version="862f2957270" created-by="jcfree" created-on="mu2edaq13.fnal.gov" creation-time="20230123T223700" last-modified-by="gjc" last-modified-on="latitude" last-modification-time="20250923T103939"/>
+<info name="" type="" num-of-items="51" oks-format="schema" oks-version="862f2957270" created-by="jcfree" created-on="mu2edaq13.fnal.gov" creation-time="20230123T223700" last-modified-by="mroda" last-modified-on="mroda-xpsp" last-modification-time="20260205T115614"/>
 
  <class name="ActionPlan" description="A set of steps for an application to carry out a command">
   <attribute name="execution_policy" description="How the application should dispatch the command to modules matched by each step of the ActionPlan" type="enum" range="modules-in-parallel,modules-in-series" init-value="modules-in-parallel"/>
@@ -179,6 +179,7 @@
 
  <class name="DetectorToDaqConnection" is-abstract="yes">
   <superclass name="ResourceSet"/>
+  <superclass name="ManagedComponent"/>
   <method name="streams" description="">
    <method-implementation language="c++" prototype="std::vector&lt;const confmodel::DetectorStream*&gt; streams() const" body=""/>
   </method>
@@ -255,6 +256,10 @@
   <attribute name="this" type="u32" init-value="0" is-not-null="yes"/>
   <attribute name="that" type="u32" init-value="1" is-not-null="yes"/>
   <relationship name="other" class-type="JsonableTest" low-cc="zero" high-cc="one" is-composite="yes" is-exclusive="no" is-dependent="no"/>
+ </class>
+
+ <class name="ManagedComponent">
+  <attribute name="tag" description="if null, the check is disabled against the resource manager" type="string"/>
  </class>
 
  <class name="NetworkConnection">
@@ -340,6 +345,11 @@
   </method>
  </class>
 
+ <class name="ResourceManagerConf">
+  <attribute name="address" type="string" is-not-null="yes"/>
+  <attribute name="port" type="u16" is-not-null="yes"/>
+ </class>
+
  <class name="ResourceSet" description="Base class for a collection of Resource items. Derived classes must implement the contained_resources() method to return a vector of Resource objects." is-abstract="yes">
   <superclass name="Resource"/>
   <method name="contained_resources" description="Virtual method to obtain the list of all contained Resources. Used internally by the core disabled logic. Not intended to be used in application code as that should be using individual relationships of the derived classes.">
@@ -405,6 +415,7 @@
   <relationship name="infrastructure_applications" class-type="Application" low-cc="zero" high-cc="many" is-composite="yes" is-exclusive="no" is-dependent="yes"/>
   <relationship name="detector_configuration" class-type="DetectorConfig" low-cc="one" high-cc="one" is-composite="no" is-exclusive="no" is-dependent="no"/>
   <relationship name="opmon_uri" description="Configuration for the OpMon facilities used across the session" class-type="OpMonURI" low-cc="one" high-cc="one" is-composite="yes" is-exclusive="no" is-dependent="yes"/>
+  <relationship name="resource_manager" class-type="ResourceManagerConf" low-cc="zero" high-cc="one" is-composite="no" is-exclusive="no" is-dependent="no"/>
   <method name="all_applications" description="Returns applications defined in the Session and all of its Segments.">
    <method-implementation language="c++" prototype="std::vector&lt;const dunedaq::confmodel::Application *&gt; all_applications() const" body="BEGIN_PRIVATE_SECTION&#xA;friend class DisabledResources;&#xA;std::vector&lt;const Application*&gt;getSegmentApps(const Segment*,bool)const;&#xA;END_PRIVATE_SECTION&#xA;&#xA;BEGIN_HEADER_PROLOGUE&#xA;namespace dunedaq::confmodel{class Segment;}&#xA;END_HEADER_PROLOGUE"/>
   </method>
