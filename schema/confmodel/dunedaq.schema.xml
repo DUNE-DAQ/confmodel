@@ -80,7 +80,7 @@
 
 <oks-schema>
 
-<info name="" type="" num-of-items="51" oks-format="schema" oks-version="862f2957270" created-by="jcfree" created-on="mu2edaq13.fnal.gov" creation-time="20230123T223700" last-modified-by="mroda" last-modified-on="mroda-xpsp" last-modification-time="20260205T115614"/>
+<info name="" type="" num-of-items="51" oks-format="schema" oks-version="862f2957270" created-by="jcfree" created-on="mu2edaq13.fnal.gov" creation-time="20230123T223700" last-modified-by="gjc" last-modified-on="latitude" last-modification-time="20260211T160631"/>
 
  <class name="ActionPlan" description="A set of steps for an application to carry out a command">
   <attribute name="execution_policy" description="How the application should dispatch the command to modules matched by each step of the ActionPlan" type="enum" range="modules-in-parallel,modules-in-series" init-value="modules-in-parallel"/>
@@ -179,7 +179,6 @@
 
  <class name="DetectorToDaqConnection" is-abstract="yes">
   <superclass name="ResourceSet"/>
-  <superclass name="ManagedComponent"/>
   <method name="streams" description="">
    <method-implementation language="c++" prototype="std::vector&lt;const confmodel::DetectorStream*&gt; streams() const" body=""/>
   </method>
@@ -258,8 +257,11 @@
   <relationship name="other" class-type="JsonableTest" low-cc="zero" high-cc="one" is-composite="yes" is-exclusive="no" is-dependent="no"/>
  </class>
 
- <class name="ManagedComponent">
-  <attribute name="tag" description="if null, the check is disabled against the resource manager" type="string"/>
+ <class name="ManagedObject">
+  <attribute name="tag" description="(Component of) name  to be matched with resource manager for locking" type="string" is-not-null="yes"/>
+  <method name="object_tags" description="Method to return strings to be submitted to resource maanger for reservation.">
+   <method-implementation language="c++" prototype="virtual std::vector&lt;std::string&gt; object_tags() const" body="return {get_tag()};"/>
+  </method>
  </class>
 
  <class name="NetworkConnection">
@@ -299,6 +301,7 @@
  </class>
 
  <class name="PhysicalHost">
+  <superclass name="ManagedObject"/>
   <relationship name="contains" description="List of hardware components on this host" class-type="HostComponent" low-cc="one" high-cc="many" is-composite="yes" is-exclusive="no" is-dependent="yes"/>
  </class>
 
@@ -424,6 +427,9 @@
   </method>
   <method name="resource_root" description="">
    <method-implementation language="c++" prototype="const ResourceSet* resource_root() const override" body="return get_segment();"/>
+  </method>
+  <method name="managed_object_tags" description="Method to find all (enabled) managed objects in this session.">
+   <method-implementation language="c++" prototype="std::set&lt;std::string&gt; managed_object_tags() const" body="BEGIN_HEADER_PROLOGUE&#xA;#include &lt;map&gt;&#xA;#include &lt;string&gt;&#xA;#include &lt;vector&gt;&#xA;END_HEADER_PROLOGUE"/>
   </method>
  </class>
 

@@ -36,6 +36,12 @@ namespace dunedaq::confmodel::python {
     const std::string class_name;
   };
 
+  std::set<std::string>
+  session_get_managed_object_tags(Configuration& db,
+                               const std::string& session_name) {
+    auto session=db.get<Session>(session_name);
+    return session->managed_object_tags();
+  }
 
   std::vector<ObjectLocator>
   session_get_all_applications(Configuration& db,
@@ -176,6 +182,7 @@ register_dal_methods(py::module& m)
     .def_readonly("class_name", &ObjectLocator::class_name)
     ;
 
+  m.def("session_get_managed_object_tags", &session_get_managed_object_tags, "Get list of ALL enabled ManagedObject tags in the requested session");
   m.def("session_get_all_applications", &session_get_all_applications, "Get list of ALL applications (regardless of enabled/disabled state) in the requested session");
   m.def("session_get_enabled_applications", &session_get_enabled_applications, "Get list of enabled applications in the requested session");
 
