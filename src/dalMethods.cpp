@@ -234,9 +234,13 @@ relationships(conffwk::Configuration& confdb, ConfigObject& obj) {
   return result;
 }
 std::set<std::string>
-Session::managed_object_tags() const {
+Segment::managed_object_tags(const Session* session) const {
   std::set<std::string> related_objs;
-  for (auto app : enabled_applications()) {
+  for (auto app : get_applications()) {
+    const Resource* res = app->cast<Resource>();
+    if (res != nullptr && res->is_disabled(*session)) {
+      continue;
+    }
     auto obj = app->config_object();  // Take a copy because we need
                                       // to call a non-const method!
     auto rels = relationships(configuration(), obj);
@@ -250,6 +254,14 @@ Session::managed_object_tags() const {
       result.insert(tags.begin(), tags.end());
     }
   }
+
+  for (auto seg : get_segments()) {
+    if (!seg->is_disabled(*session)) {
+      auto tags = seg->managed_object_tags(session);
+      result.insert(tags.begin(), tags.end());
+    }
+  }
+
   result.erase("");
   return result;
 }

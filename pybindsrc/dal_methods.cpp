@@ -18,6 +18,7 @@
 #include "confmodel/DetDataSender.hpp"
 #include "confmodel/HostComponent.hpp"
 #include "confmodel/RCApplication.hpp"
+#include "confmodel/Segment.hpp"
 #include "confmodel/Session.hpp"
 
 
@@ -37,10 +38,12 @@ namespace dunedaq::confmodel::python {
   };
 
   std::set<std::string>
-  session_get_managed_object_tags(Configuration& db,
-                               const std::string& session_name) {
+  segment_get_managed_object_tags(Configuration& db,
+                                  const std::string& segment_name,
+                                  const std::string& session_name) {
     auto session=db.get<Session>(session_name);
-    return session->managed_object_tags();
+    auto segment=db.get<Segment>(segment_name);
+    return segment->managed_object_tags(session);
   }
 
   std::vector<ObjectLocator>
@@ -182,7 +185,7 @@ register_dal_methods(py::module& m)
     .def_readonly("class_name", &ObjectLocator::class_name)
     ;
 
-  m.def("session_get_managed_object_tags", &session_get_managed_object_tags, "Get list of ALL enabled ManagedObject tags in the requested session");
+  m.def("segment_get_managed_object_tags", &segment_get_managed_object_tags, "Get list of ALL enabled ManagedObject tags in the requested segment");
   m.def("session_get_all_applications", &session_get_all_applications, "Get list of ALL applications (regardless of enabled/disabled state) in the requested session");
   m.def("session_get_enabled_applications", &session_get_enabled_applications, "Get list of enabled applications in the requested session");
 
