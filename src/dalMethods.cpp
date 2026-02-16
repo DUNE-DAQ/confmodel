@@ -250,6 +250,7 @@ Session::managed_object_tags() const {
       result.insert(tags.begin(), tags.end());
     }
   }
+  result.erase("");
   return result;
 }
 
