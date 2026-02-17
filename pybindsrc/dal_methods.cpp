@@ -224,7 +224,7 @@ register_dal_methods(py::module& m)
 
   m.def("segment_get_managed_object_tags", &segment_get_managed_object_tags,
         py::arg("db"), py::arg("session_name"), py::arg("segment_name")="",
-        "Get list of ALL enabled ManagedObject tags in the requested segment");
+        "Get list of ALL ManagedObject tags in the requested segment that are enabled in the given session. If only a session is specified then the segment will be taken from the session's segment relationship");
   m.def("session_get_all_applications", &session_get_all_applications, "Get list of ALL applications (regardless of enabled/disabled state) in the requested session");
   m.def("session_get_enabled_applications", &session_get_enabled_applications, "Get list of enabled applications in the requested session");
 

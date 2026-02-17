@@ -80,7 +80,7 @@
 
 <oks-schema>
 
-<info name="" type="" num-of-items="51" oks-format="schema" oks-version="862f2957270" created-by="jcfree" created-on="mu2edaq13.fnal.gov" creation-time="20230123T223700" last-modified-by="gjc" last-modified-on="latitude" last-modification-time="20260216T121951"/>
+<info name="" type="" num-of-items="51" oks-format="schema" oks-version="862f2957270" created-by="jcfree" created-on="mu2edaq13.fnal.gov" creation-time="20230123T223700" last-modified-by="gjc" last-modified-on="latitude" last-modification-time="20260217T094939"/>
 
  <class name="ActionPlan" description="A set of steps for an application to carry out a command">
   <attribute name="execution_policy" description="How the application should dispatch the command to modules matched by each step of the ActionPlan" type="enum" range="modules-in-parallel,modules-in-series" init-value="modules-in-parallel"/>
@@ -396,7 +396,7 @@
   <method name="compute_disabled_state" description="">
    <method-implementation language="c++" prototype="bool compute_disabled_state(const std::set&lt;std::string&gt;&amp; disabled) const final" body=""/>
   </method>
-  <method name="managed_object_tags" description="Method to find all (enabled) managed objects in this session.">
+  <method name="managed_object_tags" description="Method to find all managed objects in this segment that are enabled in the given session.">
    <method-implementation language="c++" prototype="std::set&lt;std::string&gt; managed_object_tags(const Session*) const" body="BEGIN_HEADER_PROLOGUE&#xA;#include &lt;map&gt;&#xA;#include &lt;string&gt;&#xA;#include &lt;vector&gt;&#xA;&#xA;namespace dunedaq::confmodel {&#xA; class Session;&#xA;}&#xA;END_HEADER_PROLOGUE"/>
   </method>
  </class>
