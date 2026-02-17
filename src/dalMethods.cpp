@@ -237,6 +237,7 @@ std::set<std::string>
 Segment::managed_object_tags(const Session* session) const {
   std::set<std::string> related_objs;
   for (auto app : get_applications()) {
+    related_objs.insert(app->UID());
     const Resource* res = app->cast<Resource>();
     if (res != nullptr && res->is_disabled(*session)) {
       continue;
