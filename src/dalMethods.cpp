@@ -403,7 +403,7 @@ void ResourceTree::disable(const Resource* res) {
   }
   disabled_vec.push_back(res);
 
-  const_cast<ResourceTree*>(this)->set_disabled(disabled_vec);
+  set_disabled(disabled_vec);
   configuration().update<ResourceTree>({UID()}, {}, {});
 
   m_disabled_resources.update(resource_root(), disabled_vec);
@@ -414,7 +414,7 @@ void ResourceTree::enable(const Resource* res) {
   if (count == 0) {
     return;
   }
-  const_cast<ResourceTree*>(this)->set_disabled(disabled_vec);
+  set_disabled(disabled_vec);
   configuration().update<ResourceTree>({UID()}, {}, {});
 
   m_disabled_resources.update(resource_root(), disabled_vec);
