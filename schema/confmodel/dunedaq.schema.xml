@@ -80,7 +80,7 @@
 
 <oks-schema>
 
-<info name="" type="" num-of-items="51" oks-format="schema" oks-version="862f2957270" created-by="jcfree" created-on="mu2edaq13.fnal.gov" creation-time="20230123T223700" last-modified-by="gjc" last-modified-on="latitude" last-modification-time="20260217T094939"/>
+<info name="" type="" num-of-items="51" oks-format="schema" oks-version="862f2957270" created-by="jcfree" created-on="mu2edaq13.fnal.gov" creation-time="20230123T223700" last-modified-by="gjc" last-modified-on="latitude" last-modification-time="20260224T141634"/>
 
  <class name="ActionPlan" description="A set of steps for an application to carry out a command">
   <attribute name="execution_policy" description="How the application should dispatch the command to modules matched by each step of the ActionPlan" type="enum" range="modules-in-parallel,modules-in-series" init-value="modules-in-parallel"/>
@@ -152,8 +152,9 @@
   <attribute name="modules" type="class" is-multi-value="yes"/>
  </class>
 
- <class name="DetDataReceiver" is-abstract="yes">
+ <class name="DetDataReceiver" description="Abstract base class for detector data receivers" is-abstract="yes">
   <superclass name="Resource"/>
+  <superclass name="ManagedObject"/>
  </class>
 
  <class name="DetDataSender" is-abstract="yes">
@@ -258,8 +259,8 @@
   <relationship name="other" class-type="JsonableTest" low-cc="zero" high-cc="one" is-composite="yes" is-exclusive="no" is-dependent="no"/>
  </class>
 
- <class name="ManagedObject">
-  <attribute name="tag" description="(Component of) name  to be matched with resource manager for locking" type="string" is-not-null="yes"/>
+ <class name="ManagedObject" description="Abstract base class for an item that is managed by the Resource Manager." is-abstract="yes">
+  <attribute name="tag" description="(Component of) name  to be matched with resource manager for locking." type="string"/>
   <method name="object_tags" description="Method to return strings to be submitted to resource maanger for reservation.">
    <method-implementation language="c++" prototype="virtual std::set&lt;std::string&gt; object_tags() const" body="return {get_tag()};"/>
   </method>
@@ -302,7 +303,6 @@
  </class>
 
  <class name="PhysicalHost">
-  <superclass name="ManagedObject"/>
   <relationship name="contains" description="List of hardware components on this host" class-type="HostComponent" low-cc="one" high-cc="many" is-composite="yes" is-exclusive="no" is-dependent="yes"/>
  </class>
 
