@@ -392,6 +392,34 @@ std::string OpMonURI::get_URI( const std::string & /* app */) const {
   return "stdout://";
 }
 
+
+// ========================================================================
+void ResourceTree::disable(const Resource* res) {
+  auto disabled_vec = get_disabled();
+  for (auto disabled_resource : disabled_vec) {
+    if (disabled_resource == res) {
+      return;
+    }
+  }
+  disabled_vec.push_back(res);
+
+  set_disabled(disabled_vec);
+  configuration().update<ResourceTree>({UID()}, {}, {});
+
+  m_disabled_resources.update(resource_root(), disabled_vec);
+}
+void ResourceTree::enable(const Resource* res) {
+  auto disabled_vec = get_disabled();
+  auto count = std::erase(disabled_vec, res);
+  if (count == 0) {
+    return;
+  }
+  set_disabled(disabled_vec);
+  configuration().update<ResourceTree>({UID()}, {}, {});
+
+  m_disabled_resources.update(resource_root(), disabled_vec);
+}
+
 bool Resource::is_disabled(const dunedaq::confmodel::ResourceTree& holder) const {
   return (!holder.disabled_components().is_enabled(this));
 }
