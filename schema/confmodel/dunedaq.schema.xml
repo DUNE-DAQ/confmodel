@@ -383,6 +383,12 @@
   <method name="resource_root" description="Pure virtual method to get the ResourceSet at the root of the ResourceTree.">
    <method-implementation language="c++" prototype="virtual const ResourceSet* resource_root() const = 0" body=""/>
   </method>
+  <method name="disable" description="Add a component to the disabled relationship and recalculate the disabled tree">
+   <method-implementation language="c++" prototype="void disable(const Resource*)" body=""/>
+  </method>
+  <method name="enable" description="">
+   <method-implementation language="c++" prototype="void enable(const Resource*)" body=""/>
+  </method>
  </class>
 
  <class name="Segment" description="Logical sub division of the configuration that can be enabled/disabled as a group">

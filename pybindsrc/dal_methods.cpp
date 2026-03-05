@@ -84,6 +84,35 @@ namespace dunedaq::confmodel::python {
     return apps;
   }
 
+
+  void disable_component(Configuration& db,
+                         const std::string& session_id,
+                         const std::string& component_id) {
+    auto session_ptr = const_cast<dunedaq::confmodel::Session*>(db.get<dunedaq::confmodel::Session>(session_id));
+    auto component_ptr = db.get<dunedaq::confmodel::Resource>(component_id);
+    if (session_ptr == nullptr) {
+      throw (std::runtime_error(std::format("Session {} not found", session_id)));
+    }
+    if (component_ptr == nullptr) {
+      throw (std::runtime_error(std::format("Component {} not found", component_id)));
+    }
+    session_ptr->disable(component_ptr);
+  }
+  void enable_component(Configuration& db,
+                         const std::string& session_id,
+                         const std::string& component_id) {
+    auto session_ptr = const_cast<dunedaq::confmodel::Session*>(db.get<dunedaq::confmodel::Session>(session_id));
+    auto component_ptr = db.get<dunedaq::confmodel::Resource>(component_id);
+    if (session_ptr == nullptr) {
+      throw (std::runtime_error(std::format("Session {} not found", session_id)));
+    }
+    if (component_ptr == nullptr) {
+      throw (std::runtime_error(std::format("Component {} not found", component_id)));
+    }
+    session_ptr->enable(component_ptr);
+  }
+
+
   bool component_disabled(Configuration& db,
                           const std::string& session_id,
                           const std::string& component_id) {
@@ -151,14 +180,14 @@ namespace dunedaq::confmodel::python {
     return app->construct_commandline_parameters(db, session);
   }
 
-  std::vector<std::string> rc_application_construct_commandline_parameters(const Configuration& db,
+  std::vector<std::string> rc_application_construct_commandline_parameters(Configuration& db,
                                                                            const std::string& session_id,
                                                                            const std::string& app_id) {
-    const auto* app = const_cast<Configuration&>(db).get<dunedaq::confmodel::RCApplication>(app_id);
+    const auto* app = db.get<dunedaq::confmodel::RCApplication>(app_id);
     if (app == nullptr) {
       throw (std::runtime_error(std::format("RCApplication {} not found", app_id)));
     }
-    const auto* session = const_cast<Configuration&>(db).get<dunedaq::confmodel::Session>(session_id);
+    const auto* session = db.get<dunedaq::confmodel::Session>(session_id);
     if (session == nullptr) {
       throw (std::runtime_error(std::format("Session {} not found", session_id)));
     }
@@ -227,6 +256,9 @@ register_dal_methods(py::module& m)
         "Get list of ALL ManagedObject tags in the requested segment that are enabled in the given session. If only a session is specified then the segment will be taken from the session's segment relationship");
   m.def("session_get_all_applications", &session_get_all_applications, "Get list of ALL applications (regardless of enabled/disabled state) in the requested session");
   m.def("session_get_enabled_applications", &session_get_enabled_applications, "Get list of enabled applications in the requested session");
+
+  m.def("disable_component", &disable_component, "Disable a Resource-derived object (e.g. a Segment)");
+  m.def("enable_component", &enable_component, "Enable a Resource-derived object (e.g. a Segment)");
 
   m.def("component_disabled", &component_disabled, "Determine if a Resource-derived object (e.g. a Segment) has been disabled");
   m.def("component_get_parents", &component_get_parents, "Get the Resource-derived class instances of the parent(s) of the Resource-derived object in question");
