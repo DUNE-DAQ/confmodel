@@ -43,6 +43,7 @@ void DisabledResources::update(const ResourceSet* root,
 
   for (auto & comp : initial_list) {
     disable(*comp);
+    comp->m_disabled_reason = "disabled in initial list";
     TLOG_DEBUG(6) << comp->UID() << " is disabled in session";
     if (const ResourceSet * rs = comp->cast<ResourceSet>()) {
       disable_children(*rs);
@@ -56,6 +57,9 @@ void DisabledResources::update(const ResourceSet* root,
     for (const auto& res_set : resource_sets) {
       if (is_enabled(res_set)) {
         if (res_set->compute_disabled_state(m_disabled)) {
+          if (res_set->m_disabled_reason.empty()) {
+            res_set->m_disabled_reason = "state of contained components";
+          }
           TLOG_DEBUG(6) <<  "disable custom resource-set- " << res_set->UID() << " because children are disabled" ;
           disable(*res_set);
           disable_children(*res_set);
@@ -102,6 +106,10 @@ DisabledResources::disable_children(const ResourceSet& rs)
 {
   TLOG_DEBUG(6) << "Disabling children of " << rs.UID();
   for (auto & res : rs.contained_resources()) {
+    if (res->m_disabled_reason.empty()) {
+      res->m_disabled_reason = "child of disabled object " + rs.UID() + ", "
+        + rs.m_disabled_reason;
+    }
     TLOG_DEBUG(6) << "Disabling child " << res->UID();
     disable(*res);
     if (const auto * rs2 = res->cast<ResourceSet>()) {

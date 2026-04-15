@@ -456,10 +456,21 @@ DetectorToDaqConnection::compute_disabled_state(const std::set<std::string>& dis
   }
   TLOG_DBG(6) << "receiver disabled=" << receiver()->compute_disabled_state(disabled_resources)
               << " senders disabled=" << send_disabled;
-  if (receiver()->compute_disabled_state(disabled_resources) || send_disabled) {
-    return true;
+  if (send_disabled) {
+    m_disabled_reason = "all senders disabled";
   }
-  return false;
+  bool rec_disabled = receiver()->compute_disabled_state(disabled_resources);
+  if (rec_disabled) {
+    std::string recv_reason = "receiver " + receiver()->UID() +
+      " disabled, " + receiver()->m_disabled_reason;
+    if (send_disabled) {
+      m_disabled_reason += " and " + recv_reason;
+    }
+    else {
+      m_disabled_reason = recv_reason;
+    }
+  }
+  return rec_disabled || send_disabled;
 }
 
 std::vector<const Resource*>
@@ -496,6 +507,7 @@ Segment::compute_disabled_state(const std::set<std::string>& disabled) const {
       return false;
     }
   }
+  m_disabled_reason = "all contained segments/applications disabled";
   return true;
 }
 
