@@ -22,8 +22,10 @@
 #include "confmodel/Session.hpp"
 
 #include <format>
+#include <set>
 #include <stdexcept>
 #include <sstream>
+#include <string>
 
 namespace py = pybind11;
 using namespace dunedaq::conffwk;
