@@ -43,7 +43,7 @@ namespace dunedaq::confmodel::python {
     auto session=db.get<Session>(session_name);
     std::vector<ObjectLocator> apps;
     for (auto app : session->all_applications()) {
-      apps.push_back({app->UID(),app->class_name()});
+      apps.emplace_back({app->UID(),app->class_name()});
     }
     return apps;
   }
@@ -54,7 +54,7 @@ namespace dunedaq::confmodel::python {
     auto session=db.get<Session>(session_name);
     std::vector<ObjectLocator> apps;
     for (auto app : session->enabled_applications()) {
-      apps.push_back({app->UID(),app->class_name()});
+      apps.emplace_back({app->UID(),app->class_name()});
     }
     return apps;
   }
@@ -91,8 +91,8 @@ namespace dunedaq::confmodel::python {
   bool component_disabled(Configuration& db,
                           const std::string& session_id,
                           const std::string& component_id) {
-    const dunedaq::confmodel::Session* session_ptr = db.get<dunedaq::confmodel::Session>(session_id);
-    const dunedaq::confmodel::Resource* component_ptr = db.get<dunedaq::confmodel::Resource>(component_id);
+    const auto* session_ptr = db.get<dunedaq::confmodel::Session>(session_id);
+    const auto* component_ptr = db.get<dunedaq::confmodel::Resource>(component_id);
     if (component_ptr == nullptr) {
       return false;
     }
@@ -103,8 +103,8 @@ namespace dunedaq::confmodel::python {
   std::vector<std::vector<ObjectLocator>> component_get_parents(Configuration& db,
                                                                 const std::string& session_id,
                                                                 const std::string& component_id) {
-    const dunedaq::confmodel::Session* session_ptr = db.get<dunedaq::confmodel::Session>(session_id);
-    const dunedaq::confmodel::Resource* component_ptr = db.get<dunedaq::confmodel::Resource>(component_id);
+    const auto* session_ptr = db.get<dunedaq::confmodel::Session>(session_id);
+    const auto Resource* component_ptr = db.get<dunedaq::confmodel::Resource>(component_id);
 
     std::list<std::vector<const dunedaq::confmodel::Resource*>> parents;
     std::vector<std::vector<ObjectLocator>> parent_ids;
