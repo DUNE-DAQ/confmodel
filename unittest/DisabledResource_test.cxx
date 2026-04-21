@@ -27,7 +27,7 @@
 
 #include <list>
 #include <string>
-
+#include <vector>
 
 BOOST_AUTO_TEST_SUITE(DisabledResource_test)
 

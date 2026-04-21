@@ -1,14 +1,12 @@
-#ifndef _daq_core_test_circular_dependency_H_
-#define _daq_core_test_circular_dependency_H_
+#ifndef CONFMODEL_INCLUDE_CONFMODEL_TEST_CIRCULAR_DEPENDENCY_HPP_
+#define CONFMODEL_INCLUDE_CONFMODEL_TEST_CIRCULAR_DEPENDENCY_HPP_
 
 
 
 
-namespace dunedaq {
-  namespace conffwk {
-    class DalObject2g;
-  }
-}
+namespace dunedaq::conffwk {
+  class DalObject2g;
+} // namespace dunedaq::conffwk
 
 namespace dunedaq::confmodel {
 
@@ -21,7 +19,8 @@ namespace dunedaq::confmodel {
         TestCircularDependency(const char * goal, const dunedaq::conffwk::DalObject * first_object) :
             p_goal(goal), p_index(0)
         {
-          p_objects[p_index++] = first_object;
+          p_objects[p_index] = first_object;
+          p_index++;
         }
 
 
@@ -59,7 +58,7 @@ namespace dunedaq::confmodel {
 
         TestCircularDependency& p_fuse;
     };
-} // dunedaq::confmodel
+} // namespace dunedaq::confmodel
 
 
-#endif
+#endif // CONFMODEL_INCLUDE_CONFMODEL_TEST_CIRCULAR_DEPENDENCY_HPP_
