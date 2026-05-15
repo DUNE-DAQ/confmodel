@@ -135,23 +135,6 @@ namespace dunedaq::confmodel::python {
     return resources;
   }
 
-  std::vector<std::string> daq_application_construct_commandline_parameters(Configuration& db,
-                                                                            const std::string& session_id,
-                                                                            const std::string& app_id) {
-    const auto* app = db.get<dunedaq::confmodel::DaqApplication>(app_id);
-    const auto* session = db.get<dunedaq::confmodel::Session>(session_id);
-    return app->construct_commandline_parameters(db, session);
-  }
-
-  std::vector<std::string> rc_application_construct_commandline_parameters(Configuration& db,
-                                                                           const std::string& session_id,
-                                                                           const std::string& app_id) {
-    const auto* app = db.get<dunedaq::confmodel::RCApplication>(app_id);
-    const auto* session = db.get<dunedaq::confmodel::Session>(session_id);
-    return app->construct_commandline_parameters(db, session);
-  }
-
-
   std::string d2d_receiver(Configuration& db,
                            const std::string& d2d_id) {
     const auto* d2d = db.get<dunedaq::confmodel::DetectorToDaqConnection>(d2d_id);
@@ -217,8 +200,6 @@ register_dal_methods(py::module& m)
   m.def("component_disabled", &component_disabled, "Determine if a Resource-derived object (e.g. a Segment) has been disabled");
   m.def("component_get_parents", &component_get_parents, "Get the Resource-derived class instances of the parent(s) of the Resource-derived object in question");
   m.def("daqapp_get_used_resources", &daq_application_get_used_hostresources, "Get list of HostResources used by DAQApplication");
-  m.def("daq_application_construct_commandline_parameters", &daq_application_construct_commandline_parameters, "Get a version of the command line agruments parsed");
-  m.def("rc_application_construct_commandline_parameters", &rc_application_construct_commandline_parameters, "Get a version of the command line agruments parsed");
 
   m.def("d2d_receiver", &d2d_receiver, "Get receiver associated with DetectorToDaqConnection");
   m.def("d2d_senders", &d2d_senders, "Get senders associated with DetectorToDaqConnection");
