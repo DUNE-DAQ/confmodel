@@ -1,11 +1,3 @@
-/**
- * @file DisabledResources.cpp
- *
- * This is part of the DUNE DAQ Software Suite, copyright 2020.
- * Licensing/copyright details are in the COPYING file that you should have
- * received with this code.
- */
-
 #include "confmodel/Application.hpp"
 #include "confmodel/Resource.hpp"
 #include "confmodel/ResourceSet.hpp"
@@ -18,8 +10,6 @@
 #include "logging/Logging.hpp"
 
 #include "confmodel/test_circular_dependency.hpp"
-
-#include <vector>
 
 using namespace dunedaq::confmodel;
 
@@ -59,8 +49,8 @@ void DisabledResources::update(const ResourceSet* root,
     }
   }
 
-  for (size_t count = 1; true; ++count) {
-    const auto num(size()); // Remember current size
+  for (unsigned long count = 1; true; ++count) {
+    const unsigned long num(size()); // Remember current size
 
     TLOG_DEBUG(6) <<  "before auto-disabling iteration " << count << " the number of disabled components is " << num ;
     for (const auto& res_set : resource_sets) {

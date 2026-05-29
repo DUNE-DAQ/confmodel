@@ -7,7 +7,8 @@ dunedaq::confmodel::TestCircularDependency::push(const dunedaq::conffwk::DalObje
 {
   if(p_index < p_limit) {
     p_objects[p_index++] = object;
-  } else {
+  }
+  else {
     std::ostringstream s;
     for(unsigned int i = 0; i < p_index; ++i) {
       if(i != 0) s << ", ";
