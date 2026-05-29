@@ -20,8 +20,10 @@
 #include "confmodel/RCApplication.hpp"
 #include "confmodel/Session.hpp"
 
-
+#include <list>
 #include <sstream>
+#include <string>
+#include <vector>
 
 namespace py = pybind11;
 using namespace dunedaq::conffwk;
@@ -43,7 +45,7 @@ namespace dunedaq::confmodel::python {
     auto session=db.get<Session>(session_name);
     std::vector<ObjectLocator> apps;
     for (auto app : session->all_applications()) {
-      apps.push_back({app->UID(),app->class_name()});
+      apps.emplace_back(app->UID(),app->class_name());
     }
     return apps;
   }
@@ -54,7 +56,7 @@ namespace dunedaq::confmodel::python {
     auto session=db.get<Session>(session_name);
     std::vector<ObjectLocator> apps;
     for (auto app : session->enabled_applications()) {
-      apps.push_back({app->UID(),app->class_name()});
+      apps.emplace_back(app->UID(),app->class_name());
     }
     return apps;
   }
@@ -63,7 +65,8 @@ namespace dunedaq::confmodel::python {
   void disable_component(Configuration& db,
                          const std::string& session_id,
                          const std::string& component_id) {
-    auto session_ptr = const_cast<dunedaq::confmodel::Session*>(db.get<dunedaq::confmodel::Session>(session_id));
+    auto session_ptr = const_cast<dunedaq::confmodel::Session*>( // NOLINT
+      db.get<dunedaq::confmodel::Session>(session_id));
     auto component_ptr = db.get<dunedaq::confmodel::Resource>(component_id);
     if (session_ptr == nullptr) {
       throw (std::runtime_error(std::format("Session {} not found", session_id)));
@@ -76,7 +79,8 @@ namespace dunedaq::confmodel::python {
   void enable_component(Configuration& db,
                          const std::string& session_id,
                          const std::string& component_id) {
-    auto session_ptr = const_cast<dunedaq::confmodel::Session*>(db.get<dunedaq::confmodel::Session>(session_id));
+    auto session_ptr = const_cast<dunedaq::confmodel::Session*>( // NOLINT
+      db.get<dunedaq::confmodel::Session>(session_id));
     auto component_ptr = db.get<dunedaq::confmodel::Resource>(component_id);
     if (session_ptr == nullptr) {
       throw (std::runtime_error(std::format("Session {} not found", session_id)));
@@ -91,8 +95,8 @@ namespace dunedaq::confmodel::python {
   bool component_disabled(Configuration& db,
                           const std::string& session_id,
                           const std::string& component_id) {
-    const dunedaq::confmodel::Session* session_ptr = db.get<dunedaq::confmodel::Session>(session_id);
-    const dunedaq::confmodel::Resource* component_ptr = db.get<dunedaq::confmodel::Resource>(component_id);
+    const auto session_ptr = db.get<dunedaq::confmodel::Session>(session_id);
+    const auto component_ptr = db.get<dunedaq::confmodel::Resource>(component_id);
     if (component_ptr == nullptr) {
       return false;
     }
@@ -103,8 +107,8 @@ namespace dunedaq::confmodel::python {
   std::vector<std::vector<ObjectLocator>> component_get_parents(Configuration& db,
                                                                 const std::string& session_id,
                                                                 const std::string& component_id) {
-    const dunedaq::confmodel::Session* session_ptr = db.get<dunedaq::confmodel::Session>(session_id);
-    const dunedaq::confmodel::Resource* component_ptr = db.get<dunedaq::confmodel::Resource>(component_id);
+    const auto session_ptr = db.get<dunedaq::confmodel::Session>(session_id);
+    const auto component_ptr = db.get<dunedaq::confmodel::Resource>(component_id);
 
     std::list<std::vector<const dunedaq::confmodel::Resource*>> parents;
     std::vector<std::vector<ObjectLocator>> parent_ids;
@@ -114,9 +118,8 @@ namespace dunedaq::confmodel::python {
     for (const auto& parent : parents) {
       std::vector<ObjectLocator> parents_components;
       for (const auto& ancestor_component_ptr : parent) {
-        parents_components.emplace_back(
-          ObjectLocator(ancestor_component_ptr->UID(),
-                        ancestor_component_ptr->class_name()) );
+        parents_components.emplace_back(ancestor_component_ptr->UID(),
+                                        ancestor_component_ptr->class_name() );
       }
       parent_ids.emplace_back(parents_components);
     }
@@ -131,23 +134,6 @@ namespace dunedaq::confmodel::python {
     }
     return resources;
   }
-
-  std::vector<std::string> daq_application_construct_commandline_parameters(Configuration& db,
-                                                                            const std::string& session_id,
-                                                                            const std::string& app_id) {
-    const auto* app = db.get<dunedaq::confmodel::DaqApplication>(app_id);
-    const auto* session = db.get<dunedaq::confmodel::Session>(session_id);
-    return app->construct_commandline_parameters(db, session);
-  }
-
-  std::vector<std::string> rc_application_construct_commandline_parameters(Configuration& db,
-                                                                           const std::string& session_id,
-                                                                           const std::string& app_id) {
-    const auto* app = db.get<dunedaq::confmodel::RCApplication>(app_id);
-    const auto* session = db.get<dunedaq::confmodel::Session>(session_id);
-    return app->construct_commandline_parameters(db, session);
-  }
-
 
   std::string d2d_receiver(Configuration& db,
                            const std::string& d2d_id) {
@@ -214,8 +200,6 @@ register_dal_methods(py::module& m)
   m.def("component_disabled", &component_disabled, "Determine if a Resource-derived object (e.g. a Segment) has been disabled");
   m.def("component_get_parents", &component_get_parents, "Get the Resource-derived class instances of the parent(s) of the Resource-derived object in question");
   m.def("daqapp_get_used_resources", &daq_application_get_used_hostresources, "Get list of HostResources used by DAQApplication");
-  m.def("daq_application_construct_commandline_parameters", &daq_application_construct_commandline_parameters, "Get a version of the command line agruments parsed");
-  m.def("rc_application_construct_commandline_parameters", &rc_application_construct_commandline_parameters, "Get a version of the command line agruments parsed");
 
   m.def("d2d_receiver", &d2d_receiver, "Get receiver associated with DetectorToDaqConnection");
   m.def("d2d_senders", &d2d_senders, "Get senders associated with DetectorToDaqConnection");
