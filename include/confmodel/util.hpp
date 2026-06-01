@@ -51,8 +51,6 @@ std::vector<std::string> construct_commandline_parameters_appfwk(
                                   ":" +
                                   std::to_string(control_service->get_port());
 
-  const std::string& configuration_uri = confdb.get_impl_spec();
-
   return {
       "-s",
       session->UID(),
@@ -61,7 +59,7 @@ std::vector<std::string> construct_commandline_parameters_appfwk(
       "-c",
       control_uri,
       "--configurationService",
-      configuration_uri,
+      confdb.get_impl_spec(),
   };
 }
 
