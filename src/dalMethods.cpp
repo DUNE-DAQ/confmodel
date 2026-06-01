@@ -326,6 +326,49 @@ nlohmann::json Jsonable::to_json(bool direct_only,
                          skip_object_name);
 }
 
+std::vector<std::string> DaqApplication::construct_commandline_parameters(
+  const conffwk::Configuration& confdb,
+  const dunedaq::confmodel::Session* session) const {
+
+    return construct_commandline_parameters_appfwk<dunedaq::confmodel::DaqApplication>(this, confdb, session);
+}
+
+std::vector<std::string> RCApplication::construct_commandline_parameters(
+  const conffwk::Configuration& confdb,
+  const dunedaq::confmodel::Session* session) const {
+
+    const std::string& configuration_uri = confdb.get_impl_spec();
+    const dunedaq::confmodel::Service* control_service = nullptr;
+
+    const std::string& controller_log_level = session->get_controller_log_level();
+
+    for (auto const *as : get_exposes_service()) {
+      if (as->UID().ends_with("_control")) {
+        if (control_service)
+          throw DuplicatedControlService(ERS_HERE, as->UID());
+        control_service = as;
+      }
+    }
+
+    if (control_service == nullptr)
+      throw NoControlServiceDefined(ERS_HERE, UID());
+
+    const std::string control_uri =
+      control_service->get_protocol()
+      + "://"
+      + get_runs_on()->get_runs_on()->UID()
+      + ":"
+      + std::to_string(control_service->get_port());
+
+    std::vector<std::string> ret = { "-l", controller_log_level };
+    ret.push_back(configuration_uri);
+    ret.push_back(control_uri);
+    ret.push_back(UID());
+    ret.push_back(session->UID());
+    return ret;
+}
+
+
 
 std::vector<const confmodel::DetectorStream*>
 DetectorToDaqConnection::streams() const {

@@ -80,7 +80,7 @@
 
 <oks-schema>
 
-<info name="" type="" num-of-items="48" oks-format="schema" oks-version="862f2957270" created-by="jcfree" created-on="mu2edaq13.fnal.gov" creation-time="20230123T223700" last-modified-by="gjc" last-modified-on="latitude" last-modification-time="20260515T101126"/>
+<info name="" type="" num-of-items="48" oks-format="schema" oks-version="862f2957270" created-by="jcfree" created-on="mu2edaq13.fnal.gov" creation-time="20230123T223700" last-modified-by="gjc" last-modified-on="latitude" last-modification-time="20260421T135943"/>
 
  <class name="ActionPlan" description="A set of steps for an application to carry out a command">
   <attribute name="execution_policy" description="How the application should dispatch the command to modules matched by each step of the ActionPlan" type="enum" range="modules-in-parallel,modules-in-series" init-value="modules-in-parallel"/>
@@ -96,6 +96,9 @@
   <relationship name="runs_on" description="VirtualHost to run this application on" class-type="VirtualHost" low-cc="one" high-cc="one" is-composite="yes" is-exclusive="no" is-dependent="yes"/>
   <relationship name="exposes_service" description="Services exposed i.e. provided by this application" class-type="Service" low-cc="zero" high-cc="many" is-composite="yes" is-exclusive="no" is-dependent="yes"/>
   <relationship name="opmon_conf" description="description of the monitoring behaviour in the application" class-type="OpMonConf" low-cc="one" high-cc="one" is-composite="no" is-exclusive="no" is-dependent="no"/>
+  <method name="parse_commandline_parameters" description="Get the CLA for the application">
+   <method-implementation language="c++" prototype=" const std::vector&lt;std::string&gt; parse_commandline_parameters() const" body=""/>
+  </method>
  </class>
 
  <class name="Connection" is-abstract="yes">
@@ -123,6 +126,9 @@
   <relationship name="action_plans" class-type="ActionPlan" low-cc="zero" high-cc="many" is-composite="no" is-exclusive="no" is-dependent="no"/>
   <method name="get_used_hostresources" description="Get the set of all HostComponents used by this application">
    <method-implementation language="c++" prototype=" std::set&lt;const dunedaq::confmodel::HostComponent*&gt; get_used_hostresources() const" body=""/>
+  </method>
+  <method name="construct_commandline_parameters" description="get the command line parameters for this application">
+   <method-implementation language="c++" prototype="std::vector&lt;std::string&gt; construct_commandline_parameters(const conffwk::Configuration&amp; confdb, const dunedaq::confmodel::Session* session) const" body="BEGIN_HEADER_PROLOGUE&#xA;#include &quot;confmodel/util.hpp&quot;&#xA;END_HEADER_PROLOGUE"/>
   </method>
  </class>
 
@@ -304,6 +310,9 @@
   <attribute name="application_name" type="string" init-value="controller" is-not-null="yes"/>
   <relationship name="fsm" class-type="FSMconfiguration" low-cc="one" high-cc="one" is-composite="yes" is-exclusive="no" is-dependent="yes"/>
   <relationship name="broadcaster" class-type="RCBroadcaster" low-cc="zero" high-cc="one" is-composite="yes" is-exclusive="no" is-dependent="no"/>
+  <method name="construct_commandline_parameters" description="get the command line parameters for this rc application">
+   <method-implementation language="c++" prototype="std::vector&lt;std::string&gt; construct_commandline_parameters(const conffwk::Configuration&amp; confdb, const dunedaq::confmodel::Session* session) const" body=""/>
+  </method>
  </class>
 
  <class name="RCBroadcaster">
