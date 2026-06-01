@@ -23,8 +23,8 @@ BOOST_AUTO_TEST_SUITE(Jsonable_test)
 
 using namespace dunedaq;
 
-constexpr uint32_t u32{0xabcd1234};
-constexpr uint32_t u32_2{0xdeadbeef};
+constexpr uint32_t u32{0xabcd1234}; // NOLINT(build/unsigned)
+constexpr uint32_t u32_2{0xdeadbeef}; // NOLINT(build/unsigned)
 constexpr int32_t s32{-42};
 constexpr float float1{9.5};
 constexpr std::string str{"9.5"};
