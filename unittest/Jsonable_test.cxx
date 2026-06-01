@@ -15,6 +15,7 @@
 
 #include "boost/test/unit_test.hpp"
 
+#include <list>
 #include <string>
 #include <vector>
 
@@ -53,7 +54,8 @@ public:
 
     config_obj1.set_obj("other", &config_obj2);
 
-    config_obj2.set_by_val<unsigned int>("u32val", u32_2);
+    config_obj2.set_by_val<unsigned int> // NOLINTBEGIN(build/unsigned)
+      ("u32val", u32_2);
     config_obj2.set_by_val<int>("s32val", -2);
 
   }
