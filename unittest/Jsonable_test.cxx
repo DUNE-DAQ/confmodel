@@ -47,7 +47,8 @@ public:
     conffwk::ConfigObject config_obj2;
     confdb.create(oksfile, "JsonableTest", "test2", config_obj2);
 
-    config_obj1.set_by_val<unsigned int>("u32val", u32);
+    config_obj1.set_by_val<unsigned int> // NOLINT(build/unsigned)
+      ("u32val", u32);
     config_obj1.set_by_val<int>("s32val", s32);
     config_obj1.set_by_val<float>("fval", float1);
     config_obj1.set_by_val<std::string>("strval", str);
