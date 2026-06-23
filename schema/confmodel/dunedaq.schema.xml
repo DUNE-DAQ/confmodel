@@ -333,7 +333,7 @@
    <method-implementation language="c++" prototype="void parents(const dunedaq::confmodel::Session&amp; session, std::list&lt; std::vector&lt;const dunedaq::confmodel::Resource *&gt; &gt;&amp; parents) const" body=""/>
   </method>
   <method name="is_disabled" description="Method to be called from user code to determine if this Resource is disabled in the current configuration.">
-   <method-implementation language="c++" prototype="bool is_disabled(const dunedaq::confmodel::ResourceTree&amp; session) const" body=""/>
+   <method-implementation language="c++" prototype="virtual bool is_disabled(const dunedaq::confmodel::ResourceTree&amp; session) const" body=""/>
   </method>
   <method name="compute_disabled_state" description="Virtual method to be implemented by subclasses containing the logic to determine if this object should be considered disabled.">
    <method-implementation language="c++" prototype="virtual bool compute_disabled_state(const std::set&lt;std::string&gt;&amp;) const" body=""/>
