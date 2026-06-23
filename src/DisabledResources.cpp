@@ -49,6 +49,15 @@ void DisabledResources::update(const ResourceSet* root,
     }
   }
 
+  std::set<const Resource*> simple_resources;
+  for (auto& res_set : resource_sets) {
+    for (auto& res : res_set->contained_resources()) {
+      if (!res->castable("ResourceSet")) {
+        simple_resources.insert(res);
+      }
+    }
+  }
+
   for (unsigned long count = 1; true; ++count) {
     const unsigned long num(size()); // Remember current size
 
@@ -60,6 +69,13 @@ void DisabledResources::update(const ResourceSet* root,
           disable(*res_set);
           disable_children(*res_set);
         }
+      }
+    }
+
+    for (auto& res : simple_resources) {
+      if (is_enabled(res) && res->compute_disabled_state(m_disabled)) {
+        TLOG_DEBUG(6) << "Marking " << res->UID() << " as disabled\n";
+        disable(*res);
       }
     }
 
