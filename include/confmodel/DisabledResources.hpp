@@ -25,6 +25,7 @@ namespace dunedaq::confmodel {
       bool m_initialised{false};
       void fill(const ResourceSet& rs,
                 std::vector<const ResourceSet*>& all_resource_sets,
+                std::set<const Resource*>& simple_resources,
                 TestCircularDependency& cd_fuse);
 
       void
