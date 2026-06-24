@@ -1,11 +1,3 @@
-/**
- * @file DisabledResources.cpp
- *
- * This is part of the DUNE DAQ Software Suite, copyright 2020.
- * Licensing/copyright details are in the COPYING file that you should have
- * received with this code.
- */
-
 #include "confmodel/Application.hpp"
 #include "confmodel/Resource.hpp"
 #include "confmodel/ResourceSet.hpp"
@@ -18,8 +10,6 @@
 #include "logging/Logging.hpp"
 
 #include "confmodel/test_circular_dependency.hpp"
-
-#include <vector>
 
 using namespace dunedaq::confmodel;
 
@@ -40,16 +30,13 @@ void DisabledResources::update(const ResourceSet* root,
   m_disabled.clear();
 
   m_initialised = true;
-  if (initial_list.empty()) {
-    TLOG_DEBUG( 6) << "We have no disabled components";
-    return;
-  }
 
   // get list of all root's resource-sets also test any
   // circular dependencies between segments and resource sets
   TestCircularDependency cd_fuse("component \'is-disabled\' status", root);
   std::vector<const ResourceSet*> resource_sets;
-  fill(*root, resource_sets, cd_fuse);
+  std::set<const Resource*> simple_resources;
+  fill(*root, resource_sets, simple_resources, cd_fuse);
 
   for (auto & comp : initial_list) {
     disable(*comp);
@@ -59,8 +46,8 @@ void DisabledResources::update(const ResourceSet* root,
     }
   }
 
-  for (size_t count = 1; true; ++count) {
-    const auto num(size()); // Remember current size
+  for (unsigned long count = 1; true; ++count) {
+    const unsigned long num(size()); // Remember current size
 
     TLOG_DEBUG(6) <<  "before auto-disabling iteration " << count << " the number of disabled components is " << num ;
     for (const auto& res_set : resource_sets) {
@@ -70,6 +57,13 @@ void DisabledResources::update(const ResourceSet* root,
           disable(*res_set);
           disable_children(*res_set);
         }
+      }
+    }
+
+    for (auto& res : simple_resources) {
+      if (is_enabled(res) && res->compute_disabled_state(m_disabled)) {
+        TLOG_DEBUG(6) << "Marking " << res->UID() << " as disabled\n";
+        disable(*res);
       }
     }
 
@@ -89,6 +83,7 @@ void DisabledResources::update(const ResourceSet* root,
 // fill data from resource sets
 void DisabledResources::fill(const ResourceSet& rs,
                              std::vector<const ResourceSet*>& all_resource_sets,
+                             std::set<const Resource*>& simple_resources,
                              TestCircularDependency& cd_fuse)
 {
   TLOG_DEBUG(6) << "rs.UID=" << rs.UID() << ", class=" << rs.class_name();
@@ -100,7 +95,9 @@ void DisabledResources::fill(const ResourceSet& rs,
   for (auto & res : rs.contained_resources()) {
     AddTestOnCircularDependency add_fuse_test(cd_fuse, res);
     if (const ResourceSet * rs2 = res->cast<ResourceSet>()) {
-      fill(*rs2, all_resource_sets, cd_fuse);
+      fill(*rs2, all_resource_sets, simple_resources, cd_fuse);
+    } else {
+        simple_resources.insert(res);
     }
   }
 }

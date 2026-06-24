@@ -34,11 +34,9 @@
 #include "conffwk/Configuration.hpp"
 #include "conffwk/Schema.hpp"
 
-#include <iostream>
 #include <list>
 #include <set>
-#include <string>
-#include <vector>
+#include <iostream>
 
 using namespace dunedaq::conffwk;
 
@@ -68,7 +66,8 @@ make_parents_list(
   for (const auto& i : resource_set->contained_resources()) {
     if (i->config_object().implementation() == child) {
       out.push_back(p_list);
-    } else if (const dunedaq::confmodel::ResourceSet * rs = i->cast<dunedaq::confmodel::ResourceSet>()) {
+    }
+    else if (const dunedaq::confmodel::ResourceSet * rs = i->cast<dunedaq::confmodel::ResourceSet>()) {
       make_parents_list(child, rs, p_list, out, cd_fuse);
     }
   }
@@ -130,7 +129,7 @@ check_segment(
   }
   make_parents_list(child, segment, compList, out, is_segment, cd_fuse);
 }
-} // namespace ""
+} // namespace
 
 
 namespace dunedaq::confmodel {
@@ -175,7 +174,8 @@ Session::getSegmentApps(const Segment* segment,
         apps.insert(apps.end(), app);
       }
     }
-  } else {
+  }
+  else {
     apps.swap(segapps);
   }
   for (auto seg : segment->get_segments()) {
@@ -218,59 +218,54 @@ DaqApplication::get_used_hostresources() const {
 }
 
 namespace {
-
+nlohmann::json get_json_config(conffwk::Configuration& confdb,
+                               const std::string& class_name,
+                               const std::string& uid,
+                               bool direct_only,
+                               bool skip_object_name) {
   using nlohmann::json;
   using namespace conffwk;
-
-template <typename T>
-void add_json_value(ConfigObject &obj, std::string &name,
-                    bool multi_value, json &attributes) {
-  if (!multi_value) {
-    T value;
-    obj.get(name, value);
-    attributes[name] = value;
-  } else {
-    std::vector<T> value_vector;
-    obj.get(name, value_vector);
-    attributes[name] = nlohmann::json(value_vector);
-  }
-}
-
-json get_json_config(Configuration& confdb,
-                     const std::string& class_name,
-                     const std::string& uid,
-                     bool direct_only,
-                     bool skip_object_name) {
   TLOG_DBG(9) << "Getting attributes for " << uid << " of class " << class_name;
   json attributes;
   auto class_info = confdb.get_class_info(class_name);
   ConfigObject obj;
   confdb.get(class_name, uid, obj);
   for (auto attr : class_info.p_attributes) {
-    if (attr.p_type == type_t::u8_type) { // NOLINTBEGIN(build/unsigned)
+    if (attr.p_type == type_t::u8_type) {
       add_json_value<uint8_t>(obj, attr.p_name, attr.p_is_multi_value, attributes);
-    } else if (attr.p_type == type_t::u16_type) {
+    }
+    else if (attr.p_type == type_t::u16_type) {
       add_json_value<uint16_t>(obj, attr.p_name, attr.p_is_multi_value, attributes);
-    } else if (attr.p_type == type_t::u32_type) {
+    }
+    else if (attr.p_type == type_t::u32_type) {
       add_json_value<uint32_t>(obj, attr.p_name, attr.p_is_multi_value, attributes);
-    } else if (attr.p_type == type_t::u64_type) {// NOLINTEND(build/unsigned)
+    }
+    else if (attr.p_type == type_t::u64_type) {
       add_json_value<uint64_t>(obj, attr.p_name, attr.p_is_multi_value, attributes);
-    } else if (attr.p_type == type_t::s8_type) {
+    }
+    else if (attr.p_type == type_t::s8_type) {
       add_json_value<int8_t>(obj, attr.p_name, attr.p_is_multi_value, attributes);
-    } else if (attr.p_type == type_t::s16_type) {
+    }
+    else if (attr.p_type == type_t::s16_type) {
       add_json_value<int16_t>(obj, attr.p_name, attr.p_is_multi_value, attributes);
-    } else if (attr.p_type == type_t::s32_type ||
+    }
+    else if (attr.p_type == type_t::s32_type ||
              attr.p_type == type_t::s16_type) {
       add_json_value<int32_t>(obj, attr.p_name, attr.p_is_multi_value, attributes);
-    } else if (attr.p_type == type_t::s64_type) {
+    }
+    else if (attr.p_type == type_t::s64_type) {
       add_json_value<int64_t>(obj, attr.p_name, attr.p_is_multi_value, attributes);
-    } else if (attr.p_type == type_t::float_type) {
+    }
+    else if (attr.p_type == type_t::float_type) {
       add_json_value<float>(obj, attr.p_name, attr.p_is_multi_value, attributes);
-    } else if (attr.p_type == type_t::double_type) {
+    }
+    else if (attr.p_type == type_t::double_type) {
       add_json_value<double>(obj, attr.p_name, attr.p_is_multi_value, attributes);
-    } else if (attr.p_type == type_t::bool_type) {
+    }
+    else if (attr.p_type == type_t::bool_type) {
       add_json_value<bool>(obj, attr.p_name, attr.p_is_multi_value, attributes);
-    } else if ((attr.p_type == type_t::string_type) ||
+    }
+    else if ((attr.p_type == type_t::string_type) ||
              (attr.p_type == type_t::enum_type) ||
              (attr.p_type == type_t::date_type) ||
              (attr.p_type == type_t::time_type)) {
@@ -279,7 +274,7 @@ json get_json_config(Configuration& confdb,
   }
   if (!direct_only) {
     TLOG_DBG(9) << "Processing  relationships";
-    for (const auto& iter: class_info.p_relationships) {
+    for (auto iter: class_info.p_relationships) {
       std::string rel_name = iter.p_name;
       if (iter.p_cardinality == cardinality_t::zero_or_one ||
           iter.p_cardinality == cardinality_t::only_one) {
@@ -291,16 +286,18 @@ json get_json_config(Configuration& confdb,
                                                  rel_obj.UID(),
                                                  direct_only,
                                                  skip_object_name);
-        } else {
+        }
+        else {
           TLOG_DBG(9) << "Relationship " << rel_name << " not set";
         }
-      } else {
+      }
+      else {
         TLOG_DBG(9) << "Relationship " << rel_name << " is multi value. "
                     << "Getting attibutes for relationship.";
         std::vector<ConfigObject> rel_vec;
         obj.get(rel_name, rel_vec);
         std::vector<json> configs;
-        for (const auto& rel_obj : rel_vec) {
+        for (auto rel_obj : rel_vec) {
           TLOG_DBG(9) << "Getting attibute of relationship " << rel_obj.UID();
           auto rel_conf = get_json_config(confdb, rel_obj.class_name(), rel_obj.UID(),
                                           direct_only, skip_object_name);
@@ -318,7 +315,7 @@ json get_json_config(Configuration& confdb,
   json_config[uid] = attributes;
   return json_config;
 }
-} // namespace ""
+} // namespace
 
 nlohmann::json Jsonable::to_json(bool direct_only,
                                  bool skip_object_name) const {

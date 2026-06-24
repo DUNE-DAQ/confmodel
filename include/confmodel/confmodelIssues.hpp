@@ -1,22 +1,9 @@
-/**
- * @file confmodelIssues.hpp
- *
- * This is part of the DUNE DAQ Software Suite, copyright 2020.
- * Licensing/copyright details are in the COPYING file that you should have
- * received with this code.
- */
-
-#ifndef CONFMODEL_INCLUDE_CONFMODEL_CONFMODELISSUES_HPP_
-#define CONFMODEL_INCLUDE_CONFMODEL_CONFMODELISSUES_HPP_
+#ifndef CONFMODELISSUES_HPP
+#define CONFMODELISSUES_HPP
 
 #include "ers/Issue.hpp"
 
-#include <string>
-
 namespace dunedaq {
-
-// NOLINTBEGIN(readability/casting)
-
 ERS_DECLARE_ISSUE(confmodel, InvalidOpMonFile,
                   file_name << " is an invalid name for the opmon output",
                   ((std::string)file_name))
@@ -190,9 +177,8 @@ ERS_DECLARE_ISSUE_BASE(
     ,
     ((unsigned int)limit))
 
-// NOLINTEND(readability/casting)
 
 } // namespace dunedaq
 
 
-#endif // CONFMODEL_INCLUDE_CONFMODEL_CONFMODELISSUES_HPP_
+#endif // CONFMODELISSUES_HPP

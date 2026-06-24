@@ -80,7 +80,7 @@
 
 <oks-schema>
 
-<info name="" type="" num-of-items="8" oks-format="schema" oks-version="862f2957270" created-by="gjc" created-on="latitude" creation-time="20250604T141447" last-modified-by="gjc" last-modified-on="latitude" last-modification-time="20250611T095516"/>
+<info name="" type="" num-of-items="9" oks-format="schema" oks-version="862f2957270" created-by="gjc" created-on="latitude" creation-time="20250604T141447" last-modified-by="gjc" last-modified-on="latitude" last-modification-time="20260624T102805"/>
 
 <include>
  <file path="schema/confmodel/dunedaq.schema.xml"/>
@@ -130,6 +130,13 @@
 
  <class name="DummySender">
   <superclass name="DetDataSender"/>
+ </class>
+
+ <class name="DummySmartResource">
+  <superclass name="Resource"/>
+  <method name="compute_disabled_state" description="">
+   <method-implementation language="c++" prototype="bool compute_disabled_state(const std::set&lt;std::string&gt;&amp; disabled) const override" body="return (UID()==&quot;deadun&quot; || disabled.contains(UID())) ;&#xA;"/>
+  </method>
  </class>
 
  <class name="DummyStream">
