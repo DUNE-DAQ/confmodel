@@ -437,7 +437,9 @@ std::vector<const Resource*> DetDataSender::contained_resources() const {
 
 std::vector<const Resource*> DetectorToDaqConnection::contained_resources() const {
   auto res = to_resources(senders());
-  res.push_back(receiver());
+  auto rec = receiver();
+  if (rec) 
+    res.push_back(rec);
   return res;
 }
 
@@ -456,7 +458,11 @@ DetectorToDaqConnection::compute_disabled_state(const std::set<std::string>& dis
   }
   TLOG_DBG(6) << "receiver disabled=" << receiver()->compute_disabled_state(disabled_resources)
               << " senders disabled=" << send_disabled;
-  if (receiver()->compute_disabled_state(disabled_resources) || send_disabled) {
+  auto rec = receiver();
+  if ( ! rec )
+    return send_disabled;
+  
+  if (rec->compute_disabled_state(disabled_resources) || send_disabled) {
     return true;
   }
   return false;
