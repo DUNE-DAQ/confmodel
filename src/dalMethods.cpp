@@ -461,11 +461,9 @@ DetectorToDaqConnection::compute_disabled_state(const std::set<std::string>& dis
   auto rec = receiver();
   if ( ! rec )
     return send_disabled;
-  
-  if (rec->compute_disabled_state(disabled_resources) || send_disabled) {
-    return true;
-  }
-  return false;
+
+  return (rec->compute_disabled_state(disabled_resources) || send_disabled) ;
+
 }
 
 std::vector<const Resource*>
