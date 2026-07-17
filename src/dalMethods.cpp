@@ -437,7 +437,9 @@ std::vector<const Resource*> DetDataSender::contained_resources() const {
 
 std::vector<const Resource*> DetectorToDaqConnection::contained_resources() const {
   auto res = to_resources(senders());
-  res.push_back(receiver());
+  auto rec = receiver();
+  if (rec) 
+    res.push_back(rec);
   return res;
 }
 
@@ -456,18 +458,25 @@ DetectorToDaqConnection::compute_disabled_state(const std::set<std::string>& dis
   }
   TLOG_DBG(6) << "receiver disabled=" << receiver()->compute_disabled_state(disabled_resources)
               << " senders disabled=" << send_disabled;
+
+
   if (send_disabled) {
     m_disabled_reason = "all senders disabled";
   }
-  bool rec_disabled = receiver()->compute_disabled_state(disabled_resources);
-  if (rec_disabled) {
-    std::string recv_reason = "receiver " + receiver()->UID() +
-      " disabled, " + receiver()->m_disabled_reason;
-    if (send_disabled) {
-      m_disabled_reason += " and " + recv_reason;
-    }
-    else {
-      m_disabled_reason = recv_reason;
+
+  bool rec_disabled = false;
+  auto rec = receiver();
+  if (rec != nullptr) {
+    rec_disabled = receiver()->compute_disabled_state(disabled_resources);
+    if (rec_disabled) {
+      std::string recv_reason = "receiver " + receiver()->UID() +
+        " disabled, " + receiver()->m_disabled_reason;
+      if (send_disabled) {
+        m_disabled_reason += " and " + recv_reason;
+      }
+      else {
+        m_disabled_reason = recv_reason;
+      }
     }
   }
   return rec_disabled || send_disabled;
