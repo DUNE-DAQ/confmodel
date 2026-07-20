@@ -108,7 +108,7 @@ namespace dunedaq::confmodel::python {
       if (component_ptr == nullptr) {
         throw (std::runtime_error(std::format("Component {} not found", component_id)));
       }
-      return component_ptr->m_disabled_reason;
+      return component_ptr->why_disabled();
     } else {
       return "not disabled";
     }

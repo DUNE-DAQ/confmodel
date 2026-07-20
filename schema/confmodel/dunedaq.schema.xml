@@ -80,7 +80,7 @@
 
 <oks-schema>
 
-<info name="" type="" num-of-items="49" oks-format="schema" oks-version="862f2957270" created-by="jcfree" created-on="mu2edaq13.fnal.gov" creation-time="20230123T223700" last-modified-by="gjc" last-modified-on="latitude" last-modification-time="20260415T111439"/>
+<info name="" type="" num-of-items="49" oks-format="schema" oks-version="862f2957270" created-by="jcfree" created-on="mu2edaq13.fnal.gov" creation-time="20230123T223700" last-modified-by="gjc" last-modified-on="latitude" last-modification-time="20260720T111739"/>
 
  <class name="ActionPlan" description="A set of steps for an application to carry out a command">
   <attribute name="execution_policy" description="How the application should dispatch the command to modules matched by each step of the ActionPlan" type="enum" range="modules-in-parallel,modules-in-series" init-value="modules-in-parallel"/>
@@ -336,7 +336,13 @@
    <method-implementation language="c++" prototype="bool is_disabled(const dunedaq::confmodel::ResourceTree&amp; session) const" body=""/>
   </method>
   <method name="compute_disabled_state" description="Virtual method to be implemented by subclasses containing the logic to determine if this object should be considered disabled.">
-   <method-implementation language="c++" prototype="virtual bool compute_disabled_state(const std::set&lt;std::string&gt;&amp;) const" body="BEGIN_PUBLIC_SECTION&#xA;mutable std::string m_disabled_reason{&quot;&quot;};&#xA;END_PUBLIC_SECTION&#xA;"/>
+   <method-implementation language="c++" prototype="virtual bool compute_disabled_state(const std::set&lt;std::string&gt;&amp;) const" body=""/>
+  </method>
+  <method name="why_disabled" description="Report reason that this Resource is disabled">
+   <method-implementation language="c++" prototype="std::string why_disabled() const" body="BEGIN_PRIVATE_SECTION&#xA;mutable std::string m_disabled_reason{&quot;&quot;};&#xA;END_PRIVATE_SECTION&#xA;&#xA;{&#xA;return m_disabled_reason;&#xA;}"/>
+  </method>
+  <method name="set_disabled_reason" description="Function to set the reason that this Resource is disabled. Does not change the disabled state of the Resource">
+   <method-implementation language="c++" prototype="void set_disabled_reason(const std::string&amp; reason) const" body="m_disabled_reason = reason;"/>
   </method>
  </class>
 
@@ -350,14 +356,14 @@
  <class name="ResourceSetDisableAND" description="Abstract base class for a resource set that determines it&apos;s disabled state by ANDing all its contained resources." is-abstract="yes">
   <superclass name="ResourceSet"/>
   <method name="compute_disabled_state" description="Method that ANDs all resources to determine disabled state.">
-   <method-implementation language="c++" prototype="bool compute_disabled_state(const std::set&lt;std::string&gt;&amp; disabled) const final" body="  if (disabled.contains(UID())) {&#xA;    return true;&#xA;  }&#xA;  for (auto res: contained_resources()) {&#xA;     if (!res-&gt;compute_disabled_state(disabled)) {&#xA;        return false;&#xA;    }&#xA;  }&#xA;  m_disabled_reason=&quot;all contained components disabled&quot;;&#xA;  return true;&#xA;  "/>
+   <method-implementation language="c++" prototype="bool compute_disabled_state(const std::set&lt;std::string&gt;&amp; disabled) const final" body="  if (disabled.contains(UID())) {&#xA;    return true;&#xA;  }&#xA;  for (auto res: contained_resources()) {&#xA;     if (!res-&gt;compute_disabled_state(disabled)) {&#xA;        return false;&#xA;    }&#xA;  }&#xA;  set_disabled_reason(&quot;all contained components disabled&quot;);&#xA;  return true;&#xA;  "/>
   </method>
  </class>
 
  <class name="ResourceSetDisableOR" is-abstract="yes">
   <superclass name="ResourceSet"/>
   <method name="compute_disabled_state" description="Method that ORs the disabled state of its contained resources to determine the state of the set">
-   <method-implementation language="c++" prototype="bool compute_disabled_state(const std::set&lt;std::string&gt;&amp; disabled) const final" body="  if (disabled.contains(UID())) {&#xA;    return true;&#xA;  }&#xA;  for (auto res: contained_resources()) {&#xA;     if (res-&gt;compute_disabled_state(disabled)) {&#xA;        m_disabled_reason = &quot;child &quot; + res-&gt;UID() + &quot; disabled, &quot; + res-&gt;m_disabled_reason;&#xA;        return true;&#xA;    }&#xA;  }&#xA;  return false;&#xA;  "/>
+   <method-implementation language="c++" prototype="bool compute_disabled_state(const std::set&lt;std::string&gt;&amp; disabled) const final" body="  if (disabled.contains(UID())) {&#xA;    return true;&#xA;  }&#xA;  for (auto res: contained_resources()) {&#xA;     if (res-&gt;compute_disabled_state(disabled)) {&#xA;        set_disabled_reason(&quot;child &quot; + res-&gt;UID() + &quot; disabled, &quot; + res-&gt;why_disabled());&#xA;        return true;&#xA;    }&#xA;  }&#xA;  return false;&#xA;  "/>
   </method>
  </class>
 

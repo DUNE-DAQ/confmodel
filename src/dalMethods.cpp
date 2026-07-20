@@ -461,7 +461,7 @@ DetectorToDaqConnection::compute_disabled_state(const std::set<std::string>& dis
 
 
   if (send_disabled) {
-    m_disabled_reason = "all senders disabled";
+    set_disabled_reason("all senders disabled");
   }
 
   bool rec_disabled = false;
@@ -470,12 +470,12 @@ DetectorToDaqConnection::compute_disabled_state(const std::set<std::string>& dis
     rec_disabled = receiver()->compute_disabled_state(disabled_resources);
     if (rec_disabled) {
       std::string recv_reason = "receiver " + receiver()->UID() +
-        " disabled, " + receiver()->m_disabled_reason;
+        " disabled, " + receiver()->why_disabled();
       if (send_disabled) {
-        m_disabled_reason += " and " + recv_reason;
+        set_disabled_reason("all senders disabled and " + recv_reason);
       }
       else {
-        m_disabled_reason = recv_reason;
+        set_disabled_reason(recv_reason);
       }
     }
   }
@@ -516,7 +516,7 @@ Segment::compute_disabled_state(const std::set<std::string>& disabled) const {
       return false;
     }
   }
-  m_disabled_reason = "all contained segments/applications disabled";
+  set_disabled_reason("all contained segments/applications disabled");
   return true;
 }
 
