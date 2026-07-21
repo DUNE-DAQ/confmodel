@@ -80,7 +80,7 @@
 
 <oks-schema>
 
-<info name="" type="" num-of-items="49" oks-format="schema" oks-version="862f2957270" created-by="jcfree" created-on="mu2edaq13.fnal.gov" creation-time="20230123T223700" last-modified-by="gjc" last-modified-on="latitude" last-modification-time="20260218T122834"/>
+<info name="" type="" num-of-items="51" oks-format="schema" oks-version="862f2957270" created-by="jcfree" created-on="mu2edaq13.fnal.gov" creation-time="20230123T223700" last-modified-by="biery" last-modified-on="daq.fnal.gov" last-modification-time="20260720T194653"/>
 
  <class name="ActionPlan" description="A set of steps for an application to carry out a command">
   <attribute name="execution_policy" description="How the application should dispatch the command to modules matched by each step of the ActionPlan" type="enum" range="modules-in-parallel,modules-in-series" init-value="modules-in-parallel"/>
@@ -96,6 +96,7 @@
   <relationship name="runs_on" description="VirtualHost to run this application on" class-type="VirtualHost" low-cc="one" high-cc="one" is-composite="yes" is-exclusive="no" is-dependent="yes"/>
   <relationship name="exposes_service" description="Services exposed i.e. provided by this application" class-type="Service" low-cc="zero" high-cc="many" is-composite="yes" is-exclusive="no" is-dependent="yes"/>
   <relationship name="opmon_conf" description="description of the monitoring behaviour in the application" class-type="OpMonConf" low-cc="one" high-cc="one" is-composite="no" is-exclusive="no" is-dependent="no"/>
+  <relationship name="delay_manager_conf" class-type="DelayManagerConf" low-cc="zero" high-cc="one" is-composite="no" is-exclusive="no" is-dependent="no"/>
   <method name="parse_commandline_parameters" description="Get the CLA for the application">
    <method-implementation language="c++" prototype=" const std::vector&lt;std::string&gt; parse_commandline_parameters() const" body=""/>
   </method>
@@ -150,6 +151,15 @@
  <class name="DaqModulesGroupByType">
   <superclass name="DaqModulesGroup"/>
   <attribute name="modules" type="class" is-multi-value="yes"/>
+ </class>
+
+ <class name="DelayManagerConf">
+  <relationship name="delays" class-type="DelaySpec" low-cc="zero" high-cc="many" is-composite="no" is-exclusive="no" is-dependent="no"/>
+ </class>
+
+ <class name="DelaySpec">
+  <attribute name="delay_name" description="The context-specific name for a particular delay value" type="string" is-not-null="yes"/>
+  <attribute name="delay_usec" description="The duration of the delay, in micro-seconds" type="u32" init-value="0" is-not-null="yes"/>
  </class>
 
  <class name="DetDataReceiver" is-abstract="yes">
