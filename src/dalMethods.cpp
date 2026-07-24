@@ -451,15 +451,11 @@ DetectorToDaqConnection::compute_disabled_state(const std::set<std::string>& dis
   }
   bool send_disabled = true;
   for (auto sender: senders()) {
-    if (!sender->compute_disabled_state(disabled_resources)) {
+    if (!disabled_resources.contains(sender->UID())) {
       send_disabled = false;
       break;
     }
   }
-  TLOG_DBG(6) << "receiver disabled=" << receiver()->compute_disabled_state(disabled_resources)
-              << " senders disabled=" << send_disabled;
-
-
   if (send_disabled) {
     set_disabled_reason("all senders disabled");
   }
@@ -467,7 +463,7 @@ DetectorToDaqConnection::compute_disabled_state(const std::set<std::string>& dis
   bool rec_disabled = false;
   auto rec = receiver();
   if (rec != nullptr) {
-    rec_disabled = receiver()->compute_disabled_state(disabled_resources);
+    rec_disabled = disabled_resources.contains(receiver()->UID());
     if (rec_disabled) {
       std::string recv_reason = "receiver " + receiver()->UID() +
         " disabled, " + receiver()->why_disabled();
@@ -479,6 +475,8 @@ DetectorToDaqConnection::compute_disabled_state(const std::set<std::string>& dis
       }
     }
   }
+  TLOG_DBG(6) << "receiver disabled=" << rec_disabled
+              << " senders disabled=" << send_disabled;
   return rec_disabled || send_disabled;
 }
 
@@ -512,7 +510,7 @@ Segment::compute_disabled_state(const std::set<std::string>& disabled) const {
     }
   }
   for (auto res: contained_resources()) {
-    if (!res->compute_disabled_state(disabled)) {
+    if (!disabled.contains(res->UID())) {
       return false;
     }
   }
