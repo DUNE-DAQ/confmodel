@@ -92,7 +92,7 @@ void DisabledResources::fill(const ExcludableEntitySet& rs,
   if (rptr->cast<Resource>() == nullptr) {
     throw (MissingConstructor(ERS_HERE, "Resource", rs.full_name()));
   }
-  for (auto & res : rs.contained_resources()) {
+  for (auto & res : rs.contained_excludable_entities()) {
     AddTestOnCircularDependency add_fuse_test(cd_fuse, res);
     if (const ExcludableEntitySet * rs2 = res->cast<ExcludableEntitySet>()) {
       fill(*rs2, all_resource_sets, simple_resources, cd_fuse);
@@ -108,7 +108,7 @@ void
 DisabledResources::disable_children(const ExcludableEntitySet& rs)
 {
   TLOG_DEBUG(6) << "Disabling children of " << rs.UID();
-  for (auto & res : rs.contained_resources()) {
+  for (auto & res : rs.contained_excludable_entities()) {
     TLOG_DEBUG(6) << "Disabling child " << res->UID();
     disable(*res);
     if (const auto * rs2 = res->cast<ExcludableEntitySet>()) {

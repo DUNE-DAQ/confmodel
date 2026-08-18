@@ -60,7 +60,7 @@ namespace dunedaq::confmodel::python {
   }
 
 
-  void disable_component(Configuration& db,
+  void exclude_entity(Configuration& db,
                          const std::string& session_id,
                          const std::string& component_id) {
     auto session_ptr = const_cast<dunedaq::confmodel::Session*>(db.get<dunedaq::confmodel::Session>(session_id));
@@ -73,7 +73,7 @@ namespace dunedaq::confmodel::python {
     }
     session_ptr->disable(component_ptr);
   }
-  void enable_component(Configuration& db,
+  void include_entity(Configuration& db,
                          const std::string& session_id,
                          const std::string& component_id) {
     auto session_ptr = const_cast<dunedaq::confmodel::Session*>(db.get<dunedaq::confmodel::Session>(session_id));
@@ -88,7 +88,7 @@ namespace dunedaq::confmodel::python {
   }
 
 
-  bool component_disabled(Configuration& db,
+  bool entity_excluded(Configuration& db,
                           const std::string& session_id,
                           const std::string& component_id) {
     const dunedaq::confmodel::Session* session_ptr = db.get<dunedaq::confmodel::Session>(session_id);
@@ -100,7 +100,7 @@ namespace dunedaq::confmodel::python {
   }
 
 
-  std::vector<std::vector<ObjectLocator>> component_get_parents(Configuration& db,
+  std::vector<std::vector<ObjectLocator>> entity_get_parents(Configuration& db,
                                                                 const std::string& session_id,
                                                                 const std::string& component_id) {
     const dunedaq::confmodel::Session* session_ptr = db.get<dunedaq::confmodel::Session>(session_id);
@@ -183,12 +183,12 @@ namespace dunedaq::confmodel::python {
   }
 
   std::vector<std::string>
-  resourceset_contains(Configuration& db,
+  exclude_entity_set_contains(Configuration& db,
                        const std::string& res_id) {
     std::vector<std::string> resources;
     auto res_set = db.get<dunedaq::confmodel::ExcludableEntitySet>(res_id);
     if (res_set != nullptr) {
-      for (auto res: res_set->contained_resources()) {
+      for (auto res: res_set->contained_excludable_entities()) {
         resources.push_back(res->UID());
       }
     }
@@ -208,11 +208,11 @@ register_dal_methods(py::module& m)
   m.def("session_get_all_applications", &session_get_all_applications, "Get list of ALL applications (regardless of enabled/disabled state) in the requested session");
   m.def("session_get_enabled_applications", &session_get_enabled_applications, "Get list of enabled applications in the requested session");
 
-  m.def("disable_component", &disable_component, "Disable a Resource-derived object (e.g. a Segment)");
-  m.def("enable_component", &enable_component, "Enable a Resource-derived object (e.g. a Segment)");
+  m.def("exclude_entity", &exclude_entity, "Disable a Resource-derived object (e.g. a Segment)");
+  m.def("include_entity", &include_entity, "Enable a Resource-derived object (e.g. a Segment)");
 
-  m.def("component_disabled", &component_disabled, "Determine if a Resource-derived object (e.g. a Segment) has been disabled");
-  m.def("component_get_parents", &component_get_parents, "Get the Resource-derived class instances of the parent(s) of the Resource-derived object in question");
+  m.def("entity_excluded", &entity_excluded, "Determine if a Resource-derived object (e.g. a Segment) has been disabled");
+  m.def("entity_get_parents", &entity_get_parents, "Get the Resource-derived class instances of the parent(s) of the Resource-derived object in question");
   m.def("daqapp_get_used_resources", &daq_application_get_used_hostresources, "Get list of HostResources used by DAQApplication");
   m.def("daq_application_construct_commandline_parameters", &daq_application_construct_commandline_parameters, "Get a version of the command line agruments parsed");
   m.def("rc_application_construct_commandline_parameters", &rc_application_construct_commandline_parameters, "Get a version of the command line agruments parsed");
@@ -220,7 +220,7 @@ register_dal_methods(py::module& m)
   m.def("d2d_receiver", &d2d_receiver, "Get receiver associated with DetectorToDaqConnection");
   m.def("d2d_senders", &d2d_senders, "Get senders associated with DetectorToDaqConnection");
   m.def("d2d_streams", &d2d_streams, "Get streams associated with DetectorToDaqConnection");
-  m.def("resourceset_contains", &resourceset_contains, "Get contained Resources from ExcludableEntitySet");
+  m.def("exclude_entity_set_contains", &exclude_entity_set_contains, "Get contained Resources from ExcludableEntitySet");
 }
 
 } // namespace dunedaq::confmodel::python

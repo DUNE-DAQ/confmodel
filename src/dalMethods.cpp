@@ -63,7 +63,7 @@ make_parents_list(
   p_list.push_back(resource_set);
 
   // check if the application is in the resource relationship, i.e. is a resource or belongs to resource set(s)
-  for (const auto& i : resource_set->contained_resources()) {
+  for (const auto& i : resource_set->contained_excludable_entities()) {
     if (i->config_object().implementation() == child) {
       out.push_back(p_list);
     }
@@ -406,7 +406,7 @@ void ExcludableEntityTree::disable(const Resource* res) {
   set_disabled(disabled_vec);
   configuration().update<ExcludableEntityTree>({UID()}, {}, {});
 
-  m_disabled_resources.update(resource_root(), disabled_vec);
+  m_disabled_resources.update(root_entity(), disabled_vec);
 }
 void ExcludableEntityTree::enable(const Resource* res) {
   auto disabled_vec = get_disabled();
@@ -417,7 +417,7 @@ void ExcludableEntityTree::enable(const Resource* res) {
   set_disabled(disabled_vec);
   configuration().update<ExcludableEntityTree>({UID()}, {}, {});
 
-  m_disabled_resources.update(resource_root(), disabled_vec);
+  m_disabled_resources.update(root_entity(), disabled_vec);
 }
 
 bool Resource::is_disabled(const dunedaq::confmodel::ExcludableEntityTree& holder) const {
@@ -431,11 +431,11 @@ bool Resource::compute_disabled_state(const std::set<std::string>& disabled_reso
   return false;
 }
 
-std::vector<const Resource*> DetDataSender::contained_resources() const {
+std::vector<const Resource*> DetDataSender::contained_excludable_entities() const {
   return to_resources(get_streams());
 }
 
-std::vector<const Resource*> DetectorToDaqConnection::contained_resources() const {
+std::vector<const Resource*> DetectorToDaqConnection::contained_excludable_entities() const {
   auto res = to_resources(senders());
   auto rec = receiver();
   if (rec) 
@@ -467,7 +467,7 @@ DetectorToDaqConnection::compute_disabled_state(const std::set<std::string>& dis
 }
 
 std::vector<const Resource*>
-Segment::contained_resources() const {
+Segment::contained_excludable_entities() const {
   // All our contained segments are resources
   std::vector<const Resource*> resources = to_resources(get_segments());
 
@@ -495,7 +495,7 @@ Segment::compute_disabled_state(const std::set<std::string>& disabled) const {
       return false;
     }
   }
-  for (auto res: contained_resources()) {
+  for (auto res: contained_excludable_entities()) {
     if (!res->compute_disabled_state(disabled)) {
       return false;
     }
