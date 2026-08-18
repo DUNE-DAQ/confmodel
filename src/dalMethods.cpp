@@ -21,7 +21,7 @@
 #include "confmodel/PhysicalHost.hpp"
 #include "confmodel/RCApplication.hpp"
 #include "confmodel/Resource.hpp"
-#include "confmodel/ResourceSet.hpp"
+#include "confmodel/ExcludableEntitySet.hpp"
 #include "confmodel/Segment.hpp"
 #include "confmodel/Session.hpp"
 #include "confmodel/Service.hpp"
@@ -52,7 +52,7 @@ namespace {
 void
 make_parents_list(
     const ConfigObjectImpl * child,
-    const dunedaq::confmodel::ResourceSet * resource_set,
+    const dunedaq::confmodel::ExcludableEntitySet * resource_set,
     std::vector<const dunedaq::confmodel::Resource *> & p_list,
     std::list< std::vector<const dunedaq::confmodel::Resource *> >& out,
     dunedaq::confmodel::TestCircularDependency& cd_fuse)
@@ -67,7 +67,7 @@ make_parents_list(
     if (i->config_object().implementation() == child) {
       out.push_back(p_list);
     }
-    else if (const dunedaq::confmodel::ResourceSet * rs = i->cast<dunedaq::confmodel::ResourceSet>()) {
+    else if (const dunedaq::confmodel::ExcludableEntitySet * rs = i->cast<dunedaq::confmodel::ExcludableEntitySet>()) {
       make_parents_list(child, rs, p_list, out, cd_fuse);
     }
   }
@@ -101,7 +101,7 @@ make_parents_list(
     for (const auto& app : segment->get_applications()) {
       if (app->config_object().implementation() == child)
         out.push_back(p_list);
-      else if (const auto resource_set = app->cast<dunedaq::confmodel::ResourceSet>())
+      else if (const auto resource_set = app->cast<dunedaq::confmodel::ExcludableEntitySet>())
         make_parents_list(child, resource_set, p_list, out, cd_fuse);
     }
   }
@@ -394,7 +394,7 @@ std::string OpMonURI::get_URI( const std::string & /* app */) const {
 
 
 // ========================================================================
-void ResourceTree::disable(const Resource* res) {
+void ExcludableEntityTree::disable(const Resource* res) {
   auto disabled_vec = get_disabled();
   for (auto disabled_resource : disabled_vec) {
     if (disabled_resource == res) {
@@ -404,23 +404,23 @@ void ResourceTree::disable(const Resource* res) {
   disabled_vec.push_back(res);
 
   set_disabled(disabled_vec);
-  configuration().update<ResourceTree>({UID()}, {}, {});
+  configuration().update<ExcludableEntityTree>({UID()}, {}, {});
 
   m_disabled_resources.update(resource_root(), disabled_vec);
 }
-void ResourceTree::enable(const Resource* res) {
+void ExcludableEntityTree::enable(const Resource* res) {
   auto disabled_vec = get_disabled();
   auto count = std::erase(disabled_vec, res);
   if (count == 0) {
     return;
   }
   set_disabled(disabled_vec);
-  configuration().update<ResourceTree>({UID()}, {}, {});
+  configuration().update<ExcludableEntityTree>({UID()}, {}, {});
 
   m_disabled_resources.update(resource_root(), disabled_vec);
 }
 
-bool Resource::is_disabled(const dunedaq::confmodel::ResourceTree& holder) const {
+bool Resource::is_disabled(const dunedaq::confmodel::ExcludableEntityTree& holder) const {
   return (!holder.disabled_components().is_enabled(this));
 }
 bool Resource::compute_disabled_state(const std::set<std::string>& disabled_resources) const {

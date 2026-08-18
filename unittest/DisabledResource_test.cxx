@@ -12,8 +12,8 @@
 #include "confmodel/DummyD2D.hpp"
 #include "confmodel/DummyReceiver.hpp"
 #include "confmodel/DummyResource.hpp"
-#include "confmodel/DummyResourceSetAND.hpp"
-#include "confmodel/DummyResourceSet.hpp"
+#include "confmodel/DummyExcludableEntitySetAND.hpp"
+#include "confmodel/DummyExcludableEntitySet.hpp"
 #include "confmodel/DummySender.hpp"
 #include "confmodel/DummySmartResource.hpp"
 #include "confmodel/DummyStream.hpp"
@@ -56,10 +56,10 @@ BOOST_AUTO_TEST_CASE(simple_resource_set){
   }
 
   conffwk::ConfigObject conf_obj;
-  confdb.create(oksfile, "DummyResourceSet", "root", conf_obj);
+  confdb.create(oksfile, "DummyExcludableEntitySet", "root", conf_obj);
   conf_obj.set_objs("items", resource_config_objects);
 
-  auto root = confdb.get<DummyResourceSet>(conf_obj);
+  auto root = confdb.get<DummyExcludableEntitySet>(conf_obj);
 
   // Nothing disabled
   DisabledResources dr(root,{});
@@ -72,12 +72,12 @@ BOOST_AUTO_TEST_CASE(simple_resource_set){
   BOOST_CHECK( dr.is_enabled(dummy_resources[0]) );
   BOOST_CHECK( !dr.is_enabled(dummy_resources[1]) );
 
-  // All simple resources disabled - no affect on ResourceSet
+  // All simple resources disabled - no affect on ExcludableEntitySet
   dr.update(root, {dummy_resources[0], dummy_resources[1], dummy_resources[2]});
   BOOST_CHECK( dr.is_enabled(root) );
   BOOST_CHECK( !dr.is_enabled(dummy_resources[1]) );
 
-  // ResourceSet disabled -- should affect contained simple Resources
+  // ExcludableEntitySet disabled -- should affect contained simple Resources
   dr.update(root,{root});
   BOOST_CHECK( !dr.is_enabled(root) );
   BOOST_CHECK( !dr.is_enabled(dummy_resources[0]) );
@@ -105,10 +105,10 @@ BOOST_AUTO_TEST_CASE(resource_set_and){
   }
 
   conffwk::ConfigObject conf_obj;
-  confdb.create(oksfile, "DummyResourceSetAND", "root", conf_obj);
+  confdb.create(oksfile, "DummyExcludableEntitySetAND", "root", conf_obj);
   conf_obj.set_objs("items", resource_config_objects);
 
-  auto root = confdb.get<DummyResourceSetAND>(conf_obj);
+  auto root = confdb.get<DummyExcludableEntitySetAND>(conf_obj);
 
   // Nothing disabled
   DisabledResources dr(root,{});
@@ -121,12 +121,12 @@ BOOST_AUTO_TEST_CASE(resource_set_and){
   BOOST_CHECK( dr.is_enabled(dummy_resources[0]) );
   BOOST_CHECK( !dr.is_enabled(dummy_resources[1]) );
 
-  // All simple resources disabled - also disables ResourceSetDisableAND
+  // All simple resources disabled - also disables ExcludableEntitySetAND
   dr.update(root, {dummy_resources[0], dummy_resources[1], dummy_resources[2]});
   BOOST_CHECK( !dr.is_enabled(root) );
   BOOST_CHECK( !dr.is_enabled(dummy_resources[1]) );
 
-  // ResourceSet disabled -- should affect contained simple Resources
+  // ExcludableEntitySet disabled -- should affect contained simple Resources
   dr.update(root,{root});
   BOOST_CHECK( !dr.is_enabled(root) );
   BOOST_CHECK( !dr.is_enabled(dummy_resources[0]) );
@@ -171,7 +171,7 @@ BOOST_AUTO_TEST_CASE(segment){
   BOOST_CHECK( !dr.is_enabled(dummy_apps[0]) );
   BOOST_CHECK( dr.is_enabled(dummy_apps[1]) );
 
-  // All simple resources disabled - also disables Segment (ResourceSetDisableAND)
+  // All simple resources disabled - also disables Segment (ExcludableEntitySetAND)
   dr.update(root, {dummy_apps[0], dummy_apps[1], dummy_apps[2]});
   BOOST_CHECK( !dr.is_enabled(root) );
   BOOST_CHECK( !dr.is_enabled(dummy_apps[1]) );
@@ -230,10 +230,10 @@ BOOST_AUTO_TEST_CASE(detector_to_daq){
   conf_obj.set_obj("dummy_receiver", &receiver_conf_obj);
   auto d2d_dal = confdb.get<DummyD2D>(conf_obj);
   auto d2d_conf_obj = d2d_dal->config_object();
-  confdb.create(oksfile, "DummyResourceSet", "root", conf_obj);
+  confdb.create(oksfile, "DummyExcludableEntitySet", "root", conf_obj);
   conf_obj.set_objs("items", {&d2d_conf_obj});
 
-  auto root = confdb.get<DummyResourceSet>(conf_obj);
+  auto root = confdb.get<DummyExcludableEntitySet>(conf_obj);
 
   // Nothing disabled
   DisabledResources dr(root,{});
@@ -300,10 +300,10 @@ BOOST_AUTO_TEST_CASE(smart_resource){
   }
 
   conffwk::ConfigObject conf_obj;
-  confdb.create(oksfile, "DummyResourceSetAND", "root", conf_obj);
+  confdb.create(oksfile, "DummyExcludableEntitySetAND", "root", conf_obj);
   conf_obj.set_objs("items", resource_config_objects);
 
-  auto root = confdb.get<DummyResourceSetAND>(conf_obj);
+  auto root = confdb.get<DummyExcludableEntitySetAND>(conf_obj);
 
   // Nothing explicitly disabled, one DummySmartResource disabled due to UID
   DisabledResources dr(root,{});

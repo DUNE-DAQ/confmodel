@@ -157,7 +157,7 @@
  </class>
 
  <class name="DetDataSender" is-abstract="yes">
-  <superclass name="ResourceSetDisableAND"/>
+  <superclass name="ExcludableEntitySetAND"/>
   <relationship name="streams" class-type="DetectorStream" low-cc="one" high-cc="many" is-composite="no" is-exclusive="yes" is-dependent="no"/>
   <method name="contained_resources" description="">
    <method-implementation language="c++" prototype="virtual std::vector&lt;const Resource*&gt; contained_resources() const override" body=""/>
@@ -178,7 +178,7 @@
  </class>
 
  <class name="DetectorToDaqConnection" is-abstract="yes">
-  <superclass name="ResourceSet"/>
+  <superclass name="ExcludableEntitySet"/>
   <method name="streams" description="">
    <method-implementation language="c++" prototype="std::vector&lt;const confmodel::DetectorStream*&gt; streams() const" body=""/>
   </method>
@@ -333,41 +333,41 @@
    <method-implementation language="c++" prototype="void parents(const dunedaq::confmodel::Session&amp; session, std::list&lt; std::vector&lt;const dunedaq::confmodel::Resource *&gt; &gt;&amp; parents) const" body=""/>
   </method>
   <method name="is_disabled" description="Method to be called from user code to determine if this Resource is disabled in the current configuration.">
-   <method-implementation language="c++" prototype="bool is_disabled(const dunedaq::confmodel::ResourceTree&amp; session) const" body=""/>
+   <method-implementation language="c++" prototype="bool is_disabled(const dunedaq::confmodel::ExcludableEntityTree&amp; session) const" body=""/>
   </method>
   <method name="compute_disabled_state" description="Virtual method to be implemented by subclasses containing the logic to determine if this object should be considered disabled.">
    <method-implementation language="c++" prototype="virtual bool compute_disabled_state(const std::set&lt;std::string&gt;&amp;) const" body=""/>
   </method>
  </class>
 
- <class name="ResourceSet" description="Base class for a collection of Resource items. Derived classes must implement the contained_resources() method to return a vector of Resource objects." is-abstract="yes">
+ <class name="ExcludableEntitySet" description="Base class for a collection of Resource items. Derived classes must implement the contained_resources() method to return a vector of Resource objects." is-abstract="yes">
   <superclass name="Resource"/>
   <method name="contained_resources" description="Virtual method to obtain the list of all contained Resources. Used internally by the core disabled logic. Not intended to be used in application code as that should be using individual relationships of the derived classes.">
    <method-implementation language="c++" prototype="virtual std::vector&lt;const Resource*&gt; contained_resources() const = 0" body="BEGIN_HEADER_EPILOGUE&#xA;template&lt;typename T&gt;&#xA;std::vector&lt;const dunedaq::confmodel::Resource*&gt; to_resources( const std::vector&lt;T*&gt;&amp; vector_of_children ) {&#xA;  std::vector&lt;const dunedaq::confmodel::Resource*&gt; resources;&#xA;  resources.reserve(vector_of_children.size());&#xA;&#xA;  std::copy(vector_of_children.begin(), vector_of_children.end(), std::back_inserter(resources));&#xA;&#xA;  return resources;&#xA;&#xA;}&#xA;END_HEADER_EPILOGUE"/>
   </method>
  </class>
 
- <class name="ResourceSetDisableAND" description="Abstract base class for a resource set that determines it&apos;s disabled state by ANDing all its contained resources." is-abstract="yes">
-  <superclass name="ResourceSet"/>
+ <class name="ExcludableEntitySetAND" description="Abstract base class for a resource set that determines it&apos;s disabled state by ANDing all its contained resources." is-abstract="yes">
+  <superclass name="ExcludableEntitySet"/>
   <method name="compute_disabled_state" description="Method that ANDs all resources to determine disabled state.">
    <method-implementation language="c++" prototype="bool compute_disabled_state(const std::set&lt;std::string&gt;&amp; disabled) const final" body="  if (disabled.contains(UID())) {&#xA;    return true;&#xA;  }&#xA;  for (auto res: contained_resources()) {&#xA;     if (!res-&gt;compute_disabled_state(disabled)) {&#xA;        return false;&#xA;    }&#xA;  }&#xA;  return true;&#xA;  "/>
   </method>
  </class>
 
- <class name="ResourceSetDisableOR" is-abstract="yes">
-  <superclass name="ResourceSet"/>
+ <class name="ExcludableEntitySetDisableOR" is-abstract="yes">
+  <superclass name="ExcludableEntitySet"/>
   <method name="compute_disabled_state" description="Method that ORs the disabled state of its contained resources to determine the state of the set">
    <method-implementation language="c++" prototype="bool compute_disabled_state(const std::set&lt;std::string&gt;&amp; disabled) const final" body="  if (disabled.contains(UID())) {&#xA;    return true;&#xA;  }&#xA;  for (auto res: contained_resources()) {&#xA;     if (res-&gt;compute_disabled_state(disabled)) {&#xA;        return true;&#xA;    }&#xA;  }&#xA;  return false;&#xA;  "/>
   </method>
  </class>
 
- <class name="ResourceTree" is-abstract="yes">
+ <class name="ExcludableEntityTree" is-abstract="yes">
   <relationship name="disabled" description="Resources that should not participate in the current run" class-type="Resource" low-cc="zero" high-cc="many" is-composite="yes" is-exclusive="no" is-dependent="yes"/>
-  <method name="disabled_components" description="Get a reference to the DisabledResources object of this ResourceTree, initialising it if it has not already been initialised.">
+  <method name="disabled_components" description="Get a reference to the DisabledResources object of this ExcludableEntityTree, initialising it if it has not already been initialised.">
    <method-implementation language="c++" prototype="const dunedaq::confmodel::DisabledResources&amp; disabled_components() const" body="BEGIN_HEADER_PROLOGUE&#xA;#include &quot;confmodel/DisabledResources.hpp&quot;&#xA;#include &quot;confmodel/Resource.hpp&quot;&#xA;END_HEADER_PROLOGUE&#xA;&#xA;BEGIN_PRIVATE_SECTION&#xA;mutable DisabledResources m_disabled_resources;&#xA;END_PRIVATE_SECTION&#xA;&#xA;&#xA;if (!m_disabled_resources.initialised()) {&#xA; m_disabled_resources.update(resource_root(),get_disabled());&#xA;}&#xA;return m_disabled_resources;"/>
   </method>
-  <method name="resource_root" description="Pure virtual method to get the ResourceSet at the root of the ResourceTree.">
-   <method-implementation language="c++" prototype="virtual const ResourceSet* resource_root() const = 0" body=""/>
+  <method name="resource_root" description="Pure virtual method to get the ExcludableEntitySet at the root of the ExcludableEntityTree.">
+   <method-implementation language="c++" prototype="virtual const ExcludableEntitySet* resource_root() const = 0" body=""/>
   </method>
   <method name="disable" description="Add a component to the disabled relationship and recalculate the disabled tree">
    <method-implementation language="c++" prototype="void disable(const Resource*)" body=""/>
@@ -378,7 +378,7 @@
  </class>
 
  <class name="Segment" description="Logical sub division of the configuration that can be enabled/disabled as a group">
-  <superclass name="ResourceSet"/>
+  <superclass name="ExcludableEntitySet"/>
   <relationship name="segments" description="Nested list of Segments that form part of this Segment" class-type="Segment" low-cc="zero" high-cc="many" is-composite="yes" is-exclusive="no" is-dependent="yes"/>
   <relationship name="applications" description="List of Applications that run in this Segment" class-type="Application" low-cc="zero" high-cc="many" is-composite="yes" is-exclusive="yes" is-dependent="yes"/>
   <relationship name="controller" description="This Segment&apos;s run controller." class-type="RCApplication" low-cc="one" high-cc="one" is-composite="yes" is-exclusive="yes" is-dependent="yes"/>
@@ -398,7 +398,7 @@
  </class>
 
  <class name="Session">
-  <superclass name="ResourceTree"/>
+  <superclass name="ExcludableEntityTree"/>
   <attribute name="description" description="A description of the session." type="string"/>
   <attribute name="data_request_timeout_ms" description="The baseline data request timeout that will be used by modules in the Readout and Trigger subsystems (i.e. any module that produces data fragments). Downstream timeouts, such as the trigger-record-building timeout, are derived from this" type="u32" init-value="1000" is-not-null="yes"/>
   <attribute name="data_rate_slowdown_factor" description="&quot;Factor by which to suppress data generation." type="u32" init-value="1" is-not-null="yes"/>
@@ -418,7 +418,7 @@
    <method-implementation language="c++" prototype="std::vector&lt;const dunedaq::confmodel::Application *&gt; enabled_applications() const" body=""/>
   </method>
   <method name="resource_root" description="">
-   <method-implementation language="c++" prototype="const ResourceSet* resource_root() const override" body="return get_segment();"/>
+   <method-implementation language="c++" prototype="const ExcludableEntitySet* resource_root() const override" body="return get_segment();"/>
   </method>
  </class>
 

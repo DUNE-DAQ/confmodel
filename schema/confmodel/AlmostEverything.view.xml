@@ -173,15 +173,15 @@
  </rel>
 </obj>
 
-<obj class="ALink" id="ResourceSet-2-ResourceBase-via-contains">
+<obj class="ALink" id="ExcludableEntitySet-2-ResourceBase-via-contains">
  <attr name="Name" type="string" val="contains"/>
- <rel name="From" class="Class" id="ResourceSet"/>
+ <rel name="From" class="Class" id="ExcludableEntitySet"/>
  <rel name="To" class="Class" id="ResourceBase"/>
  <rel name="Points">
-  <ref class="Point" id="1 ResourceSet-2-ResourceBase-via-contains"/>
-  <ref class="Point" id="2 ResourceSet-2-ResourceBase-via-contains"/>
-  <ref class="Point" id="3 ResourceSet-2-ResourceBase-via-contains"/>
-  <ref class="Point" id="4 ResourceSet-2-ResourceBase-via-contains"/>
+  <ref class="Point" id="1 ExcludableEntitySet-2-ResourceBase-via-contains"/>
+  <ref class="Point" id="2 ExcludableEntitySet-2-ResourceBase-via-contains"/>
+  <ref class="Point" id="3 ExcludableEntitySet-2-ResourceBase-via-contains"/>
+  <ref class="Point" id="4 ExcludableEntitySet-2-ResourceBase-via-contains"/>
  </rel>
 </obj>
 
@@ -398,7 +398,7 @@
  <attr name="y" type="s16" val="163"/>
 </obj>
 
-<obj class="Class" id="ResourceSet">
+<obj class="Class" id="ExcludableEntitySet">
  <attr name="x" type="s16" val="848"/>
  <attr name="y" type="s16" val="110"/>
 </obj>
@@ -553,14 +553,14 @@
  </rel>
 </obj>
 
-<obj class="GLink" id="ResourceBase-2-ResourceSet">
+<obj class="GLink" id="ResourceBase-2-ExcludableEntitySet">
  <rel name="From" class="Class" id="ResourceBase"/>
- <rel name="To" class="Class" id="ResourceSet"/>
+ <rel name="To" class="Class" id="ExcludableEntitySet"/>
  <rel name="Points">
-  <ref class="Point" id="1 ResourceBase-2-ResourceSet"/>
-  <ref class="Point" id="2 ResourceBase-2-ResourceSet"/>
-  <ref class="Point" id="3 ResourceBase-2-ResourceSet"/>
-  <ref class="Point" id="4 ResourceBase-2-ResourceSet"/>
+  <ref class="Point" id="1 ResourceBase-2-ExcludableEntitySet"/>
+  <ref class="Point" id="2 ResourceBase-2-ExcludableEntitySet"/>
+  <ref class="Point" id="3 ResourceBase-2-ExcludableEntitySet"/>
+  <ref class="Point" id="4 ResourceBase-2-ExcludableEntitySet"/>
  </rel>
 </obj>
 
@@ -689,7 +689,7 @@
  <attr name="y" type="s16" val="24"/>
 </obj>
 
-<obj class="Point" id="1 ResourceBase-2-ResourceSet">
+<obj class="Point" id="1 ResourceBase-2-ExcludableEntitySet">
  <attr name="x" type="s16" val="74"/>
  <attr name="y" type="s16" val="32"/>
 </obj>
@@ -698,7 +698,7 @@
  <attr name="y" type="s16" val="32"/>
 </obj>
 
-<obj class="Point" id="1 ResourceSet-2-ResourceBase-via-contains">
+<obj class="Point" id="1 ExcludableEntitySet-2-ResourceBase-via-contains">
  <attr name="x" type="s16" val="66"/>
  <attr name="y" type="s16" val="24"/>
 </obj>
@@ -859,7 +859,7 @@
  <attr name="y" type="s16" val="490"/>
 </obj>
 
-<obj class="Point" id="2 ResourceBase-2-ResourceSet">
+<obj class="Point" id="2 ResourceBase-2-ExcludableEntitySet">
  <attr name="x" type="s16" val="74"/>
  <attr name="y" type="s16" val="124"/>
 </obj>
@@ -868,7 +868,7 @@
  <attr name="y" type="s16" val="183"/>
 </obj>
 
-<obj class="Point" id="2 ResourceSet-2-ResourceBase-via-contains">
+<obj class="Point" id="2 ExcludableEntitySet-2-ResourceBase-via-contains">
  <attr name="x" type="s16" val="66"/>
  <attr name="y" type="s16" val="170"/>
 </obj>
@@ -1031,7 +1031,7 @@
  <attr name="y" type="s16" val="490"/>
 </obj>
 
-<obj class="Point" id="3 ResourceBase-2-ResourceSet">
+<obj class="Point" id="3 ResourceBase-2-ExcludableEntitySet">
  <attr name="x" type="s16" val="7"/>
  <attr name="y" type="s16" val="124"/>
 </obj>
@@ -1041,7 +1041,7 @@
  <attr name="y" type="s16" val="183"/>
 </obj>
 
-<obj class="Point" id="3 ResourceSet-2-ResourceBase-via-contains">
+<obj class="Point" id="3 ExcludableEntitySet-2-ResourceBase-via-contains">
  <attr name="x" type="s16" val="22"/>
  <attr name="y" type="s16" val="170"/>
 </obj>
@@ -1205,7 +1205,7 @@
  <attr name="y" type="s16" val="12"/>
 </obj>
 
-<obj class="Point" id="4 ResourceBase-2-ResourceSet">
+<obj class="Point" id="4 ResourceBase-2-ExcludableEntitySet">
  <attr name="x" type="s16" val="7"/>
  <attr name="y" type="s16" val="8"/>
 </obj>
@@ -1215,7 +1215,7 @@
  <attr name="y" type="s16" val="12"/>
 </obj>
 
-<obj class="Point" id="4 ResourceSet-2-ResourceBase-via-contains">
+<obj class="Point" id="4 ExcludableEntitySet-2-ResourceBase-via-contains">
  <attr name="x" type="s16" val="22"/>
  <attr name="y" type="s16" val="12"/>
 </obj>

@@ -5,7 +5,7 @@
 #include "confmodel/ResourceBase.hpp"
 #include "confmodel/DaqApplication.hpp"
 #include "confmodel/DaqModule.hpp"
-#include "confmodel/ResourceSet.hpp"
+#include "confmodel/ExcludableEntitySet.hpp"
 #include "confmodel/Segment.hpp"
 #include "confmodel/Session.hpp"
 
@@ -17,7 +17,7 @@ using namespace dunedaq;
 void listApps(const confmodel::Session* session) {
   for (auto app : session->get_all_applications()) {
     std::cout << "Application: " << app->UID();
-    auto res = app->cast<confmodel::ResourceSet>();
+    auto res = app->cast<confmodel::ExcludableEntitySet>();
     if (res) {
       if (res->disabled(*session)) {
         std::cout << "<disabled>";

@@ -4,7 +4,7 @@
 
 #include "confmodel/DaqApplication.hpp"
 #include "confmodel/DaqModule.hpp"
-#include "confmodel/ResourceSet.hpp"
+#include "confmodel/ExcludableEntitySet.hpp"
 #include "confmodel/Segment.hpp"
 #include "confmodel/Session.hpp"
 
@@ -36,7 +36,7 @@ void process_segment(const Session* session,
     bool disabled = segment_disabled;
     std::cout << spacer << "  Application: " << app->UID();
     if (!disabled) {
-      auto rset = app->cast<ResourceSet>();
+      auto rset = app->cast<ExcludableEntitySet>();
       if (rset) {
         if (rset->is_disabled(*session)) {
           disabled = true;

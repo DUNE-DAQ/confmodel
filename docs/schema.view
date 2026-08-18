@@ -1,14 +1,14 @@
 DetDataSender,429,221
 DetDataReceiver,856,113
-ResourceTree,1011,13
+ExcludableEntityTree,1011,13
 Session,948,294
 DetectorConfig,888,599
 VariableBase,391,307
 VariableSet,202,228
 Variable,420,377
 Resource,617,14
-ResourceSet,670,150
-ResourceSetDisableAND,663,226
+ExcludableEntitySet,670,150
+ExcludableEntitySetAND,663,226
 Segment,649,452
 Application,135,375
 RCApplication,527,616

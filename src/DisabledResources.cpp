@@ -1,6 +1,6 @@
 #include "confmodel/Application.hpp"
 #include "confmodel/Resource.hpp"
-#include "confmodel/ResourceSet.hpp"
+#include "confmodel/ExcludableEntitySet.hpp"
 #include "confmodel/Segment.hpp"
 #include "confmodel/Session.hpp"
 
@@ -16,7 +16,7 @@ using namespace dunedaq::confmodel;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-DisabledResources::DisabledResources(const ResourceSet* root,
+DisabledResources::DisabledResources(const ExcludableEntitySet* root,
                                      std::vector<const Resource*> initial_list)
 {
   TLOG_DEBUG(2) <<  "construct the object from Resource " << root->UID() ;
@@ -24,7 +24,7 @@ DisabledResources::DisabledResources(const ResourceSet* root,
 }
 
 
-void DisabledResources::update(const ResourceSet* root,
+void DisabledResources::update(const ExcludableEntitySet* root,
                                std::vector<const Resource*> initial_list) {
 
   m_disabled.clear();
@@ -34,14 +34,14 @@ void DisabledResources::update(const ResourceSet* root,
   // get list of all root's resource-sets also test any
   // circular dependencies between segments and resource sets
   TestCircularDependency cd_fuse("component \'is-disabled\' status", root);
-  std::vector<const ResourceSet*> resource_sets;
+  std::vector<const ExcludableEntitySet*> resource_sets;
   std::set<const Resource*> simple_resources;
   fill(*root, resource_sets, simple_resources, cd_fuse);
 
   for (auto & comp : initial_list) {
     disable(*comp);
     TLOG_DEBUG(6) << comp->UID() << " is disabled in session";
-    if (const ResourceSet * rs = comp->cast<ResourceSet>()) {
+    if (const ExcludableEntitySet * rs = comp->cast<ExcludableEntitySet>()) {
       disable_children(*rs);
     }
   }
@@ -81,8 +81,8 @@ void DisabledResources::update(const ResourceSet* root,
 }
 
 // fill data from resource sets
-void DisabledResources::fill(const ResourceSet& rs,
-                             std::vector<const ResourceSet*>& all_resource_sets,
+void DisabledResources::fill(const ExcludableEntitySet& rs,
+                             std::vector<const ExcludableEntitySet*>& all_resource_sets,
                              std::set<const Resource*>& simple_resources,
                              TestCircularDependency& cd_fuse)
 {
@@ -94,7 +94,7 @@ void DisabledResources::fill(const ResourceSet& rs,
   }
   for (auto & res : rs.contained_resources()) {
     AddTestOnCircularDependency add_fuse_test(cd_fuse, res);
-    if (const ResourceSet * rs2 = res->cast<ResourceSet>()) {
+    if (const ExcludableEntitySet * rs2 = res->cast<ExcludableEntitySet>()) {
       fill(*rs2, all_resource_sets, simple_resources, cd_fuse);
     } else {
         simple_resources.insert(res);
@@ -105,13 +105,13 @@ void DisabledResources::fill(const ResourceSet& rs,
 
 
 void
-DisabledResources::disable_children(const ResourceSet& rs)
+DisabledResources::disable_children(const ExcludableEntitySet& rs)
 {
   TLOG_DEBUG(6) << "Disabling children of " << rs.UID();
   for (auto & res : rs.contained_resources()) {
     TLOG_DEBUG(6) << "Disabling child " << res->UID();
     disable(*res);
-    if (const auto * rs2 = res->cast<ResourceSet>()) {
+    if (const auto * rs2 = res->cast<ExcludableEntitySet>()) {
       disable_children(*rs2);
     }
   }

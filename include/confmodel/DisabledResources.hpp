@@ -10,7 +10,7 @@
 namespace dunedaq::confmodel {
 
     class Session;
-    class ResourceSet;
+    class ExcludableEntitySet;
     class TestCircularDependency;
 
     class DisabledResources 
@@ -23,8 +23,8 @@ namespace dunedaq::confmodel {
 
       std::set<std::string> m_disabled;
       bool m_initialised{false};
-      void fill(const ResourceSet& rs,
-                std::vector<const ResourceSet*>& all_resource_sets,
+      void fill(const ExcludableEntitySet& rs,
+                std::vector<const ExcludableEntitySet*>& all_resource_sets,
                 std::set<const Resource*>& simple_resources,
                 TestCircularDependency& cd_fuse);
 
@@ -35,7 +35,7 @@ namespace dunedaq::confmodel {
       }
 
       void
-      disable_children(const ResourceSet&);
+      disable_children(const ExcludableEntitySet&);
 
       size_t
       size() noexcept
@@ -46,12 +46,12 @@ namespace dunedaq::confmodel {
     public:
 
       DisabledResources() = default;
-      DisabledResources(const ResourceSet* root,
+      DisabledResources(const ExcludableEntitySet* root,
                         std::vector<const Resource*> initial_list);
 
       ~DisabledResources() = default;
 
-      void update(const ResourceSet* root,
+      void update(const ExcludableEntitySet* root,
                   std::vector<const Resource*> initial_list);
 
       bool
