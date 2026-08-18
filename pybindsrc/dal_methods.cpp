@@ -71,7 +71,7 @@ namespace dunedaq::confmodel::python {
     if (component_ptr == nullptr) {
       throw (std::runtime_error(std::format("Component {} not found", component_id)));
     }
-    session_ptr->disable(component_ptr);
+    session_ptr->exclude(component_ptr);
   }
   void include_entity(Configuration& db,
                          const std::string& session_id,
@@ -84,7 +84,7 @@ namespace dunedaq::confmodel::python {
     if (component_ptr == nullptr) {
       throw (std::runtime_error(std::format("Component {} not found", component_id)));
     }
-    session_ptr->enable(component_ptr);
+    session_ptr->include(component_ptr);
   }
 
 

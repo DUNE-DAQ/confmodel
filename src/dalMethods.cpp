@@ -394,8 +394,8 @@ std::string OpMonURI::get_URI( const std::string & /* app */) const {
 
 
 // ========================================================================
-void ExcludableEntityTree::disable(const Resource* res) {
-  auto disabled_vec = get_disabled();
+void ExcludableEntityTree::exclude(const Resource* res) {
+  auto disabled_vec = get_excluded();
   for (auto disabled_resource : disabled_vec) {
     if (disabled_resource == res) {
       return;
@@ -403,18 +403,18 @@ void ExcludableEntityTree::disable(const Resource* res) {
   }
   disabled_vec.push_back(res);
 
-  set_disabled(disabled_vec);
+  set_excluded(disabled_vec);
   configuration().update<ExcludableEntityTree>({UID()}, {}, {});
 
   m_disabled_resources.update(root_entity(), disabled_vec);
 }
-void ExcludableEntityTree::enable(const Resource* res) {
-  auto disabled_vec = get_disabled();
+void ExcludableEntityTree::include(const Resource* res) {
+  auto disabled_vec = get_excluded();
   auto count = std::erase(disabled_vec, res);
   if (count == 0) {
     return;
   }
-  set_disabled(disabled_vec);
+  set_excluded(disabled_vec);
   configuration().update<ExcludableEntityTree>({UID()}, {}, {});
 
   m_disabled_resources.update(root_entity(), disabled_vec);

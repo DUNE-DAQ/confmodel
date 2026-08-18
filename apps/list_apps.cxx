@@ -122,7 +122,7 @@ int main(int argc, char* argv[]) {
     std::cout << separator << "      Applications in Session: "
               << sessionName << "\n";
     std::set<std::string> disabled_objects;
-    for (auto object : session->get_disabled()) {
+    for (auto object : session->get_excluded()) {
       TLOG_DEBUG(11) << object->UID() << " is in disabled list of Session";
       disabled_objects.insert(object->UID());
     }
