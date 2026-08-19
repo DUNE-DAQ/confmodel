@@ -1,5 +1,5 @@
 /**
- * @file DisabledResource_test.cxx  Unit Tests for Resource disabling logic
+ * @file ExcludedEntity_test.cxx  Unit Tests for Entities exclusion logic
  *
  * This is part of the DUNE DAQ Application Framework, copyright 2025.
  * Licensing/copyright details are in the COPYING file that you should have
@@ -7,7 +7,7 @@
  */
 
 #include "conffwk/Configuration.hpp"
-#include "confmodel/DisabledResources.hpp"
+#include "confmodel/ExcludedEntities.hpp"
 #include "confmodel/DummyApplication.hpp"
 #include "confmodel/DummyD2D.hpp"
 #include "confmodel/DummyReceiver.hpp"
@@ -22,7 +22,7 @@
 
 #include "logging/Logging.hpp"
 
-#define BOOST_TEST_MODULE DisabledResource_test // NOLINT
+#define BOOST_TEST_MODULE ExcludedEntities_test // NOLINT
 
 #include "boost/test/unit_test.hpp"
 
@@ -30,7 +30,7 @@
 #include <string>
 
 
-BOOST_AUTO_TEST_SUITE(DisabledResource_test)
+BOOST_AUTO_TEST_SUITE(ExcludedEntities_test)
 
 using namespace dunedaq;
 using namespace dunedaq::confmodel;
@@ -61,27 +61,27 @@ BOOST_AUTO_TEST_CASE(simple_resource_set){
 
   auto root = confdb.get<DummyExcludableEntitySet>(conf_obj);
 
-  // Nothing disabled
-  DisabledResources dr(root,{});
-  BOOST_CHECK( dr.is_enabled(root) );
-  BOOST_CHECK( dr.is_enabled(dummy_resources[1]) );
+  // Nothing excluded
+  ExcludedEntities dr(root,{});
+  BOOST_CHECK( !dr.is_excluded(root) );
+  BOOST_CHECK( !dr.is_excluded(dummy_resources[1]) );
 
   // Single resource disabled
   dr.update(root,{dummy_resources[1]});
-  BOOST_CHECK( dr.is_enabled(root) );
-  BOOST_CHECK( dr.is_enabled(dummy_resources[0]) );
-  BOOST_CHECK( !dr.is_enabled(dummy_resources[1]) );
+  BOOST_CHECK( dr.is_excluded(root) );
+  BOOST_CHECK( dr.is_excluded(dummy_resources[0]) );
+  BOOST_CHECK( !dr.is_excluded(dummy_resources[1]) );
 
   // All simple resources disabled - no affect on ExcludableEntitySet
   dr.update(root, {dummy_resources[0], dummy_resources[1], dummy_resources[2]});
-  BOOST_CHECK( dr.is_enabled(root) );
-  BOOST_CHECK( !dr.is_enabled(dummy_resources[1]) );
+  BOOST_CHECK( dr.is_excluded(root) );
+  BOOST_CHECK( !dr.is_excluded(dummy_resources[1]) );
 
   // ExcludableEntitySet disabled -- should affect contained simple Resources
   dr.update(root,{root});
-  BOOST_CHECK( !dr.is_enabled(root) );
-  BOOST_CHECK( !dr.is_enabled(dummy_resources[0]) );
-  BOOST_CHECK( !dr.is_enabled(dummy_resources[1]) );
+  BOOST_CHECK( !dr.is_excluded(root) );
+  BOOST_CHECK( !dr.is_excluded(dummy_resources[0]) );
+  BOOST_CHECK( !dr.is_excluded(dummy_resources[1]) );
 
 }
 
@@ -110,27 +110,27 @@ BOOST_AUTO_TEST_CASE(resource_set_and){
 
   auto root = confdb.get<DummyExcludableEntitySetAND>(conf_obj);
 
-  // Nothing disabled
-  DisabledResources dr(root,{});
-  BOOST_CHECK( dr.is_enabled(root) );
-  BOOST_CHECK( dr.is_enabled(dummy_resources[1]) );
+  // Nothing excluded
+  ExcludedEntities dr(root,{});
+  BOOST_CHECK( !dr.is_excluded(root) );
+  BOOST_CHECK( !dr.is_excluded(dummy_resources[1]) );
 
-  // Single resource disabled
+  // Single resource excluded
   dr.update(root,{dummy_resources[1]});
-  BOOST_CHECK( dr.is_enabled(root) );
-  BOOST_CHECK( dr.is_enabled(dummy_resources[0]) );
-  BOOST_CHECK( !dr.is_enabled(dummy_resources[1]) );
+  BOOST_CHECK( dr.is_excluded(root) );
+  BOOST_CHECK( dr.is_excluded(dummy_resources[0]) );
+  BOOST_CHECK( !dr.is_excluded(dummy_resources[1]) );
 
-  // All simple resources disabled - also disables ExcludableEntitySetAND
+  // All simple resources excluded - also excludes ExcludableEntitySetAND
   dr.update(root, {dummy_resources[0], dummy_resources[1], dummy_resources[2]});
-  BOOST_CHECK( !dr.is_enabled(root) );
-  BOOST_CHECK( !dr.is_enabled(dummy_resources[1]) );
+  BOOST_CHECK( !dr.is_excluded(root) );
+  BOOST_CHECK( !dr.is_excluded(dummy_resources[1]) );
 
-  // ExcludableEntitySet disabled -- should affect contained simple Resources
+  // ExcludableEntitySet excluded -- should affect contained simple Resources
   dr.update(root,{root});
-  BOOST_CHECK( !dr.is_enabled(root) );
-  BOOST_CHECK( !dr.is_enabled(dummy_resources[0]) );
-  BOOST_CHECK( !dr.is_enabled(dummy_resources[1]) );
+  BOOST_CHECK( !dr.is_excluded(root) );
+  BOOST_CHECK( !dr.is_excluded(dummy_resources[0]) );
+  BOOST_CHECK( !dr.is_excluded(dummy_resources[1]) );
 
 }
 
@@ -160,21 +160,21 @@ BOOST_AUTO_TEST_CASE(segment){
 
   auto root = confdb.get<Segment>(segment_conf_obj);
 
-  // Nothing disabled
-  DisabledResources dr(root,{});
-  BOOST_CHECK( dr.is_enabled(root) );
-  BOOST_CHECK( dr.is_enabled(dummy_apps[0]) );
+  // Nothing excluded
+  ExcludedEntities dr(root,{});
+  BOOST_CHECK( !dr.is_excluded(root) );
+  BOOST_CHECK( !dr.is_excluded(dummy_apps[0]) );
 
-  // Single resource disabled
+  // Single resource excluded
   dr.update(root,{dummy_apps[0]});
-  BOOST_CHECK( dr.is_enabled(root) );
-  BOOST_CHECK( !dr.is_enabled(dummy_apps[0]) );
-  BOOST_CHECK( dr.is_enabled(dummy_apps[1]) );
+  BOOST_CHECK( dr.is_excluded(root) );
+  BOOST_CHECK( !dr.is_excluded(dummy_apps[0]) );
+  BOOST_CHECK( dr.is_excluded(dummy_apps[1]) );
 
-  // All simple resources disabled - also disables Segment (ExcludableEntitySetAND)
+  // All simple resources excluded - also excludes Segment (ExcludableEntitySetAND)
   dr.update(root, {dummy_apps[0], dummy_apps[1], dummy_apps[2]});
-  BOOST_CHECK( !dr.is_enabled(root) );
-  BOOST_CHECK( !dr.is_enabled(dummy_apps[1]) );
+  BOOST_CHECK( !dr.is_excluded(root) );
+  BOOST_CHECK( !dr.is_excluded(dummy_apps[1]) );
 }
 
 
@@ -235,48 +235,48 @@ BOOST_AUTO_TEST_CASE(detector_to_daq){
 
   auto root = confdb.get<DummyExcludableEntitySet>(conf_obj);
 
-  // Nothing disabled
-  DisabledResources dr(root,{});
-  BOOST_CHECK( dr.is_enabled(root) );
-  BOOST_CHECK( dr.is_enabled(receiver_dal) );
-  BOOST_CHECK( dr.is_enabled(d2d_dal) );
+  // Nothing excluded
+  ExcludedEntities dr(root,{});
+  BOOST_CHECK( !dr.is_excluded(root) );
+  BOOST_CHECK( !dr.is_excluded(receiver_dal) );
+  BOOST_CHECK( !dr.is_excluded(d2d_dal) );
 
-  // receiver disabled - disables d2d
+  // receiver excluded - excludes d2d
   dr.update(root,{receiver});
-  BOOST_CHECK( dr.is_enabled(root) );
-  BOOST_CHECK( !dr.is_enabled(receiver_dal) );
-  BOOST_CHECK( !dr.is_enabled(d2d_dal) );
+  BOOST_CHECK( !dr.is_excluded(root) );
+  BOOST_CHECK( dr.is_excluded(receiver_dal) );
+  BOOST_CHECK( dr.is_excluded(d2d_dal) );
 
   
-  std::vector<const Resource*> disable = sender0_streams;
-  // All streams of sender0 disabled - disables sender0
-  dr.update(root, disable);
-  BOOST_CHECK( dr.is_enabled(d2d_dal) );
-  BOOST_CHECK( dr.is_enabled(sender1_dal) );
-  BOOST_CHECK( !dr.is_enabled(sender0_dal) );
-  BOOST_CHECK( dr.is_enabled(receiver_dal) );
+  std::vector<const Resource*> exclude = sender0_streams;
+  // All streams of sender0 excluded - excludes sender0
+  dr.update(root, exclude);
+  BOOST_CHECK( !dr.is_excluded(d2d_dal) );
+  BOOST_CHECK( !dr.is_excluded(sender1_dal) );
+  BOOST_CHECK( dr.is_excluded(sender0_dal) );
+  BOOST_CHECK( !dr.is_excluded(receiver_dal) );
 
-  // All streams of both senders disabled - disables d2d and in turn receiver
-  disable.insert(disable.end(), sender1_streams.begin(), sender1_streams.end());
-  dr.update(root, disable);
-  BOOST_CHECK( !dr.is_enabled(d2d_dal) );
-  BOOST_CHECK( !dr.is_enabled(receiver_dal) );
+  // All streams of both senders excluded - excludes d2d and in turn receiver
+  exclude.insert(exclude.end(), sender1_streams.begin(), sender1_streams.end());
+  dr.update(root, exclude);
+  BOOST_CHECK( dr.is_excluded(d2d_dal) );
+  BOOST_CHECK( !dr.is_excluded(receiver_dal) );
 
-  // Sender0 and all streams of sender1 disabled - also disables d2d
-  disable.clear();
-  disable.push_back(sender0_dal);
-  disable.insert(disable.end(), sender1_streams.begin(), sender1_streams.end());
-  dr.update(root, disable);
-  BOOST_CHECK( !dr.is_enabled(d2d_dal) );
-  BOOST_CHECK( !dr.is_enabled(receiver_dal) );
+  // Sender0 and all streams of sender1 excluded - also excludes d2d
+  exclude.clear();
+  exclude.push_back(sender0_dal);
+  exclude.insert(exclude.end(), sender1_streams.begin(), sender1_streams.end());
+  dr.update(root, exclude);
+  BOOST_CHECK( !dr.is_excluded(d2d_dal) );
+  BOOST_CHECK( !dr.is_excluded(receiver_dal) );
 
-  // Both senders disabled - same as above
-  disable.clear();
-  disable.push_back(sender0_dal);
-  disable.push_back(sender1_dal);
-  dr.update(root, disable);
-  BOOST_CHECK( !dr.is_enabled(d2d_dal) );
-  BOOST_CHECK( !dr.is_enabled(receiver_dal) );
+  // Both senders excluded - same as above
+  exclude.clear();
+  exclude.push_back(sender0_dal);
+  exclude.push_back(sender1_dal);
+  dr.update(root, exclude);
+  BOOST_CHECK( !dr.is_excluded(d2d_dal) );
+  BOOST_CHECK( !dr.is_excluded(receiver_dal) );
 
 }
 
@@ -305,11 +305,11 @@ BOOST_AUTO_TEST_CASE(smart_resource){
 
   auto root = confdb.get<DummyExcludableEntitySetAND>(conf_obj);
 
-  // Nothing explicitly disabled, one DummySmartResource disabled due to UID
-  DisabledResources dr(root,{});
-  BOOST_CHECK( dr.is_enabled(root));
-  BOOST_CHECK( !dr.is_enabled(dummy_resources[0]) );
-  BOOST_CHECK( dr.is_enabled(dummy_resources[1]) );
+  // Nothing explicitly excluded, one DummySmartResource excluded due to UID
+  ExcludedEntities dr(root,{});
+  BOOST_CHECK( dr.is_excluded(root));
+  BOOST_CHECK( !dr.is_excluded(dummy_resources[0]) );
+  BOOST_CHECK( dr.is_excluded(dummy_resources[1]) );
 
 }
 

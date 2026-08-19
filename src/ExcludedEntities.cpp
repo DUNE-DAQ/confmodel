@@ -5,7 +5,7 @@
 #include "confmodel/Session.hpp"
 
 #include "confmodel/confmodelIssues.hpp"
-#include "confmodel/DisabledResources.hpp"
+#include "confmodel/ExcludedEntities.hpp"
 
 #include "logging/Logging.hpp"
 
@@ -16,7 +16,7 @@ using namespace dunedaq::confmodel;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-DisabledResources::DisabledResources(const ExcludableEntitySet* root,
+ExcludedEntities::ExcludedEntities(const ExcludableEntitySet* root,
                                      std::vector<const Resource*> initial_list)
 {
   TLOG_DEBUG(2) <<  "construct the object from Resource " << root->UID() ;
@@ -24,46 +24,46 @@ DisabledResources::DisabledResources(const ExcludableEntitySet* root,
 }
 
 
-void DisabledResources::update(const ExcludableEntitySet* root,
+void ExcludedEntities::update(const ExcludableEntitySet* root,
                                std::vector<const Resource*> initial_list) {
 
-  m_disabled.clear();
+  m_excluded.clear();
 
   m_initialised = true;
 
-  // get list of all root's resource-sets also test any
-  // circular dependencies between segments and resource sets
-  TestCircularDependency cd_fuse("component \'is-disabled\' status", root);
+  // get list of all root's entities-sets also test any
+  // circular dependencies between segments and entity sets
+  TestCircularDependency cd_fuse("component \'is-excluded\' status", root);
   std::vector<const ExcludableEntitySet*> resource_sets;
   std::set<const Resource*> simple_resources;
   fill(*root, resource_sets, simple_resources, cd_fuse);
 
   for (auto & comp : initial_list) {
-    disable(*comp);
-    TLOG_DEBUG(6) << comp->UID() << " is disabled in session";
+    exclude(*comp);
+    TLOG_DEBUG(6) << comp->UID() << " is excluded in session";
     if (const ExcludableEntitySet * rs = comp->cast<ExcludableEntitySet>()) {
-      disable_children(*rs);
+      exclude_children(*rs);
     }
   }
 
   for (unsigned long count = 1; true; ++count) {
     const unsigned long num(size()); // Remember current size
 
-    TLOG_DEBUG(6) <<  "before auto-disabling iteration " << count << " the number of disabled components is " << num ;
+    TLOG_DEBUG(6) <<  "before auto-disabling iteration " << count << " the number of excluded components is " << num ;
     for (const auto& res_set : resource_sets) {
-      if (is_enabled(res_set)) {
-        if (res_set->compute_excluded_state(m_disabled)) {
-          TLOG_DEBUG(6) <<  "disable custom resource-set- " << res_set->UID() << " because children are disabled" ;
-          disable(*res_set);
-          disable_children(*res_set);
+      if (is_excluded(res_set)) {
+        if (res_set->compute_excluded_state(m_excluded)) {
+          TLOG_DEBUG(6) <<  "Exclude custom entity-set- " << res_set->UID() << " because children are excluded" ;
+          exclude(*res_set);
+          exclude_children(*res_set);
         }
       }
     }
 
     for (auto& res : simple_resources) {
-      if (is_enabled(res) && res->compute_excluded_state(m_disabled)) {
-        TLOG_DEBUG(6) << "Marking " << res->UID() << " as disabled\n";
-        disable(*res);
+      if (is_excluded(res) && res->compute_excluded_state(m_excluded)) {
+        TLOG_DEBUG(6) << "Marking " << res->UID() << " as excluded\n";
+        exclude(*res);
       }
     }
 
@@ -80,8 +80,8 @@ void DisabledResources::update(const ExcludableEntitySet* root,
   }
 }
 
-// fill data from resource sets
-void DisabledResources::fill(const ExcludableEntitySet& rs,
+// fill data from entities sets
+void ExcludedEntities::fill(const ExcludableEntitySet& rs,
                              std::vector<const ExcludableEntitySet*>& all_resource_sets,
                              std::set<const Resource*>& simple_resources,
                              TestCircularDependency& cd_fuse)
@@ -105,14 +105,14 @@ void DisabledResources::fill(const ExcludableEntitySet& rs,
 
 
 void
-DisabledResources::disable_children(const ExcludableEntitySet& rs)
+ExcludedEntities::exclude_children(const ExcludableEntitySet& rs)
 {
-  TLOG_DEBUG(6) << "Disabling children of " << rs.UID();
+  TLOG_DEBUG(6) << "Excluding children of " << rs.UID();
   for (auto & res : rs.contained_excludable_entities()) {
-    TLOG_DEBUG(6) << "Disabling child " << res->UID();
-    disable(*res);
+    TLOG_DEBUG(6) << "Excluding child " << res->UID();
+    exclude(*res);
     if (const auto * rs2 = res->cast<ExcludableEntitySet>()) {
-      disable_children(*rs2);
+      exclude_children(*rs2);
     }
   }
 }

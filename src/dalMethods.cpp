@@ -406,7 +406,7 @@ void ExcludableEntityTree::exclude(const Resource* res) {
   set_excluded(disabled_vec);
   configuration().update<ExcludableEntityTree>({UID()}, {}, {});
 
-  m_disabled_resources.update(root_entity(), disabled_vec);
+  m_excluded_entities.update(root_entity(), disabled_vec);
 }
 void ExcludableEntityTree::include(const Resource* res) {
   auto disabled_vec = get_excluded();
@@ -417,11 +417,11 @@ void ExcludableEntityTree::include(const Resource* res) {
   set_excluded(disabled_vec);
   configuration().update<ExcludableEntityTree>({UID()}, {}, {});
 
-  m_disabled_resources.update(root_entity(), disabled_vec);
+  m_excluded_entities.update(root_entity(), disabled_vec);
 }
 
 bool Resource::is_excluded(const dunedaq::confmodel::ExcludableEntityTree& holder) const {
-  return (!holder.disabled_components().is_enabled(this));
+  return (!holder.excluded_entities().is_excluded(this));
 }
 bool Resource::compute_excluded_state(const std::set<std::string>& disabled_resources) const {
   TLOG_DEBUG(6) << "No compute_excluded_state method defined for Resource " << class_name();

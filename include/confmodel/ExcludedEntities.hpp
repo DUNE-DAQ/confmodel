@@ -1,5 +1,5 @@
-#ifndef DUNEDAQDAL_DISABLED_RESOURCES_H
-#define DUNEDAQDAL_DISABLED_RESOURCES_H
+#ifndef DUNEDAQDAL_EXCLUDED_ENTITIES_H
+#define DUNEDAQDAL_EXCLUDED_ENTITIES_H
 
 #include "confmodel/Resource.hpp"
 
@@ -13,7 +13,7 @@ namespace dunedaq::confmodel {
     class ExcludableEntitySet;
     class TestCircularDependency;
 
-    class DisabledResources 
+    class ExcludedEntities 
     {
 
       friend class Session;
@@ -21,7 +21,7 @@ namespace dunedaq::confmodel {
 
     private:
 
-      std::set<std::string> m_disabled;
+      std::set<std::string> m_excluded;
       bool m_initialised{false};
       void fill(const ExcludableEntitySet& rs,
                 std::vector<const ExcludableEntitySet*>& all_resource_sets,
@@ -29,38 +29,38 @@ namespace dunedaq::confmodel {
                 TestCircularDependency& cd_fuse);
 
       void
-      disable(const Resource& component)
+      exclude(const Resource& component)
       {
-        m_disabled.insert(component.UID());
+        m_excluded.insert(component.UID());
       }
 
       void
-      disable_children(const ExcludableEntitySet&);
+      exclude_children(const ExcludableEntitySet&);
 
       size_t
       size() noexcept
       {
-        return m_disabled.size();
+        return m_excluded.size();
       }
 
     public:
 
-      DisabledResources() = default;
-      DisabledResources(const ExcludableEntitySet* root,
+      ExcludedEntities() = default;
+      ExcludedEntities(const ExcludableEntitySet* root,
                         std::vector<const Resource*> initial_list);
 
-      ~DisabledResources() = default;
+      ~ExcludedEntities() = default;
 
       void update(const ExcludableEntitySet* root,
                   std::vector<const Resource*> initial_list);
 
       bool
-      is_enabled(const Resource* component) const {
-        return !m_disabled.contains(component->UID());
+      is_excluded(const Resource* component) const {
+        return m_excluded.contains(component->UID());
       }
 
       [[nodiscard]] bool initialised() const {return m_initialised;}
     };
 } // namespace dunedaq::confmodel
 
-#endif // DUNEDAQDAL_DISABLED_RESOURCES_H
+#endif // DUNEDAQDAL_EXCLUDED_ENTITIES_H
