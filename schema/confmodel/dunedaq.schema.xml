@@ -212,8 +212,8 @@
 
  <class name="ExcludableEntitySetOR" is-abstract="yes">
   <superclass name="ExcludableEntitySet"/>
-  <method name="compute_excluded_state" description="Method that ORs the disabled state of its contained resources to determine the state of the set">
-   <method-implementation language="c++" prototype="bool compute_excluded_state(const std::set&lt;std::string&gt;&amp; disabled) const final" body="  if (disabled.contains(UID())) {&#xA;    return true;&#xA;  }&#xA;  for (auto res: contained_excludable_entities()) {&#xA;     if (res-&gt;compute_excluded_state(disabled)) {&#xA;        return true;&#xA;    }&#xA;  }&#xA;  return false;&#xA;  "/>
+  <method name="compute_excluded_state" description="Method that ORs the excluded state of its contained resources to determine the state of the set">
+   <method-implementation language="c++" prototype="bool compute_excluded_state(const std::set&lt;std::string&gt;&amp; excluded) const final" body="  if (excluded.contains(UID())) {&#xA;    return true;&#xA;  }&#xA;  for (auto res: contained_excludable_entities()) {&#xA;     if (res-&gt;compute_excluded_state(excluded)) {&#xA;        return true;&#xA;    }&#xA;  }&#xA;  return false;&#xA;  "/>
   </method>
  </class>
 
