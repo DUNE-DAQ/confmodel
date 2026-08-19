@@ -34,9 +34,9 @@ void ExcludedEntities::update(const ExcludableEntitySet* root,
   // get list of all root's entities-sets also test any
   // circular dependencies between segments and entity sets
   TestCircularDependency cd_fuse("component \'is-excluded\' status", root);
-  std::vector<const ExcludableEntitySet*> resource_sets;
-  std::set<const Resource*> simple_resources;
-  fill(*root, resource_sets, simple_resources, cd_fuse);
+  std::vector<const ExcludableEntitySet*> sets;
+  std::set<const Resource*> simple_entities;
+  fill(*root, sets, simple_entities, cd_fuse);
 
   for (auto & comp : initial_list) {
     exclude(*comp);
@@ -49,26 +49,26 @@ void ExcludedEntities::update(const ExcludableEntitySet* root,
   for (unsigned long count = 1; true; ++count) {
     const unsigned long num(size()); // Remember current size
 
-    TLOG_DEBUG(6) <<  "before auto-disabling iteration " << count << " the number of excluded components is " << num ;
-    for (const auto& res_set : resource_sets) {
-      if (is_excluded(res_set)) {
-        if (res_set->compute_excluded_state(m_excluded)) {
-          TLOG_DEBUG(6) <<  "Exclude custom entity-set- " << res_set->UID() << " because children are excluded" ;
-          exclude(*res_set);
-          exclude_children(*res_set);
+    TLOG_DEBUG(6) <<  "before auto-exclusion iteration " << count << " the number of excluded components is " << num ;
+    for (const auto& set : sets) {
+      if (is_excluded(set)) {
+        if (set->compute_excluded_state(m_excluded)) {
+          TLOG_DEBUG(6) <<  "Exclude custom entity-set- " << set->UID() << " because children are excluded" ;
+          exclude(*set);
+          exclude_children(*set);
         }
       }
     }
 
-    for (auto& res : simple_resources) {
-      if (is_excluded(res) && res->compute_excluded_state(m_excluded)) {
-        TLOG_DEBUG(6) << "Marking " << res->UID() << " as excluded\n";
-        exclude(*res);
+    for (auto& en : simple_entities) {
+      if (is_excluded(en) && en->compute_excluded_state(m_excluded)) {
+        TLOG_DEBUG(6) << "Marking " << en->UID() << " as excluded\n";
+        exclude(*en);
       }
     }
 
     if (size() == num) {
-      TLOG_DEBUG(6) <<  "after " << count << " iteration(s) auto-disabling algorithm found no newly disabled sets, exiting loop ..." ;
+      TLOG_DEBUG(6) <<  "after " << count << " iteration(s) auto-exclusion algorithm found no newly disabled sets, exiting loop ..." ;
       break;
     }
 
@@ -81,23 +81,23 @@ void ExcludedEntities::update(const ExcludableEntitySet* root,
 }
 
 // fill data from entities sets
-void ExcludedEntities::fill(const ExcludableEntitySet& rs,
-                             std::vector<const ExcludableEntitySet*>& all_resource_sets,
-                             std::set<const Resource*>& simple_resources,
+void ExcludedEntities::fill(const ExcludableEntitySet& es,
+                             std::vector<const ExcludableEntitySet*>& all_sets,
+                             std::set<const Resource*>& simple_entities,
                              TestCircularDependency& cd_fuse)
 {
-  TLOG_DEBUG(6) << "rs.UID=" << rs.UID() << ", class=" << rs.class_name();
-  all_resource_sets.push_back(&rs);
-  auto rptr = &rs;
+  TLOG_DEBUG(6) << "es.UID=" << es.UID() << ", class=" << es.class_name();
+  all_sets.push_back(&es);
+  auto rptr = &es;
   if (rptr->cast<Resource>() == nullptr) {
-    throw (MissingConstructor(ERS_HERE, "Resource", rs.full_name()));
+    throw (MissingConstructor(ERS_HERE, "Resource", es.full_name()));
   }
-  for (auto & res : rs.contained_excludable_entities()) {
+  for (auto & res : es.contained_excludable_entities()) {
     AddTestOnCircularDependency add_fuse_test(cd_fuse, res);
-    if (const ExcludableEntitySet * rs2 = res->cast<ExcludableEntitySet>()) {
-      fill(*rs2, all_resource_sets, simple_resources, cd_fuse);
+    if (const ExcludableEntitySet * es2 = res->cast<ExcludableEntitySet>()) {
+      fill(*es2, all_sets, simple_entities, cd_fuse);
     } else {
-        simple_resources.insert(res);
+        simple_entities.insert(res);
     }
   }
 }

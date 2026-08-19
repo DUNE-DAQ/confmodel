@@ -19,13 +19,13 @@ The **Application** class has attributes defining the application's
  `application_environment` relationship lists environment variables needed by the
  application in addition to those defined by the **Session**.
 
-## Resources and ExcludableEntitySets
+## ExcludableEntities
 
-**Resource** is an abstract class describing an item that can be
+**ExcludableEntity** is an abstract class describing an item that can be
 excluded directly. It has the method `is_excluded(const dunedaq::confmodel::ExcludableEntityTree& session)` which can be called
 by application code to determine if the object should be considered
 excluded for this session (Session is a subclass of ExcludableEntityTree). The [exclusion logic](#the-resource-excluded-logic) calls the virtual
-`compute_excluded_state(const std::set<std::string>& excluded_resources)` method to determine the state of the Resource, the excluded_resources argument is a list of UIDs of all the Resources that have been excluded so far. The
+`compute_excluded_state(const std::set<std::string>& excluded_resources)` method to determine the state of the ExcludableEntity, the excluded_resources argument is a list of UIDs of all the ExcludableEntities that have been excluded so far. The
 implementation provided by the base class just checks that the object
 itself is not in the list of excluded objects. Derived classes can
 re-implement this method with whatever logic is needed to determine the
@@ -33,7 +33,7 @@ state of the object, for example the **ExcludableEntitySetAND** class
 provides an implementation that ANDs together the state of all of its
 contained objects. 
 
-**ExcludableEntitySet** is an abstract container of **Resource**s which can be excluded together. It
+**ExcludableEntitySet** is an abstract container of **ExcludableEntity**s which can be excluded together. It
 is itself a Resource (so can be nested). It defines a pure virtual method `contained_excludable_entities()` which returns a vector of pointers to 'contained' resources. Developers should implement this method to extract any resources that need to be considered for determining the excluded state of the set from among the class's relationships. The class may have relationships to other Resource derived
 objects that will be ignored for the excluded check.
 
@@ -41,7 +41,7 @@ objects that will be ignored for the excluded check.
 be excluded if *all* of its **Resource**s are excluded. It provides a
 final implementation of the ExcludableEntitySet::compute_excluded_state() method.
 
-**ExcludableEntitySetDisableOR** is a container of **Resource**s which
+**ExcludableEntitySetOR** is a container of **Resource**s which
 provides a final implementation of the ExcludableEntitySet::compute_excluded_state()
 method returning true if *any* of its contained **Resource**s are
 excluded.
