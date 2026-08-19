@@ -1,17 +1,21 @@
 # confmodel
 This package contains the core' schema for the DUNE daq OKS configuration.
 
+_n.b. As of August 2026, many variable names have been changed that
+aren't reflected in the diagrams below - e.g., a `Resource` has become
+an `ExcludableEntity`_
+
   ![schema](schema.png)
 
 The top level of the schema is the **Session** which defines some global
 DAQ parameters and has a relationship to a single top-level **Segment**.
-It also has a list of excluded [Resources](#resources-and-resourcesets). It is intended that parts of
+It also has a list of excluded [ExcludableEntitys](#resources-and-resourcesets). It is intended that parts of
 the DAQ system that are not required in the current run are simply
 excluded rather than deleted from the database altogether.
 
 A **Segment** is a logical grouping of applications which
 are controlled by a single controller (**RCApplication**). A **Segment** may contain other
-nested **Segment**s. A **Segment** is a Resource that can be included/excluded [(see below)](#resources-and-resourcesets),
+nested **Segment**s. A **Segment** is a ExcludableEntity that can be included/excluded [(see below)](#resources-and-resourcesets),
 excluding a **Segment** excludes all of its nested **Segment**s.
 
 The **Application** class has attributes defining the application's
@@ -34,40 +38,40 @@ provides an implementation that ANDs together the state of all of its
 contained objects. 
 
 **ExcludableEntitySet** is an abstract container of **ExcludableEntity**s which can be excluded together. It
-is itself a Resource (so can be nested). It defines a pure virtual method `contained_excludable_entities()` which returns a vector of pointers to 'contained' resources. Developers should implement this method to extract any resources that need to be considered for determining the excluded state of the set from among the class's relationships. The class may have relationships to other Resource derived
+is itself a ExcludableEntity (so can be nested). It defines a pure virtual method `contained_excludable_entities()` which returns a vector of pointers to 'contained' resources. Developers should implement this method to extract any resources that need to be considered for determining the excluded state of the set from among the class's relationships. The class may have relationships to other ExcludableEntity derived
 objects that will be ignored for the excluded check.
 
-**ExcludableEntitySetAND** is a container of **Resource**s which will
-be excluded if *all* of its **Resource**s are excluded. It provides a
+**ExcludableEntitySetAND** is a container of **ExcludableEntity**s which will
+be excluded if *all* of its **ExcludableEntity**s are excluded. It provides a
 final implementation of the ExcludableEntitySet::compute_excluded_state() method.
 
-**ExcludableEntitySetOR** is a container of **Resource**s which
+**ExcludableEntitySetOR** is a container of **ExcludableEntity**s which
 provides a final implementation of the ExcludableEntitySet::compute_excluded_state()
-method returning true if *any* of its contained **Resource**s are
+method returning true if *any* of its contained **ExcludableEntity**s are
 excluded.
 
 **Segment** is a container of **Segment**s and **Applications**
 which inherits from **ExcludableEntitySetAND** so it can be excluded
 directly or indirectly if all its components are excluded.
  
- ![Resource tree](resourcetree.png)
+ ![ExcludableEntity tree](resourcetree.png)
 
-### The Resource excluded logic
+### The ExcludableEntity excluded logic
 
-The Resource excluded logic works on a single tree of **ExcludableEntitySets**.
+The ExcludableEntity excluded logic works on a single tree of **ExcludableEntitySets**.
 It is held by the virtual class **ExcludableEntityTree** currently **Session**
 is the only concrete class derived from it. 
-The **ExcludableEntityTree** holds a **ExcludedResources** object which is initialised with a reference to the root **Segment**
+The **ExcludableEntityTree** holds a **ExcludedExcludableEntitys** object which is initialised with a reference to the root **Segment**
 and the list of excluded resources from its `excluded` relationship.
 
 ⚠️**Any ExcludableEntitySet that is not referenced by a ExcludableEntitySet in the tree
 starting at the Session's segment relationship will not be considered
 by the exclusion logic!**
 
-The **ExcludedResources** constructor will configure itself using the
-tree of Resources and initial list of excluded Resources.
+The **ExcludedExcludableEntitys** constructor will configure itself using the
+tree of ExcludableEntitys and initial list of excluded ExcludableEntitys.
 To start with, the UID of each member of the list is inserted into a
-set and any 'contained' (using the `contained_excludable_entities()` method) Resources
+set and any 'contained' (using the `contained_excludable_entities()` method) ExcludableEntitys
 are also excluded.
 
 A list of all ExcludableEntitySets in the tree is generated by recursively
@@ -93,11 +97,11 @@ aggregated into a **DetDataSender** and a group of **DetDataSender**
 objects are contained in a **DetectorToDaqConnection** along with a
 single **DetDataReceiver**.
 
-### Resource handling in the readout map
+### ExcludableEntity handling in the readout map
 
 The **DetectorToDaqConnection** is a **ExcludableEntitySet** with a custom implementation of `compute_excluded_state()` that checks that the **DetDataReceiver** and at least one **DetDataSender** are included.
 
-The **DetDataSender** is a **ExcludableEntitySetAND** that contains a set of **DetectorStream** **Resource**s.
+The **DetDataSender** is a **ExcludableEntitySetAND** that contains a set of **DetectorStream** **ExcludableEntity**s.
 
 
 

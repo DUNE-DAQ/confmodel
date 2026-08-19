@@ -20,7 +20,7 @@
 #include "confmodel/OpMonURI.hpp"
 #include "confmodel/PhysicalHost.hpp"
 #include "confmodel/RCApplication.hpp"
-#include "confmodel/Resource.hpp"
+#include "confmodel/ExcludableEntity.hpp"
 #include "confmodel/ExcludableEntitySet.hpp"
 #include "confmodel/Segment.hpp"
 #include "confmodel/Session.hpp"
@@ -53,8 +53,8 @@ void
 make_parents_list(
     const ConfigObjectImpl * child,
     const dunedaq::confmodel::ExcludableEntitySet * resource_set,
-    std::vector<const dunedaq::confmodel::Resource *> & p_list,
-    std::list< std::vector<const dunedaq::confmodel::Resource *> >& out,
+    std::vector<const dunedaq::confmodel::ExcludableEntity *> & p_list,
+    std::list< std::vector<const dunedaq::confmodel::ExcludableEntity *> >& out,
     dunedaq::confmodel::TestCircularDependency& cd_fuse)
 {
   dunedaq::confmodel::AddTestOnCircularDependency add_fuse_test(cd_fuse, resource_set);
@@ -80,8 +80,8 @@ void
 make_parents_list(
     const dunedaq::conffwk::ConfigObjectImpl * child,
     const dunedaq::confmodel::Segment * segment,
-    std::vector<const dunedaq::confmodel::Resource *> & p_list,
-    std::list<std::vector<const dunedaq::confmodel::Resource *> >& out,
+    std::vector<const dunedaq::confmodel::ExcludableEntity *> & p_list,
+    std::list<std::vector<const dunedaq::confmodel::ExcludableEntity *> >& out,
     bool is_segment,
     dunedaq::confmodel::TestCircularDependency& cd_fuse)
 {
@@ -114,7 +114,7 @@ make_parents_list(
 
 void
 check_segment(
-    std::list< std::vector<const dunedaq::confmodel::Resource *> >& out,
+    std::list< std::vector<const dunedaq::confmodel::ExcludableEntity *> >& out,
     const dunedaq::confmodel::Segment * segment,
     const dunedaq::conffwk::ConfigObjectImpl * child,
     bool is_segment,
@@ -122,7 +122,7 @@ check_segment(
 {
   dunedaq::confmodel::AddTestOnCircularDependency add_fuse_test(cd_fuse, segment);
 
-  std::vector<const dunedaq::confmodel::Resource *> compList;
+  std::vector<const dunedaq::confmodel::ExcludableEntity *> compList;
 
   if (segment->config_object().implementation() == child) {
     out.push_back(compList);
@@ -135,9 +135,9 @@ check_segment(
 namespace dunedaq::confmodel {
 
 void
-Resource::parents(
+ExcludableEntity::parents(
   const Session& session,
-  std::list<std::vector<const Resource *>>& parents) const
+  std::list<std::vector<const ExcludableEntity *>>& parents) const
 {
   const ConfigObjectImpl * obj_impl = config_object().implementation();
 
@@ -152,7 +152,7 @@ Resource::parents(
 
 
     if (parents.empty()) {
-      TLOG_DEBUG(1) <<  "cannot find segment/resource path(s) between Resource " << this << " and session " << &session << " objects (check this object is linked with the session as a segment or a resource)" ;
+      TLOG_DEBUG(1) <<  "cannot find segment/resource path(s) between ExcludableEntity " << this << " and session " << &session << " objects (check this object is linked with the session as a segment or a resource)" ;
     }
   }
   catch (ers::Issue & ex) {
@@ -169,7 +169,7 @@ Session::getSegmentApps(const Segment* segment,
   auto segapps = segment->get_applications();
   if (included_only) {
     for (auto app : segapps) {
-      auto comp = app->cast<Resource>();
+      auto comp = app->cast<ExcludableEntity>();
       if (comp == nullptr || !comp->is_excluded(*this)) {
         apps.insert(apps.end(), app);
       }
@@ -394,7 +394,7 @@ std::string OpMonURI::get_URI( const std::string & /* app */) const {
 
 
 // ========================================================================
-void ExcludableEntityTree::exclude(const Resource* res) {
+void ExcludableEntityTree::exclude(const ExcludableEntity* res) {
   auto excluded_vec = get_excluded();
   for (auto excluded_resource : excluded_vec) {
     if (excluded_resource == res) {
@@ -408,7 +408,7 @@ void ExcludableEntityTree::exclude(const Resource* res) {
 
   m_excluded_entities.update(root_entity(), excluded_vec);
 }
-void ExcludableEntityTree::include(const Resource* res) {
+void ExcludableEntityTree::include(const ExcludableEntity* res) {
   auto excluded_vec = get_excluded();
   auto count = std::erase(excluded_vec, res);
   if (count == 0) {
@@ -420,22 +420,22 @@ void ExcludableEntityTree::include(const Resource* res) {
   m_excluded_entities.update(root_entity(), excluded_vec);
 }
 
-bool Resource::is_excluded(const dunedaq::confmodel::ExcludableEntityTree& holder) const {
+bool ExcludableEntity::is_excluded(const dunedaq::confmodel::ExcludableEntityTree& holder) const {
   return (!holder.excluded_entities().is_included(this));
 }
-bool Resource::compute_excluded_state(const std::set<std::string>& excluded_resources) const {
-  TLOG_DEBUG(6) << "No compute_excluded_state method defined for Resource " << class_name();
+bool ExcludableEntity::compute_excluded_state(const std::set<std::string>& excluded_resources) const {
+  TLOG_DEBUG(6) << "No compute_excluded_state method defined for ExcludableEntity " << class_name();
   if (excluded_resources.contains(UID())) {
     return true;
   }
   return false;
 }
 
-std::vector<const Resource*> DetDataSender::contained_excludable_entities() const {
+std::vector<const ExcludableEntity*> DetDataSender::contained_excludable_entities() const {
   return to_resources(get_streams());
 }
 
-std::vector<const Resource*> DetectorToDaqConnection::contained_excludable_entities() const {
+std::vector<const ExcludableEntity*> DetectorToDaqConnection::contained_excludable_entities() const {
   auto res = to_resources(senders());
   auto rec = receiver();
   if (rec) 
@@ -466,15 +466,15 @@ DetectorToDaqConnection::compute_excluded_state(const std::set<std::string>& exc
 
 }
 
-std::vector<const Resource*>
+std::vector<const ExcludableEntity*>
 Segment::contained_excludable_entities() const {
   // All our contained segments are resources
-  std::vector<const Resource*> resources = to_resources(get_segments());
+  std::vector<const ExcludableEntity*> resources = to_resources(get_segments());
 
   // Only a subset of our applications might be resources so check individually
   for (auto app: get_applications()) {
     TLOG_DBG(6) << "Checking " << app->UID();
-    auto res=app->cast<const Resource>();
+    auto res=app->cast<const ExcludableEntity>();
     if (res != nullptr) {
       TLOG_DBG(6) << "Adding " << app->UID();
       resources.push_back(res);
@@ -490,7 +490,7 @@ Segment::compute_excluded_state(const std::set<std::string>& excluded) const {
     return true;
   }
   for (auto app: get_applications()) {
-    auto res=app->cast<const Resource>();
+    auto res=app->cast<const ExcludableEntity>();
     if (res == nullptr) {
       return false;
     }

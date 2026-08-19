@@ -6,7 +6,7 @@ DetectorConfig,888,599
 VariableBase,391,307
 VariableSet,202,228
 Variable,420,377
-Resource,617,14
+ExcludableEntity,617,14
 ExcludableEntitySet,670,150
 ExcludableEntitySetAND,663,226
 Segment,649,452

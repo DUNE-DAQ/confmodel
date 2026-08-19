@@ -173,15 +173,15 @@
  </rel>
 </obj>
 
-<obj class="ALink" id="ExcludableEntitySet-2-ResourceBase-via-contains">
+<obj class="ALink" id="ExcludableEntitySet-2-ExcludableEntityBase-via-contains">
  <attr name="Name" type="string" val="contains"/>
  <rel name="From" class="Class" id="ExcludableEntitySet"/>
- <rel name="To" class="Class" id="ResourceBase"/>
+ <rel name="To" class="Class" id="ExcludableEntityBase"/>
  <rel name="Points">
-  <ref class="Point" id="1 ExcludableEntitySet-2-ResourceBase-via-contains"/>
-  <ref class="Point" id="2 ExcludableEntitySet-2-ResourceBase-via-contains"/>
-  <ref class="Point" id="3 ExcludableEntitySet-2-ResourceBase-via-contains"/>
-  <ref class="Point" id="4 ExcludableEntitySet-2-ResourceBase-via-contains"/>
+  <ref class="Point" id="1 ExcludableEntitySet-2-ExcludableEntityBase-via-contains"/>
+  <ref class="Point" id="2 ExcludableEntitySet-2-ExcludableEntityBase-via-contains"/>
+  <ref class="Point" id="3 ExcludableEntitySet-2-ExcludableEntityBase-via-contains"/>
+  <ref class="Point" id="4 ExcludableEntitySet-2-ExcludableEntityBase-via-contains"/>
  </rel>
 </obj>
 
@@ -246,15 +246,15 @@
  </rel>
 </obj>
 
-<obj class="ALink" id="Session-2-ResourceBase-via-disabled">
+<obj class="ALink" id="Session-2-ExcludableEntityBase-via-disabled">
  <attr name="Name" type="string" val="disabled"/>
  <rel name="From" class="Class" id="Session"/>
- <rel name="To" class="Class" id="ResourceBase"/>
+ <rel name="To" class="Class" id="ExcludableEntityBase"/>
  <rel name="Points">
-  <ref class="Point" id="1 Session-2-ResourceBase-via-disabled"/>
-  <ref class="Point" id="2 Session-2-ResourceBase-via-disabled"/>
-  <ref class="Point" id="3 Session-2-ResourceBase-via-disabled"/>
-  <ref class="Point" id="4 Session-2-ResourceBase-via-disabled"/>
+  <ref class="Point" id="1 Session-2-ExcludableEntityBase-via-disabled"/>
+  <ref class="Point" id="2 Session-2-ExcludableEntityBase-via-disabled"/>
+  <ref class="Point" id="3 Session-2-ExcludableEntityBase-via-disabled"/>
+  <ref class="Point" id="4 Session-2-ExcludableEntityBase-via-disabled"/>
  </rel>
 </obj>
 
@@ -393,7 +393,7 @@
  <attr name="y" type="s16" val="326"/>
 </obj>
 
-<obj class="Class" id="ResourceBase">
+<obj class="Class" id="ExcludableEntityBase">
  <attr name="x" type="s16" val="732"/>
  <attr name="y" type="s16" val="163"/>
 </obj>
@@ -476,14 +476,14 @@
  </rel>
 </obj>
 
-<obj class="GLink" id="Component-2-ResourceBase">
+<obj class="GLink" id="Component-2-ExcludableEntityBase">
  <rel name="From" class="Class" id="Component"/>
- <rel name="To" class="Class" id="ResourceBase"/>
+ <rel name="To" class="Class" id="ExcludableEntityBase"/>
  <rel name="Points">
-  <ref class="Point" id="1 Component-2-ResourceBase"/>
-  <ref class="Point" id="2 Component-2-ResourceBase"/>
-  <ref class="Point" id="3 Component-2-ResourceBase"/>
-  <ref class="Point" id="4 Component-2-ResourceBase"/>
+  <ref class="Point" id="1 Component-2-ExcludableEntityBase"/>
+  <ref class="Point" id="2 Component-2-ExcludableEntityBase"/>
+  <ref class="Point" id="3 Component-2-ExcludableEntityBase"/>
+  <ref class="Point" id="4 Component-2-ExcludableEntityBase"/>
  </rel>
 </obj>
 
@@ -553,25 +553,25 @@
  </rel>
 </obj>
 
-<obj class="GLink" id="ResourceBase-2-ExcludableEntitySet">
- <rel name="From" class="Class" id="ResourceBase"/>
+<obj class="GLink" id="ExcludableEntityBase-2-ExcludableEntitySet">
+ <rel name="From" class="Class" id="ExcludableEntityBase"/>
  <rel name="To" class="Class" id="ExcludableEntitySet"/>
  <rel name="Points">
-  <ref class="Point" id="1 ResourceBase-2-ExcludableEntitySet"/>
-  <ref class="Point" id="2 ResourceBase-2-ExcludableEntitySet"/>
-  <ref class="Point" id="3 ResourceBase-2-ExcludableEntitySet"/>
-  <ref class="Point" id="4 ResourceBase-2-ExcludableEntitySet"/>
+  <ref class="Point" id="1 ExcludableEntityBase-2-ExcludableEntitySet"/>
+  <ref class="Point" id="2 ExcludableEntityBase-2-ExcludableEntitySet"/>
+  <ref class="Point" id="3 ExcludableEntityBase-2-ExcludableEntitySet"/>
+  <ref class="Point" id="4 ExcludableEntityBase-2-ExcludableEntitySet"/>
  </rel>
 </obj>
 
-<obj class="GLink" id="ResourceBase-2-Segment">
- <rel name="From" class="Class" id="ResourceBase"/>
+<obj class="GLink" id="ExcludableEntityBase-2-Segment">
+ <rel name="From" class="Class" id="ExcludableEntityBase"/>
  <rel name="To" class="Class" id="Segment"/>
  <rel name="Points">
-  <ref class="Point" id="1 ResourceBase-2-Segment"/>
-  <ref class="Point" id="2 ResourceBase-2-Segment"/>
-  <ref class="Point" id="3 ResourceBase-2-Segment"/>
-  <ref class="Point" id="4 ResourceBase-2-Segment"/>
+  <ref class="Point" id="1 ExcludableEntityBase-2-Segment"/>
+  <ref class="Point" id="2 ExcludableEntityBase-2-Segment"/>
+  <ref class="Point" id="3 ExcludableEntityBase-2-Segment"/>
+  <ref class="Point" id="4 ExcludableEntityBase-2-Segment"/>
  </rel>
 </obj>
 
@@ -626,7 +626,7 @@
  <attr name="y" type="s16" val="51"/>
 </obj>
 
-<obj class="Point" id="1 Component-2-ResourceBase">
+<obj class="Point" id="1 Component-2-ExcludableEntityBase">
  <attr name="x" type="s16" val="44"/>
  <attr name="y" type="s16" val="65"/>
 </obj>
@@ -689,16 +689,16 @@
  <attr name="y" type="s16" val="24"/>
 </obj>
 
-<obj class="Point" id="1 ResourceBase-2-ExcludableEntitySet">
+<obj class="Point" id="1 ExcludableEntityBase-2-ExcludableEntitySet">
  <attr name="x" type="s16" val="74"/>
  <attr name="y" type="s16" val="32"/>
 </obj>
 
-<obj class="Point" id="1 ResourceBase-2-Segment">
+<obj class="Point" id="1 ExcludableEntityBase-2-Segment">
  <attr name="y" type="s16" val="32"/>
 </obj>
 
-<obj class="Point" id="1 ExcludableEntitySet-2-ResourceBase-via-contains">
+<obj class="Point" id="1 ExcludableEntitySet-2-ExcludableEntityBase-via-contains">
  <attr name="x" type="s16" val="66"/>
  <attr name="y" type="s16" val="24"/>
 </obj>
@@ -727,7 +727,7 @@
  <attr name="y" type="s16" val="105"/>
 </obj>
 
-<obj class="Point" id="1 Session-2-ResourceBase-via-disabled">
+<obj class="Point" id="1 Session-2-ExcludableEntityBase-via-disabled">
  <attr name="x" type="s16" val="95"/>
  <attr name="y" type="s16" val="105"/>
 </obj>
@@ -796,7 +796,7 @@
  <attr name="y" type="s16" val="435"/>
 </obj>
 
-<obj class="Point" id="2 Component-2-ResourceBase">
+<obj class="Point" id="2 Component-2-ExcludableEntityBase">
  <attr name="x" type="s16" val="44"/>
  <attr name="y" type="s16" val="154"/>
 </obj>
@@ -859,16 +859,16 @@
  <attr name="y" type="s16" val="490"/>
 </obj>
 
-<obj class="Point" id="2 ResourceBase-2-ExcludableEntitySet">
+<obj class="Point" id="2 ExcludableEntityBase-2-ExcludableEntitySet">
  <attr name="x" type="s16" val="74"/>
  <attr name="y" type="s16" val="124"/>
 </obj>
 
-<obj class="Point" id="2 ResourceBase-2-Segment">
+<obj class="Point" id="2 ExcludableEntityBase-2-Segment">
  <attr name="y" type="s16" val="183"/>
 </obj>
 
-<obj class="Point" id="2 ExcludableEntitySet-2-ResourceBase-via-contains">
+<obj class="Point" id="2 ExcludableEntitySet-2-ExcludableEntityBase-via-contains">
  <attr name="x" type="s16" val="66"/>
  <attr name="y" type="s16" val="170"/>
 </obj>
@@ -897,7 +897,7 @@
  <attr name="y" type="s16" val="178"/>
 </obj>
 
-<obj class="Point" id="2 Session-2-ResourceBase-via-disabled">
+<obj class="Point" id="2 Session-2-ExcludableEntityBase-via-disabled">
  <attr name="x" type="s16" val="95"/>
  <attr name="y" type="s16" val="190"/>
 </obj>
@@ -966,7 +966,7 @@
  <attr name="y" type="s16" val="435"/>
 </obj>
 
-<obj class="Point" id="3 Component-2-ResourceBase">
+<obj class="Point" id="3 Component-2-ExcludableEntityBase">
  <attr name="x" type="s16" val="37"/>
  <attr name="y" type="s16" val="154"/>
 </obj>
@@ -1031,17 +1031,17 @@
  <attr name="y" type="s16" val="490"/>
 </obj>
 
-<obj class="Point" id="3 ResourceBase-2-ExcludableEntitySet">
+<obj class="Point" id="3 ExcludableEntityBase-2-ExcludableEntitySet">
  <attr name="x" type="s16" val="7"/>
  <attr name="y" type="s16" val="124"/>
 </obj>
 
-<obj class="Point" id="3 ResourceBase-2-Segment">
+<obj class="Point" id="3 ExcludableEntityBase-2-Segment">
  <attr name="x" type="s16" val="47"/>
  <attr name="y" type="s16" val="183"/>
 </obj>
 
-<obj class="Point" id="3 ExcludableEntitySet-2-ResourceBase-via-contains">
+<obj class="Point" id="3 ExcludableEntitySet-2-ExcludableEntityBase-via-contains">
  <attr name="x" type="s16" val="22"/>
  <attr name="y" type="s16" val="170"/>
 </obj>
@@ -1071,7 +1071,7 @@
  <attr name="y" type="s16" val="178"/>
 </obj>
 
-<obj class="Point" id="3 Session-2-ResourceBase-via-disabled">
+<obj class="Point" id="3 Session-2-ExcludableEntityBase-via-disabled">
  <attr name="x" type="s16" val="22"/>
  <attr name="y" type="s16" val="190"/>
 </obj>
@@ -1140,7 +1140,7 @@
  <attr name="y" type="s16" val="8"/>
 </obj>
 
-<obj class="Point" id="4 Component-2-ResourceBase">
+<obj class="Point" id="4 Component-2-ExcludableEntityBase">
  <attr name="x" type="s16" val="37"/>
  <attr name="y" type="s16" val="12"/>
 </obj>
@@ -1205,17 +1205,17 @@
  <attr name="y" type="s16" val="12"/>
 </obj>
 
-<obj class="Point" id="4 ResourceBase-2-ExcludableEntitySet">
+<obj class="Point" id="4 ExcludableEntityBase-2-ExcludableEntitySet">
  <attr name="x" type="s16" val="7"/>
  <attr name="y" type="s16" val="8"/>
 </obj>
 
-<obj class="Point" id="4 ResourceBase-2-Segment">
+<obj class="Point" id="4 ExcludableEntityBase-2-Segment">
  <attr name="x" type="s16" val="47"/>
  <attr name="y" type="s16" val="12"/>
 </obj>
 
-<obj class="Point" id="4 ExcludableEntitySet-2-ResourceBase-via-contains">
+<obj class="Point" id="4 ExcludableEntitySet-2-ExcludableEntityBase-via-contains">
  <attr name="x" type="s16" val="22"/>
  <attr name="y" type="s16" val="12"/>
 </obj>
@@ -1245,7 +1245,7 @@
  <attr name="y" type="s16" val="21"/>
 </obj>
 
-<obj class="Point" id="4 Session-2-ResourceBase-via-disabled">
+<obj class="Point" id="4 Session-2-ExcludableEntityBase-via-disabled">
  <attr name="x" type="s16" val="22"/>
  <attr name="y" type="s16" val="12"/>
 </obj>

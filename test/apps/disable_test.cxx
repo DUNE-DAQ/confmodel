@@ -2,7 +2,7 @@
 
 #include "conffwk/Configuration.hpp"
 
-#include "confmodel/ResourceBase.hpp"
+#include "confmodel/ExcludableEntityBase.hpp"
 #include "confmodel/DaqApplication.hpp"
 #include "confmodel/DaqModule.hpp"
 #include "confmodel/ExcludableEntitySet.hpp"
@@ -84,7 +84,7 @@ int main(int argc, char* argv[]) {
   listApps(session);
 
   std::cout << "======\nNow trying to set enabled  \n";
-  std::set<const confmodel::ResourceBase*> enable;
+  std::set<const confmodel::ExcludableEntityBase*> enable;
   for (auto item : disabled) {
     enable.insert(item);
   }

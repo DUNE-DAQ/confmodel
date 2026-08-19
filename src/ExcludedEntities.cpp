@@ -1,5 +1,5 @@
 #include "confmodel/Application.hpp"
-#include "confmodel/Resource.hpp"
+#include "confmodel/ExcludableEntity.hpp"
 #include "confmodel/ExcludableEntitySet.hpp"
 #include "confmodel/Segment.hpp"
 #include "confmodel/Session.hpp"
@@ -17,15 +17,15 @@ using namespace dunedaq::confmodel;
 
 
 ExcludedEntities::ExcludedEntities(const ExcludableEntitySet* root,
-                                     std::vector<const Resource*> initial_list)
+                                     std::vector<const ExcludableEntity*> initial_list)
 {
-  TLOG_DEBUG(2) <<  "construct the object from Resource " << root->UID() ;
+  TLOG_DEBUG(2) <<  "construct the object from ExcludableEntity " << root->UID() ;
   update(root, initial_list);
 }
 
 
 void ExcludedEntities::update(const ExcludableEntitySet* root,
-                               std::vector<const Resource*> initial_list) {
+                               std::vector<const ExcludableEntity*> initial_list) {
 
   m_excluded.clear();
 
@@ -35,7 +35,7 @@ void ExcludedEntities::update(const ExcludableEntitySet* root,
   // circular dependencies between segments and entity sets
   TestCircularDependency cd_fuse("component \'is-excluded\' status", root);
   std::vector<const ExcludableEntitySet*> sets;
-  std::set<const Resource*> simple_entities;
+  std::set<const ExcludableEntity*> simple_entities;
   fill(*root, sets, simple_entities, cd_fuse);
 
   for (auto & comp : initial_list) {
@@ -83,14 +83,14 @@ void ExcludedEntities::update(const ExcludableEntitySet* root,
 // fill data from entities sets
 void ExcludedEntities::fill(const ExcludableEntitySet& es,
                              std::vector<const ExcludableEntitySet*>& all_sets,
-                             std::set<const Resource*>& simple_entities,
+                             std::set<const ExcludableEntity*>& simple_entities,
                              TestCircularDependency& cd_fuse)
 {
   TLOG_DEBUG(6) << "es.UID=" << es.UID() << ", class=" << es.class_name();
   all_sets.push_back(&es);
   auto rptr = &es;
-  if (rptr->cast<Resource>() == nullptr) {
-    throw (MissingConstructor(ERS_HERE, "Resource", es.full_name()));
+  if (rptr->cast<ExcludableEntity>() == nullptr) {
+    throw (MissingConstructor(ERS_HERE, "ExcludableEntity", es.full_name()));
   }
   for (auto & res : es.contained_excludable_entities()) {
     AddTestOnCircularDependency add_fuse_test(cd_fuse, res);

@@ -1,7 +1,7 @@
 #ifndef DUNEDAQDAL_EXCLUDED_ENTITIES_H
 #define DUNEDAQDAL_EXCLUDED_ENTITIES_H
 
-#include "confmodel/Resource.hpp"
+#include "confmodel/ExcludableEntity.hpp"
 
 #include <set>
 #include <string>
@@ -17,7 +17,7 @@ namespace dunedaq::confmodel {
     {
 
       friend class Session;
-      friend class Resource;
+      friend class ExcludableEntity;
 
     private:
 
@@ -25,11 +25,11 @@ namespace dunedaq::confmodel {
       bool m_initialised{false};
       void fill(const ExcludableEntitySet& rs,
                 std::vector<const ExcludableEntitySet*>& all_resource_sets,
-                std::set<const Resource*>& simple_resources,
+                std::set<const ExcludableEntity*>& simple_resources,
                 TestCircularDependency& cd_fuse);
 
       void
-      exclude(const Resource& component)
+      exclude(const ExcludableEntity& component)
       {
         m_excluded.insert(component.UID());
       }
@@ -47,15 +47,15 @@ namespace dunedaq::confmodel {
 
       ExcludedEntities() = default;
       ExcludedEntities(const ExcludableEntitySet* root,
-                        std::vector<const Resource*> initial_list);
+                        std::vector<const ExcludableEntity*> initial_list);
 
       ~ExcludedEntities() = default;
 
       void update(const ExcludableEntitySet* root,
-                  std::vector<const Resource*> initial_list);
+                  std::vector<const ExcludableEntity*> initial_list);
 
       bool
-      is_included(const Resource* component) const {
+      is_included(const ExcludableEntity* component) const {
         return ! m_excluded.contains(component->UID());
       }
 

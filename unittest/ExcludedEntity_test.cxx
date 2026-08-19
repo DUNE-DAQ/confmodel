@@ -11,11 +11,11 @@
 #include "confmodel/DummyApplication.hpp"
 #include "confmodel/DummyD2D.hpp"
 #include "confmodel/DummyReceiver.hpp"
-#include "confmodel/DummyResource.hpp"
+#include "confmodel/DummyExcludableEntity.hpp"
 #include "confmodel/DummyExcludableEntitySetAND.hpp"
 #include "confmodel/DummyExcludableEntitySet.hpp"
 #include "confmodel/DummySender.hpp"
-#include "confmodel/DummySmartResource.hpp"
+#include "confmodel/DummySmartExcludableEntity.hpp"
 #include "confmodel/DummyStream.hpp"
 #include "confmodel/Segment.hpp"
 #include "confmodel/Session.hpp"
@@ -36,101 +36,101 @@ using namespace dunedaq;
 using namespace dunedaq::confmodel;
 
 
-BOOST_AUTO_TEST_CASE(simple_resource_set){
+BOOST_AUTO_TEST_CASE(simple_excludable_entity_set){
 
   conffwk::Configuration confdb("oksconflibs");
   const std::string oksfile{"/tmp/drtest.data.xml"};
   const std::list<std::string> includes{
     "schema/confmodel/dunedaq.schema.xml",
-    "schema/confmodel/dummy_resource.schema.xml"};
+    "schema/confmodel/dummy_excludable_entity.schema.xml"};
   confdb.create(oksfile, includes);
 
-  std::vector<const DummyResource*> dummy_resources;
-  std::vector<const conffwk::ConfigObject*> resource_config_objects;
+  std::vector<const DummyExcludableEntity*> dummy_excludable_entitys;
+  std::vector<const conffwk::ConfigObject*> excludable_entity_config_objects;
   for (std::string id : {"dummyRes-0", "dummyRes-1", "dummyRes-2"}) {
     conffwk::ConfigObject conf_obj;
-    confdb.create(oksfile, "DummyResource", id, conf_obj);
-    auto res_dal = confdb.get<DummyResource>(conf_obj);
-    resource_config_objects.push_back(&res_dal->config_object());
-    dummy_resources.push_back(res_dal);
+    confdb.create(oksfile, "DummyExcludableEntity", id, conf_obj);
+    auto res_dal = confdb.get<DummyExcludableEntity>(conf_obj);
+    excludable_entity_config_objects.push_back(&res_dal->config_object());
+    dummy_excludable_entitys.push_back(res_dal);
   }
 
   conffwk::ConfigObject conf_obj;
   confdb.create(oksfile, "DummyExcludableEntitySet", "root", conf_obj);
-  conf_obj.set_objs("items", resource_config_objects);
+  conf_obj.set_objs("items", excludable_entity_config_objects);
 
   auto root = confdb.get<DummyExcludableEntitySet>(conf_obj);
 
   // Nothing excluded
   ExcludedEntities dr(root,{});
   BOOST_CHECK( dr.is_included(root) );
-  BOOST_CHECK( dr.is_included(dummy_resources[1]) );
+  BOOST_CHECK( dr.is_included(dummy_excludable_entitys[1]) );
 
-  // Single resource excluded
-  dr.update(root,{dummy_resources[1]});
+  // Single excludable_entity excluded
+  dr.update(root,{dummy_excludable_entitys[1]});
   BOOST_CHECK( dr.is_included(root) );
-  BOOST_CHECK( dr.is_included(dummy_resources[0]) );
-  BOOST_CHECK( !dr.is_included(dummy_resources[1]) );
+  BOOST_CHECK( dr.is_included(dummy_excludable_entitys[0]) );
+  BOOST_CHECK( !dr.is_included(dummy_excludable_entitys[1]) );
 
-  // All simple resources excluded - no affect on ExcludableEntitySet
-  dr.update(root, {dummy_resources[0], dummy_resources[1], dummy_resources[2]});
+  // All simple excludable_entitys excluded - no affect on ExcludableEntitySet
+  dr.update(root, {dummy_excludable_entitys[0], dummy_excludable_entitys[1], dummy_excludable_entitys[2]});
   BOOST_CHECK( dr.is_included(root) );
-  BOOST_CHECK( !dr.is_included(dummy_resources[1]) );
+  BOOST_CHECK( !dr.is_included(dummy_excludable_entitys[1]) );
 
-  // ExcludableEntitySet excluded -- should affect contained simple Resources
+  // ExcludableEntitySet excluded -- should affect contained simple ExcludableEntitys
   dr.update(root,{root});
   BOOST_CHECK( !dr.is_included(root) );
-  BOOST_CHECK( !dr.is_included(dummy_resources[0]) );
-  BOOST_CHECK( !dr.is_included(dummy_resources[1]) );
+  BOOST_CHECK( !dr.is_included(dummy_excludable_entitys[0]) );
+  BOOST_CHECK( !dr.is_included(dummy_excludable_entitys[1]) );
 
 }
 
-BOOST_AUTO_TEST_CASE(resource_set_and){
+BOOST_AUTO_TEST_CASE(excludable_entity_set_and){
 
   conffwk::Configuration confdb("oksconflibs");
   const std::string oksfile{"/tmp/drtest.data.xml"};
   const std::list<std::string> includes{
     "schema/confmodel/dunedaq.schema.xml",
-    "schema/confmodel/dummy_resource.schema.xml"};
+    "schema/confmodel/dummy_excludable_entity.schema.xml"};
   confdb.create(oksfile, includes);
 
-  std::vector<const DummyResource*> dummy_resources;
-  std::vector<const conffwk::ConfigObject*> resource_config_objects;
+  std::vector<const DummyExcludableEntity*> dummy_excludable_entitys;
+  std::vector<const conffwk::ConfigObject*> excludable_entity_config_objects;
   for (std::string id : {"dummyRes-0", "dummyRes-1", "dummyRes-2"}) {
     conffwk::ConfigObject conf_obj;
-    confdb.create(oksfile, "DummyResource", id, conf_obj);
-    auto res_dal = confdb.get<DummyResource>(conf_obj);
-    resource_config_objects.push_back(&res_dal->config_object());
-    dummy_resources.push_back(res_dal);
+    confdb.create(oksfile, "DummyExcludableEntity", id, conf_obj);
+    auto res_dal = confdb.get<DummyExcludableEntity>(conf_obj);
+    excludable_entity_config_objects.push_back(&res_dal->config_object());
+    dummy_excludable_entitys.push_back(res_dal);
   }
 
   conffwk::ConfigObject conf_obj;
   confdb.create(oksfile, "DummyExcludableEntitySetAND", "root", conf_obj);
-  conf_obj.set_objs("items", resource_config_objects);
+  conf_obj.set_objs("items", excludable_entity_config_objects);
 
   auto root = confdb.get<DummyExcludableEntitySetAND>(conf_obj);
 
   // Nothing excluded
   ExcludedEntities dr(root,{});
   BOOST_CHECK( dr.is_included(root) );
-  BOOST_CHECK( dr.is_included(dummy_resources[1]) );
+  BOOST_CHECK( dr.is_included(dummy_excludable_entitys[1]) );
 
-  // Single resource excluded
-  dr.update(root,{dummy_resources[1]});
+  // Single excludable_entity excluded
+  dr.update(root,{dummy_excludable_entitys[1]});
   BOOST_CHECK( dr.is_included(root) );
-  BOOST_CHECK( dr.is_included(dummy_resources[0]) );
-  BOOST_CHECK( !dr.is_included(dummy_resources[1]) );
+  BOOST_CHECK( dr.is_included(dummy_excludable_entitys[0]) );
+  BOOST_CHECK( !dr.is_included(dummy_excludable_entitys[1]) );
 
-  // All simple resources excluded - also excludes ExcludableEntitySetAND
-  dr.update(root, {dummy_resources[0], dummy_resources[1], dummy_resources[2]});
+  // All simple excludable_entitys excluded - also excludes ExcludableEntitySetAND
+  dr.update(root, {dummy_excludable_entitys[0], dummy_excludable_entitys[1], dummy_excludable_entitys[2]});
   BOOST_CHECK( !dr.is_included(root) );
-  BOOST_CHECK( !dr.is_included(dummy_resources[1]) );
+  BOOST_CHECK( !dr.is_included(dummy_excludable_entitys[1]) );
 
-  // ExcludableEntitySet excluded -- should affect contained simple Resources
+  // ExcludableEntitySet excluded -- should affect contained simple ExcludableEntitys
   dr.update(root,{root});
   BOOST_CHECK( !dr.is_included(root) );
-  BOOST_CHECK( !dr.is_included(dummy_resources[0]) );
-  BOOST_CHECK( !dr.is_included(dummy_resources[1]) );
+  BOOST_CHECK( !dr.is_included(dummy_excludable_entitys[0]) );
+  BOOST_CHECK( !dr.is_included(dummy_excludable_entitys[1]) );
 
 }
 
@@ -141,7 +141,7 @@ BOOST_AUTO_TEST_CASE(segment){
   const std::string oksfile{"/tmp/drtest.data.xml"};
   const std::list<std::string> includes{
     "schema/confmodel/dunedaq.schema.xml",
-    "schema/confmodel/dummy_resource.schema.xml"};
+    "schema/confmodel/dummy_excludable_entity.schema.xml"};
   confdb.create(oksfile, includes);
 
   std::vector<const DummyApplication*> dummy_apps;
@@ -165,13 +165,13 @@ BOOST_AUTO_TEST_CASE(segment){
   BOOST_CHECK( dr.is_included(root) );
   BOOST_CHECK( dr.is_included(dummy_apps[0]) );
 
-  // Single resource excluded
+  // Single excludable_entity excluded
   dr.update(root,{dummy_apps[0]});
   BOOST_CHECK( dr.is_included(root) );
   BOOST_CHECK( !dr.is_included(dummy_apps[0]) );
   BOOST_CHECK( dr.is_included(dummy_apps[1]) );
 
-  // All simple resources excluded - also excludes Segment (ExcludableEntitySetAND)
+  // All simple excludable_entitys excluded - also excludes Segment (ExcludableEntitySetAND)
   dr.update(root, {dummy_apps[0], dummy_apps[1], dummy_apps[2]});
   BOOST_CHECK( !dr.is_included(root) );
   BOOST_CHECK( !dr.is_included(dummy_apps[1]) );
@@ -184,12 +184,12 @@ BOOST_AUTO_TEST_CASE(detector_to_daq){
   const std::string oksfile{"/tmp/drtest.data.xml"};
   const std::list<std::string> includes{
     "schema/confmodel/dunedaq.schema.xml",
-    "schema/confmodel/dummy_resource.schema.xml"};
+    "schema/confmodel/dummy_excludable_entity.schema.xml"};
   confdb.create(oksfile, includes);
 
   conffwk::ConfigObject conf_obj;
 
-  std::vector<const Resource*> sender0_streams;
+  std::vector<const ExcludableEntity*> sender0_streams;
   std::vector<const conffwk::ConfigObject*> stream_config_objects;
   for (std::string id : {"dummyStream-0", "dummyStream-1", "dummyStream-2"}) {
     confdb.create(oksfile, "DummyStream", id, conf_obj);
@@ -206,7 +206,7 @@ BOOST_AUTO_TEST_CASE(detector_to_daq){
   sender_conf_objs.push_back(&sender0_dal->config_object());
 
 
-  std::vector<const Resource*> sender1_streams;
+  std::vector<const ExcludableEntity*> sender1_streams;
   stream_config_objects.clear();
   for (std::string id : {"dummyStream-3", "dummyStream-4", "dummyStream-5"}) {
     confdb.create(oksfile, "DummyStream", id, conf_obj);
@@ -248,7 +248,7 @@ BOOST_AUTO_TEST_CASE(detector_to_daq){
   BOOST_CHECK( !dr.is_included(d2d_dal) );
 
   
-  std::vector<const Resource*> exclude = sender0_streams;
+  std::vector<const ExcludableEntity*> exclude = sender0_streams;
   // All streams of sender0 excluded - excludes sender0
   dr.update(root, exclude);
   BOOST_CHECK( dr.is_included(d2d_dal) );
@@ -280,36 +280,36 @@ BOOST_AUTO_TEST_CASE(detector_to_daq){
 
 }
 
-BOOST_AUTO_TEST_CASE(smart_resource){
+BOOST_AUTO_TEST_CASE(smart_excludable_entity){
 
   conffwk::Configuration confdb("oksconflibs");
   const std::string oksfile{"/tmp/drtest.data.xml"};
   const std::list<std::string> includes{
     "schema/confmodel/dunedaq.schema.xml",
-    "schema/confmodel/dummy_resource.schema.xml"};
+    "schema/confmodel/dummy_excludable_entity.schema.xml"};
   confdb.create(oksfile, includes);
 
-  std::vector<const DummySmartResource*> dummy_resources;
-  std::vector<const conffwk::ConfigObject*> resource_config_objects;
+  std::vector<const DummySmartExcludableEntity*> dummy_excludable_entitys;
+  std::vector<const conffwk::ConfigObject*> excludable_entity_config_objects;
   for (std::string id : {"deadun", "dummyRes-1", "dummyRes-2"}) {
     conffwk::ConfigObject conf_obj;
-    confdb.create(oksfile, "DummySmartResource", id, conf_obj);
-    auto res_dal = confdb.get<DummySmartResource>(conf_obj);
-    resource_config_objects.push_back(&res_dal->config_object());
-    dummy_resources.push_back(res_dal);
+    confdb.create(oksfile, "DummySmartExcludableEntity", id, conf_obj);
+    auto res_dal = confdb.get<DummySmartExcludableEntity>(conf_obj);
+    excludable_entity_config_objects.push_back(&res_dal->config_object());
+    dummy_excludable_entitys.push_back(res_dal);
   }
 
   conffwk::ConfigObject conf_obj;
   confdb.create(oksfile, "DummyExcludableEntitySetAND", "root", conf_obj);
-  conf_obj.set_objs("items", resource_config_objects);
+  conf_obj.set_objs("items", excludable_entity_config_objects);
 
   auto root = confdb.get<DummyExcludableEntitySetAND>(conf_obj);
 
-  // Nothing explicitly excluded, one DummySmartResource excluded due to UID
+  // Nothing explicitly excluded, one DummySmartExcludableEntity excluded due to UID
   ExcludedEntities dr(root,{});
   BOOST_CHECK( dr.is_included(root));
-  BOOST_CHECK( !dr.is_included(dummy_resources[0]) );
-  BOOST_CHECK( dr.is_included(dummy_resources[1]) );
+  BOOST_CHECK( !dr.is_included(dummy_excludable_entitys[0]) );
+  BOOST_CHECK( dr.is_included(dummy_excludable_entitys[1]) );
 
 }
 

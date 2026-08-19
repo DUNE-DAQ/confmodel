@@ -15,7 +15,7 @@ find_package(Boost COMPONENTS unit_test_framework REQUIRED)
 
 ##############################################################################
 
-daq_add_dal_library(dunedaq.schema.xml dummy_resource.schema.xml
+daq_add_dal_library(dunedaq.schema.xml dummy_excludable_entity.schema.xml
   SOURCES dalMethods.cpp test_circular_dependency.cpp ExcludedEntities.cpp
   LINK_LIBRARIES okssystem::okssystem logging::logging nlohmann_json::nlohmann_json)
 

@@ -153,14 +153,14 @@
  </class>
 
  <class name="DetDataReceiver" is-abstract="yes">
-  <superclass name="Resource"/>
+  <superclass name="ExcludableEntity"/>
  </class>
 
  <class name="DetDataSender" is-abstract="yes">
   <superclass name="ExcludableEntitySetAND"/>
   <relationship name="streams" class-type="DetectorStream" low-cc="one" high-cc="many" is-composite="no" is-exclusive="yes" is-dependent="no"/>
   <method name="contained_excludable_entities" description="">
-   <method-implementation language="c++" prototype="virtual std::vector&lt;const Resource*&gt; contained_excludable_entities() const override" body=""/>
+   <method-implementation language="c++" prototype="virtual std::vector&lt;const ExcludableEntity*&gt; contained_excludable_entities() const override" body=""/>
   </method>
  </class>
 
@@ -172,7 +172,7 @@
  </class>
 
  <class name="DetectorStream">
-  <superclass name="Resource"/>
+  <superclass name="ExcludableEntity"/>
   <attribute name="source_id" type="u32" is-not-null="yes"/>
   <relationship name="geo_id" class-type="GeoId" low-cc="one" high-cc="one" is-composite="no" is-exclusive="no" is-dependent="no"/>
  </class>
@@ -183,7 +183,7 @@
    <method-implementation language="c++" prototype="std::vector&lt;const confmodel::DetectorStream*&gt; streams() const" body=""/>
   </method>
   <method name="contained_excludable_entities" description="">
-   <method-implementation language="c++" prototype="virtual std::vector&lt;const Resource*&gt; contained_excludable_entities() const override" body=""/>
+   <method-implementation language="c++" prototype="virtual std::vector&lt;const ExcludableEntity*&gt; contained_excludable_entities() const override" body=""/>
   </method>
   <method name="senders" description="Pure virtual method to get vector of DataSenders">
    <method-implementation language="c++" prototype="virtual std::vector&lt;const DetDataSender*&gt; senders() const = 0" body=""/>
@@ -196,10 +196,10 @@
   </method>
  </class>
 
- <class name="ExcludableEntitySet" description="Base class for a collection of Resource items. Derived classes must implement the contained_excludable_entities() method to return a vector of Resource objects." is-abstract="yes">
-  <superclass name="Resource"/>
-  <method name="contained_excludable_entities" description="Virtual method to obtain the list of all contained Resources. Used internally by the core exclusion logic. Not intended to be used in application code as that should be using individual relationships of the derived classes.">
-   <method-implementation language="c++" prototype="virtual std::vector&lt;const Resource*&gt; contained_excludable_entities() const = 0" body="BEGIN_HEADER_EPILOGUE&#xA;template&lt;typename T&gt;&#xA;std::vector&lt;const dunedaq::confmodel::Resource*&gt; to_resources( const std::vector&lt;T*&gt;&amp; vector_of_children ) {&#xA;  std::vector&lt;const dunedaq::confmodel::Resource*&gt; resources;&#xA;  resources.reserve(vector_of_children.size());&#xA;&#xA;  std::copy(vector_of_children.begin(), vector_of_children.end(), std::back_inserter(resources));&#xA;&#xA;  return resources;&#xA;&#xA;}&#xA;END_HEADER_EPILOGUE"/>
+ <class name="ExcludableEntitySet" description="Base class for a collection of ExcludableEntity items. Derived classes must implement the contained_excludable_entities() method to return a vector of ExcludableEntity objects." is-abstract="yes">
+  <superclass name="ExcludableEntity"/>
+  <method name="contained_excludable_entities" description="Virtual method to obtain the list of all contained ExcludableEntitys. Used internally by the core exclusion logic. Not intended to be used in application code as that should be using individual relationships of the derived classes.">
+   <method-implementation language="c++" prototype="virtual std::vector&lt;const ExcludableEntity*&gt; contained_excludable_entities() const = 0" body="BEGIN_HEADER_EPILOGUE&#xA;template&lt;typename T&gt;&#xA;std::vector&lt;const dunedaq::confmodel::ExcludableEntity*&gt; to_resources( const std::vector&lt;T*&gt;&amp; vector_of_children ) {&#xA;  std::vector&lt;const dunedaq::confmodel::ExcludableEntity*&gt; resources;&#xA;  resources.reserve(vector_of_children.size());&#xA;&#xA;  std::copy(vector_of_children.begin(), vector_of_children.end(), std::back_inserter(resources));&#xA;&#xA;  return resources;&#xA;&#xA;}&#xA;END_HEADER_EPILOGUE"/>
   </method>
  </class>
 
@@ -218,18 +218,18 @@
  </class>
 
  <class name="ExcludableEntityTree" is-abstract="yes">
-  <relationship name="excluded" description="Resources that should not participate in the current run" class-type="Resource" low-cc="zero" high-cc="many" is-composite="yes" is-exclusive="no" is-dependent="yes"/>
+  <relationship name="excluded" description="ExcludableEntitys that should not participate in the current run" class-type="ExcludableEntity" low-cc="zero" high-cc="many" is-composite="yes" is-exclusive="no" is-dependent="yes"/>
   <method name="excluded_entities" description="Get a reference to the ExcludedEntities object of this ExcludableEntityTree, initialising it if it has not already been initialised.">
-   <method-implementation language="c++" prototype="const dunedaq::confmodel::ExcludedEntities&amp; excluded_entities() const" body="BEGIN_HEADER_PROLOGUE&#xA;#include &quot;confmodel/ExcludedEntities.hpp&quot;&#xA;#include &quot;confmodel/Resource.hpp&quot;&#xA;END_HEADER_PROLOGUE&#xA;&#xA;BEGIN_PRIVATE_SECTION&#xA;mutable ExcludedEntities m_excluded_entities;&#xA;END_PRIVATE_SECTION&#xA;&#xA;&#xA;if (!m_excluded_entities.initialised()) {&#xA; m_excluded_entities.update(root_entity(),get_excluded());&#xA;}&#xA;return m_excluded_entities;"/>
+   <method-implementation language="c++" prototype="const dunedaq::confmodel::ExcludedEntities&amp; excluded_entities() const" body="BEGIN_HEADER_PROLOGUE&#xA;#include &quot;confmodel/ExcludedEntities.hpp&quot;&#xA;#include &quot;confmodel/ExcludableEntity.hpp&quot;&#xA;END_HEADER_PROLOGUE&#xA;&#xA;BEGIN_PRIVATE_SECTION&#xA;mutable ExcludedEntities m_excluded_entities;&#xA;END_PRIVATE_SECTION&#xA;&#xA;&#xA;if (!m_excluded_entities.initialised()) {&#xA; m_excluded_entities.update(root_entity(),get_excluded());&#xA;}&#xA;return m_excluded_entities;"/>
   </method>
   <method name="root_entity" description="Pure virtual method to get the ExcludableEntitySet at the root of the ExcludableEntityTree.">
    <method-implementation language="c++" prototype="virtual const ExcludableEntitySet* root_entity() const = 0" body=""/>
   </method>
   <method name="exclude" description="Add a component to the excluded relationship and recalculate the exclusion tree">
-   <method-implementation language="c++" prototype="void exclude(const Resource*)" body=""/>
+   <method-implementation language="c++" prototype="void exclude(const ExcludableEntity*)" body=""/>
   </method>
   <method name="include" description="">
-   <method-implementation language="c++" prototype="void include(const Resource*)" body=""/>
+   <method-implementation language="c++" prototype="void include(const ExcludableEntity*)" body=""/>
   </method>
  </class>
 
@@ -365,11 +365,11 @@
   <attribute name="publish_timeout" type="u32" init-value="2" is-not-null="yes"/>
  </class>
 
- <class name="Resource" description="Base class for all Resource objects. A Resource is an object with an included/excluded state.&#xA;Derived classes must implement the compute_excluded_state() method to return the state." is-abstract="yes">
+ <class name="ExcludableEntity" description="Base class for all ExcludableEntity objects. A ExcludableEntity is an object with an included/excluded state.&#xA;Derived classes must implement the compute_excluded_state() method to return the state." is-abstract="yes">
   <method name="parents" description="The algorithm calculates a vector of segments which are parents of given segment.&#xA;If the segment has parents referenced by the partition object, then:&#xA;- in case of C++ it fills the parents parameter; otherwise it throws {@link NotFoundException} exception">
-   <method-implementation language="c++" prototype="void parents(const dunedaq::confmodel::Session&amp; session, std::list&lt; std::vector&lt;const dunedaq::confmodel::Resource *&gt; &gt;&amp; parents) const" body=""/>
+   <method-implementation language="c++" prototype="void parents(const dunedaq::confmodel::Session&amp; session, std::list&lt; std::vector&lt;const dunedaq::confmodel::ExcludableEntity *&gt; &gt;&amp; parents) const" body=""/>
   </method>
-  <method name="is_excluded" description="Method to be called from user code to determine if this Resource is excluded in the current configuration.">
+  <method name="is_excluded" description="Method to be called from user code to determine if this ExcludableEntity is excluded in the current configuration.">
    <method-implementation language="c++" prototype="bool is_excluded(const dunedaq::confmodel::ExcludableEntityTree&amp; session) const" body=""/>
   </method>
   <method name="compute_excluded_state" description="Virtual method to be implemented by subclasses containing the logic to determine if this object should be considered excluded.">
@@ -383,7 +383,7 @@
   <relationship name="applications" description="List of Applications that run in this Segment" class-type="Application" low-cc="zero" high-cc="many" is-composite="yes" is-exclusive="yes" is-dependent="yes"/>
   <relationship name="controller" description="This Segment&apos;s run controller." class-type="RCApplication" low-cc="one" high-cc="one" is-composite="yes" is-exclusive="yes" is-dependent="yes"/>
   <method name="contained_excludable_entities" description="">
-   <method-implementation language="c++" prototype="virtual std::vector&lt;const Resource*&gt; contained_excludable_entities() const" body=""/>
+   <method-implementation language="c++" prototype="virtual std::vector&lt;const ExcludableEntity*&gt; contained_excludable_entities() const" body=""/>
   </method>
   <method name="compute_excluded_state" description="">
    <method-implementation language="c++" prototype="bool compute_excluded_state(const std::set&lt;std::string&gt;&amp; excluded) const final" body=""/>
