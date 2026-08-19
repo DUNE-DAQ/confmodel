@@ -412,7 +412,7 @@
   <relationship name="detector_configuration" class-type="DetectorConfig" low-cc="one" high-cc="one" is-composite="no" is-exclusive="no" is-dependent="no"/>
   <relationship name="opmon_uri" description="Configuration for the OpMon facilities used across the session" class-type="OpMonURI" low-cc="one" high-cc="one" is-composite="yes" is-exclusive="no" is-dependent="yes"/>
   <method name="all_applications" description="Returns applications defined in the Session and all of its Segments.">
-   <method-implementation language="c++" prototype="std::vector&lt;const dunedaq::confmodel::Application *&gt; all_applications() const" body="BEGIN_PRIVATE_SECTION&#xA;friend class DisabledResources;&#xA;std::vector&lt;const Application*&gt;getSegmentApps(const Segment*,bool)const;&#xA;END_PRIVATE_SECTION&#xA;&#xA;BEGIN_HEADER_PROLOGUE&#xA;namespace dunedaq::confmodel{class Segment;}&#xA;END_HEADER_PROLOGUE"/>
+   <method-implementation language="c++" prototype="std::vector&lt;const dunedaq::confmodel::Application *&gt; all_applications() const" body="BEGIN_PRIVATE_SECTION&#xA;friend class ExcludedEntities;&#xA;std::vector&lt;const Application*&gt;getSegmentApps(const Segment*,bool)const;&#xA;END_PRIVATE_SECTION&#xA;&#xA;BEGIN_HEADER_PROLOGUE&#xA;namespace dunedaq::confmodel{class Segment;}&#xA;END_HEADER_PROLOGUE"/>
   </method>
   <method name="enabled_applications" description="Returns all enabled applications defined in the Session and all of its Segments.">
    <method-implementation language="c++" prototype="std::vector&lt;const dunedaq::confmodel::Application *&gt; enabled_applications() const" body=""/>
