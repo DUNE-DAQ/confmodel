@@ -134,8 +134,8 @@
 
  <class name="DummySmartResource">
   <superclass name="Resource"/>
-  <method name="compute_disabled_state" description="">
-   <method-implementation language="c++" prototype="bool compute_disabled_state(const std::set&lt;std::string&gt;&amp; disabled) const override" body="return (UID()==&quot;deadun&quot; || disabled.contains(UID())) ;&#xA;"/>
+  <method name="compute_excluded_state" description="">
+   <method-implementation language="c++" prototype="bool compute_excluded_state(const std::set&lt;std::string&gt;&amp; excluded) const override" body="return (UID()==&quot;deadun&quot; || excluded.contains(UID())) ;&#xA;"/>
   </method>
  </class>
 
