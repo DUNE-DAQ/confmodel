@@ -51,7 +51,7 @@ void ExcludedEntities::update(const ExcludableEntitySet* root,
 
     TLOG_DEBUG(6) <<  "before auto-exclusion iteration " << count << " the number of excluded components is " << num ;
     for (const auto& set : sets) {
-      if (is_excluded(set)) {
+      if (is_included(set)) {
         if (set->compute_excluded_state(m_excluded)) {
           TLOG_DEBUG(6) <<  "Exclude custom entity-set- " << set->UID() << " because children are excluded" ;
           exclude(*set);
@@ -61,7 +61,7 @@ void ExcludedEntities::update(const ExcludableEntitySet* root,
     }
 
     for (auto& en : simple_entities) {
-      if (is_excluded(en) && en->compute_excluded_state(m_excluded)) {
+      if (is_included(en) && en->compute_excluded_state(m_excluded)) {
         TLOG_DEBUG(6) << "Marking " << en->UID() << " as excluded\n";
         exclude(*en);
       }

@@ -421,7 +421,7 @@ void ExcludableEntityTree::include(const Resource* res) {
 }
 
 bool Resource::is_excluded(const dunedaq::confmodel::ExcludableEntityTree& holder) const {
-  return (!holder.excluded_entities().is_excluded(this));
+  return (!holder.excluded_entities().is_included(this));
 }
 bool Resource::compute_excluded_state(const std::set<std::string>& disabled_resources) const {
   TLOG_DEBUG(6) << "No compute_excluded_state method defined for Resource " << class_name();

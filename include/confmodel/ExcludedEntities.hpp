@@ -55,8 +55,8 @@ namespace dunedaq::confmodel {
                   std::vector<const Resource*> initial_list);
 
       bool
-      is_excluded(const Resource* component) const {
-        return m_excluded.contains(component->UID());
+      is_included(const Resource* component) const {
+        return ! m_excluded.contains(component->UID());
       }
 
       [[nodiscard]] bool initialised() const {return m_initialised;}
