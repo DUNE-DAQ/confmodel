@@ -68,7 +68,7 @@ void ExcludedEntities::update(const ExcludableEntitySet* root,
     }
 
     if (size() == num) {
-      TLOG_DEBUG(6) <<  "after " << count << " iteration(s) auto-exclusion algorithm found no newly disabled sets, exiting loop ..." ;
+      TLOG_DEBUG(6) <<  "after " << count << " iteration(s) auto-exclusion algorithm found no newly excluded sets, exiting loop ..." ;
       break;
     }
 

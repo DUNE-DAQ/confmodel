@@ -66,18 +66,18 @@ BOOST_AUTO_TEST_CASE(simple_resource_set){
   BOOST_CHECK( dr.is_included(root) );
   BOOST_CHECK( dr.is_included(dummy_resources[1]) );
 
-  // Single resource disabled
+  // Single resource excluded
   dr.update(root,{dummy_resources[1]});
   BOOST_CHECK( dr.is_included(root) );
   BOOST_CHECK( dr.is_included(dummy_resources[0]) );
   BOOST_CHECK( !dr.is_included(dummy_resources[1]) );
 
-  // All simple resources disabled - no affect on ExcludableEntitySet
+  // All simple resources excluded - no affect on ExcludableEntitySet
   dr.update(root, {dummy_resources[0], dummy_resources[1], dummy_resources[2]});
   BOOST_CHECK( dr.is_included(root) );
   BOOST_CHECK( !dr.is_included(dummy_resources[1]) );
 
-  // ExcludableEntitySet disabled -- should affect contained simple Resources
+  // ExcludableEntitySet excluded -- should affect contained simple Resources
   dr.update(root,{root});
   BOOST_CHECK( !dr.is_included(root) );
   BOOST_CHECK( !dr.is_included(dummy_resources[0]) );

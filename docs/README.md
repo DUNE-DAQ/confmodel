@@ -62,7 +62,7 @@ and the list of excluded resources from its `excluded` relationship.
 
 ⚠️**Any ExcludableEntitySet that is not referenced by a ExcludableEntitySet in the tree
 starting at the Session's segment relationship will not be considered
-by the disabling logic!**
+by the exclusion logic!**
 
 The **ExcludedResources** constructor will configure itself using the
 tree of Resources and initial list of excluded Resources.

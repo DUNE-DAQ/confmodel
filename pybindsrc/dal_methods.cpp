@@ -53,7 +53,7 @@ namespace dunedaq::confmodel::python {
                                    const std::string& session_name) {
     auto session=db.get<Session>(session_name);
     std::vector<ObjectLocator> apps;
-    for (auto app : session->enabled_applications()) {
+    for (auto app : session->included_applications()) {
       apps.push_back({app->UID(),app->class_name()});
     }
     return apps;
@@ -205,13 +205,13 @@ register_dal_methods(py::module& m)
     .def_readonly("class_name", &ObjectLocator::class_name)
     ;
 
-  m.def("session_get_all_applications", &session_get_all_applications, "Get list of ALL applications (regardless of enabled/disabled state) in the requested session");
+  m.def("session_get_all_applications", &session_get_all_applications, "Get list of ALL applications (regardless of included/excluded state) in the requested session");
   m.def("session_get_included_applications", &session_get_included_applications, "Get list of included applications in the requested session");
 
   m.def("exclude_entity", &exclude_entity, "Exclude a Resource-derived object (e.g. a Segment)");
   m.def("include_entity", &include_entity, "Include a Resource-derived object (e.g. a Segment)");
 
-  m.def("entity_excluded", &entity_excluded, "Determine if a Resource-derived object (e.g. a Segment) has been disabled");
+  m.def("entity_excluded", &entity_excluded, "Determine if a Resource-derived object (e.g. a Segment) has been excluded");
   m.def("entity_get_parents", &entity_get_parents, "Get the Resource-derived class instances of the parent(s) of the Resource-derived object in question");
   m.def("daqapp_get_used_resources", &daq_application_get_used_hostresources, "Get list of HostResources used by DAQApplication");
   m.def("daq_application_construct_commandline_parameters", &daq_application_construct_commandline_parameters, "Get a version of the command line agruments parsed");

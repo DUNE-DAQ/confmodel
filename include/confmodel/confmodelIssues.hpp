@@ -173,7 +173,7 @@ ERS_DECLARE_ISSUE_BASE(
     confmodel,
     ReadMaxAllowedIterations,
     AlgorithmError,
-    "Has exceeded the maximum of iterations allowed (" << limit << ") during calculation of disabled objects",
+    "Has exceeded the maximum of iterations allowed (" << limit << ") during calculation of excluded objects",
     ,
     ((unsigned int)limit))
 

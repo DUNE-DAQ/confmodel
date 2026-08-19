@@ -196,7 +196,7 @@ Session::all_applications() const {
 }
 
 std::vector<const Application*>
-Session::enabled_applications() const {
+Session::included_applications() const {
   std::vector<const Application*> apps;
   auto segapps = getSegmentApps(get_segment(), true);
   apps.insert(apps.end(), segapps.begin(),segapps.end());
@@ -395,37 +395,37 @@ std::string OpMonURI::get_URI( const std::string & /* app */) const {
 
 // ========================================================================
 void ExcludableEntityTree::exclude(const Resource* res) {
-  auto disabled_vec = get_excluded();
-  for (auto disabled_resource : disabled_vec) {
-    if (disabled_resource == res) {
+  auto excluded_vec = get_excluded();
+  for (auto excluded_resource : excluded_vec) {
+    if (excluded_resource == res) {
       return;
     }
   }
-  disabled_vec.push_back(res);
+  excluded_vec.push_back(res);
 
-  set_excluded(disabled_vec);
+  set_excluded(excluded_vec);
   configuration().update<ExcludableEntityTree>({UID()}, {}, {});
 
-  m_excluded_entities.update(root_entity(), disabled_vec);
+  m_excluded_entities.update(root_entity(), excluded_vec);
 }
 void ExcludableEntityTree::include(const Resource* res) {
-  auto disabled_vec = get_excluded();
-  auto count = std::erase(disabled_vec, res);
+  auto excluded_vec = get_excluded();
+  auto count = std::erase(excluded_vec, res);
   if (count == 0) {
     return;
   }
-  set_excluded(disabled_vec);
+  set_excluded(excluded_vec);
   configuration().update<ExcludableEntityTree>({UID()}, {}, {});
 
-  m_excluded_entities.update(root_entity(), disabled_vec);
+  m_excluded_entities.update(root_entity(), excluded_vec);
 }
 
 bool Resource::is_excluded(const dunedaq::confmodel::ExcludableEntityTree& holder) const {
   return (!holder.excluded_entities().is_included(this));
 }
-bool Resource::compute_excluded_state(const std::set<std::string>& disabled_resources) const {
+bool Resource::compute_excluded_state(const std::set<std::string>& excluded_resources) const {
   TLOG_DEBUG(6) << "No compute_excluded_state method defined for Resource " << class_name();
-  if (disabled_resources.contains(UID())) {
+  if (excluded_resources.contains(UID())) {
     return true;
   }
   return false;
@@ -445,24 +445,24 @@ std::vector<const Resource*> DetectorToDaqConnection::contained_excludable_entit
 
 
 bool
-DetectorToDaqConnection::compute_excluded_state(const std::set<std::string>& disabled_resources) const {
-  if (disabled_resources.contains(UID())) {
+DetectorToDaqConnection::compute_excluded_state(const std::set<std::string>& excluded_resources) const {
+  if (excluded_resources.contains(UID())) {
     return true;
   }
-  bool send_disabled = true;
+  bool send_excluded = true;
   for (auto sender: senders()) {
-    if (!sender->compute_excluded_state(disabled_resources)) {
-      send_disabled = false;
+    if (!sender->compute_excluded_state(excluded_resources)) {
+      send_excluded = false;
       break;
     }
   }
-  TLOG_DBG(6) << "receiver disabled=" << receiver()->compute_excluded_state(disabled_resources)
-              << " senders disabled=" << send_disabled;
+  TLOG_DBG(6) << "receiver excluded=" << receiver()->compute_excluded_state(excluded_resources)
+              << " senders excluded=" << send_excluded;
   auto rec = receiver();
   if ( ! rec )
-    return send_disabled;
+    return send_excluded;
 
-  return (rec->compute_excluded_state(disabled_resources) || send_disabled) ;
+  return (rec->compute_excluded_state(excluded_resources) || send_excluded) ;
 
 }
 
@@ -485,8 +485,8 @@ Segment::contained_excludable_entities() const {
 }
 
 bool
-Segment::compute_excluded_state(const std::set<std::string>& disabled) const {
-  if (disabled.contains(UID())) {
+Segment::compute_excluded_state(const std::set<std::string>& excluded) const {
+  if (excluded.contains(UID())) {
     return true;
   }
   for (auto app: get_applications()) {
@@ -496,7 +496,7 @@ Segment::compute_excluded_state(const std::set<std::string>& disabled) const {
     }
   }
   for (auto res: contained_excludable_entities()) {
-    if (!res->compute_excluded_state(disabled)) {
+    if (!res->compute_excluded_state(excluded)) {
       return false;
     }
   }

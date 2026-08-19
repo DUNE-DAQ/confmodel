@@ -18,29 +18,29 @@ using namespace dunedaq::confmodel;
 
 void process_segment(const Session* session,
                      const Segment* segment,
-                     const std::set<std::string>& disabled_objects,
+                     const std::set<std::string>& excluded_objects,
                      std::string spacer) {
   std::cout << spacer << "Segment " << segment->UID();
-  bool segment_disabled = segment->is_excluded(*session);
+  bool segment_excluded = segment->is_excluded(*session);
   std::string reason = "";
-  if (segment_disabled) {
-    std::cout << " disabled";
+  if (segment_excluded) {
+    std::cout << " excluded";
     reason = "segment";
   }
   std::cout << "\n";
   for (auto subseg : segment->get_segments()) {
-    process_segment (session, subseg, disabled_objects, spacer+"  ");
+    process_segment (session, subseg, excluded_objects, spacer+"  ");
   }
 
   for (auto app : segment->get_applications()) {
-    bool disabled = segment_disabled;
+    bool excluded = segment_excluded;
     std::cout << spacer << "  Application: " << app->UID();
-    if (!disabled) {
+    if (!excluded) {
       auto rset = app->cast<ExcludableEntitySet>();
       if (rset) {
         if (rset->is_excluded(*session)) {
-          disabled = true;
-          if (disabled_objects.find(app->UID()) != disabled_objects.end()) {
+          excluded = true;
+          if (excluded_objects.find(app->UID()) != excluded_objects.end()) {
             reason = "directly";
           }
           else {
@@ -52,8 +52,8 @@ void process_segment(const Session* session,
         for (auto mod : rset->contained_excludable_entities()) {
           std::cout << seperator << mod->UID();
           if (mod->is_excluded(*session)) {
-            std::cout << "<disabled ";
-            if (disabled_objects.find(mod->UID()) == disabled_objects.end()) {
+            std::cout << "<excluded ";
+            if (excluded_objects.find(mod->UID()) == excluded_objects.end()) {
               std::cout << "in";
             }
             std::cout << "directly>";
@@ -63,8 +63,8 @@ void process_segment(const Session* session,
         std::cout << "}";
       }
     }
-    if (disabled) {
-      std::cout << " <disabled "<< reason << ">";
+    if (excluded) {
+      std::cout << " <excluded "<< reason << ">";
     }
     auto daqApp = app->cast<DaqApplication>();
     if (daqApp) {
@@ -121,14 +121,14 @@ int main(int argc, char* argv[]) {
 
     std::cout << separator << "      Applications in Session: "
               << sessionName << "\n";
-    std::set<std::string> disabled_objects;
+    std::set<std::string> excluded_objects;
     for (auto object : session->get_excluded()) {
-      TLOG_DEBUG(11) << object->UID() << " is in disabled list of Session";
-      disabled_objects.insert(object->UID());
+      TLOG_DEBUG(11) << object->UID() << " is in excluded list of Session";
+      excluded_objects.insert(object->UID());
     }
 
     process_segment (session, session->get_segment(),
-                     disabled_objects,
+                     excluded_objects,
                      "");
     separator =
       "\n   ----------------------------------------------\n\n";
