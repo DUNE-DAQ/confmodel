@@ -207,10 +207,10 @@ Session::included_applications() const {
 // ========================================================================
 
 std::set<const HostComponent*>
-DaqApplication::get_used_hostresources() const {
+DaqApplication::get_used_host_components() const {
   std::set<const HostComponent*> res;
   for (auto module :  get_modules()) {
-    for (auto hostresource : module->get_used_resources()) {
+    for (auto hostresource : module->get_used_host_components()) {
       res.insert(hostresource);
     }
   }

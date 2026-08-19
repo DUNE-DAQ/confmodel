@@ -123,7 +123,7 @@ allocated resources of a different NUMA node.
 
  The **DaqApplication** contains a list of **DaqModule**s each of which has a
 list of used resources. The **DaqApplication** provides a method
-`get_used_hostresources` which can be called by `appfwk` in order to check
+`get_used_host_components` which can be called by `appfwk` in order to check
 that these resources are indeed associated with the VirtualHost by
 comparing with those listed in its `hw_resources` relationship.
 

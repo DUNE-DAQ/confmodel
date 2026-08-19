@@ -123,10 +123,10 @@ namespace dunedaq::confmodel::python {
     return parent_ids;
   }
 
-  std::vector<std::string> daq_application_get_used_hostresources(Configuration& db, const std::string& app_id) {
+  std::vector<std::string> daq_application_get_used_host_components(Configuration& db, const std::string& app_id) {
     auto app = db.get<dunedaq::confmodel::DaqApplication>(app_id);
     std::vector<std::string> resources;
-    for (auto res : app->get_used_hostresources()) {
+    for (auto res : app->get_used_host_components()) {
       resources.push_back(res->UID());
     }
     return resources;
@@ -213,7 +213,7 @@ register_dal_methods(py::module& m)
 
   m.def("entity_excluded", &entity_excluded, "Determine if a ExcludableEntity-derived object (e.g. a Segment) has been excluded");
   m.def("entity_get_parents", &entity_get_parents, "Get the ExcludableEntity-derived class instances of the parent(s) of the ExcludableEntity-derived object in question");
-  m.def("daqapp_get_used_resources", &daq_application_get_used_hostresources, "Get list of HostExcludableEntitys used by DAQApplication");
+  m.def("daqapp_get_used_host_components", &daq_application_get_used_host_components, "Get list of HostExcludableEntitys used by DAQApplication");
   m.def("daq_application_construct_commandline_parameters", &daq_application_construct_commandline_parameters, "Get a version of the command line agruments parsed");
   m.def("rc_application_construct_commandline_parameters", &rc_application_construct_commandline_parameters, "Get a version of the command line agruments parsed");
 

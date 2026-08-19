@@ -124,8 +124,8 @@
   <attribute name="application_name" description="Name of the application binary to run." type="string" init-value="daq_application" is-not-null="yes"/>
   <relationship name="modules" class-type="DaqModule" low-cc="zero" high-cc="many" is-composite="no" is-exclusive="no" is-dependent="no"/>
   <relationship name="action_plans" class-type="ActionPlan" low-cc="zero" high-cc="many" is-composite="no" is-exclusive="no" is-dependent="no"/>
-  <method name="get_used_hostresources" description="Get the set of all HostComponents used by this application">
-   <method-implementation language="c++" prototype=" std::set&lt;const dunedaq::confmodel::HostComponent*&gt; get_used_hostresources() const" body=""/>
+  <method name="get_used_host_components" description="Get the set of all HostComponents used by this application">
+   <method-implementation language="c++" prototype=" std::set&lt;const dunedaq::confmodel::HostComponent*&gt; get_used_host_components() const" body=""/>
   </method>
   <method name="construct_commandline_parameters" description="get the command line parameters for this application">
    <method-implementation language="c++" prototype=" const std::vector&lt;std::string&gt; construct_commandline_parameters(const conffwk::Configuration&amp; confdb, const dunedaq::confmodel::Session* session) const" body="BEGIN_HEADER_PROLOGUE&#xA;#include &quot;confmodel/util.hpp&quot;&#xA;END_HEADER_PROLOGUE"/>
@@ -135,7 +135,7 @@
  <class name="DaqModule" description="A plugin module for the app framework" is-abstract="yes">
   <relationship name="inputs" description="List of connections to/from this module" class-type="Connection" low-cc="zero" high-cc="many" is-composite="yes" is-exclusive="no" is-dependent="yes"/>
   <relationship name="outputs" description="Output connections from this module" class-type="Connection" low-cc="zero" high-cc="many" is-composite="yes" is-exclusive="no" is-dependent="yes"/>
-  <relationship name="used_resources" class-type="HostComponent" low-cc="zero" high-cc="many" is-composite="yes" is-exclusive="no" is-dependent="yes"/>
+  <relationship name="used_host_components" class-type="HostComponent" low-cc="zero" high-cc="many" is-composite="yes" is-exclusive="no" is-dependent="yes"/>
  </class>
 
  <class name="DaqModulesGroup" description="Represents a group of DAQ Modules that can run commands in parallel or in series as one of the steps of an ActionPlan." is-abstract="yes">
