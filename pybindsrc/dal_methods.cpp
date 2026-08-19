@@ -49,7 +49,7 @@ namespace dunedaq::confmodel::python {
   }
 
   std::vector<ObjectLocator>
-  session_get_enabled_applications(Configuration& db,
+  session_get_included_applications(Configuration& db,
                                    const std::string& session_name) {
     auto session=db.get<Session>(session_name);
     std::vector<ObjectLocator> apps;
@@ -96,7 +96,7 @@ namespace dunedaq::confmodel::python {
     if (component_ptr == nullptr) {
       return false;
     }
-    return component_ptr->is_disabled(*session_ptr);
+    return component_ptr->is_excluded(*session_ptr);
   }
 
 
@@ -206,10 +206,10 @@ register_dal_methods(py::module& m)
     ;
 
   m.def("session_get_all_applications", &session_get_all_applications, "Get list of ALL applications (regardless of enabled/disabled state) in the requested session");
-  m.def("session_get_enabled_applications", &session_get_enabled_applications, "Get list of enabled applications in the requested session");
+  m.def("session_get_included_applications", &session_get_included_applications, "Get list of included applications in the requested session");
 
-  m.def("exclude_entity", &exclude_entity, "Disable a Resource-derived object (e.g. a Segment)");
-  m.def("include_entity", &include_entity, "Enable a Resource-derived object (e.g. a Segment)");
+  m.def("exclude_entity", &exclude_entity, "Exclude a Resource-derived object (e.g. a Segment)");
+  m.def("include_entity", &include_entity, "Include a Resource-derived object (e.g. a Segment)");
 
   m.def("entity_excluded", &entity_excluded, "Determine if a Resource-derived object (e.g. a Segment) has been disabled");
   m.def("entity_get_parents", &entity_get_parents, "Get the Resource-derived class instances of the parent(s) of the Resource-derived object in question");

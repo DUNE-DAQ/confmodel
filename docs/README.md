@@ -5,14 +5,14 @@ This package contains the core' schema for the DUNE daq OKS configuration.
 
 The top level of the schema is the **Session** which defines some global
 DAQ parameters and has a relationship to a single top-level **Segment**.
-It also has a list of disabled [Resources](#resources-and-resourcesets). It is intended that parts of
+It also has a list of excluded [Resources](#resources-and-resourcesets). It is intended that parts of
 the DAQ system that are not required in the current run are simply
-disabled rather than deleted from the database altogether.
+excluded rather than deleted from the database altogether.
 
 A **Segment** is a logical grouping of applications which
 are controlled by a single controller (**RCApplication**). A **Segment** may contain other
-nested **Segment**s. A **Segment** is a Resource that can be enabled/disabled [(see below)](#resources-and-resourcesets),
-disabling a **Segment** disables all of its nested **Segment**s.
+nested **Segment**s. A **Segment** is a Resource that can be included/excluded [(see below)](#resources-and-resourcesets),
+excluding a **Segment** excludes all of its nested **Segment**s.
 
 The **Application** class has attributes defining the application's
  `application_name` (executable name) and `commandline_parameters`. Its
@@ -22,61 +22,61 @@ The **Application** class has attributes defining the application's
 ## Resources and ExcludableEntitySets
 
 **Resource** is an abstract class describing an item that can be
-disabled directly. It has the method `is_disabled(const dunedaq::confmodel::ExcludableEntityTree& session)` which can be called
+excluded directly. It has the method `is_excluded(const dunedaq::confmodel::ExcludableEntityTree& session)` which can be called
 by application code to determine if the object should be considered
-disabled for this session (Session is a subclass of ExcludableEntityTree). The [disabling logic](#the-resource-disabled-logic) calls the virtual
-`compute_disabled_state(const std::set<std::string>& disabled_resources)` method to determine the state of the Resource, the disabled_resources argument is a list of UIDs of all the Resources that have been disabled so far. The
+excluded for this session (Session is a subclass of ExcludableEntityTree). The [exclusion logic](#the-resource-excluded-logic) calls the virtual
+`compute_excluded_state(const std::set<std::string>& excluded_resources)` method to determine the state of the Resource, the excluded_resources argument is a list of UIDs of all the Resources that have been excluded so far. The
 implementation provided by the base class just checks that the object
-itself is not in the list of disabled objects. Derived classes can
+itself is not in the list of excluded objects. Derived classes can
 re-implement this method with whatever logic is needed to determine the
 state of the object, for example the **ExcludableEntitySetAND** class
 provides an implementation that ANDs together the state of all of its
 contained objects. 
 
-**ExcludableEntitySet** is an abstract container of **Resource**s which can be disabled together. It
-is itself a Resource (so can be nested). It defines a pure virtual method `contained_excludable_entities()` which returns a vector of pointers to 'contained' resources. Developers should implement this method to extract any resources that need to be considered for determining the disabled state of the set from among the class's relationships. The class may have relationships to other Resource derived
-objects that will be ignored for the disabled check.
+**ExcludableEntitySet** is an abstract container of **Resource**s which can be excluded together. It
+is itself a Resource (so can be nested). It defines a pure virtual method `contained_excludable_entities()` which returns a vector of pointers to 'contained' resources. Developers should implement this method to extract any resources that need to be considered for determining the excluded state of the set from among the class's relationships. The class may have relationships to other Resource derived
+objects that will be ignored for the excluded check.
 
 **ExcludableEntitySetAND** is a container of **Resource**s which will
-be disabled if *all* of its **Resource**s are disabled. It provides a
-final implementation of the ExcludableEntitySet::compute_disabled_state() method.
+be excluded if *all* of its **Resource**s are excluded. It provides a
+final implementation of the ExcludableEntitySet::compute_excluded_state() method.
 
 **ExcludableEntitySetDisableOR** is a container of **Resource**s which
-provides a final implementation of the ExcludableEntitySet::compute_disabled_state()
+provides a final implementation of the ExcludableEntitySet::compute_excluded_state()
 method returning true if *any* of its contained **Resource**s are
-disabled.
+excluded.
 
 **Segment** is a container of **Segment**s and **Applications**
-which inherits from **ExcludableEntitySetAND** so it can be disabled
-directly or indirectly if all its components are disabled.
+which inherits from **ExcludableEntitySetAND** so it can be excluded
+directly or indirectly if all its components are excluded.
  
  ![Resource tree](resourcetree.png)
 
-### The Resource disabled logic
+### The Resource excluded logic
 
-The Resource disabled logic works on a single tree of **ExcludableEntitySets**.
+The Resource excluded logic works on a single tree of **ExcludableEntitySets**.
 It is held by the virtual class **ExcludableEntityTree** currently **Session**
 is the only concrete class derived from it. 
-The **ExcludableEntityTree** holds a **DisabledResources** object which is initialised with a reference to the root **Segment**
-and the list of disabled resources from its `disabled` relationship.
+The **ExcludableEntityTree** holds a **ExcludedResources** object which is initialised with a reference to the root **Segment**
+and the list of excluded resources from its `excluded` relationship.
 
 ⚠️**Any ExcludableEntitySet that is not referenced by a ExcludableEntitySet in the tree
 starting at the Session's segment relationship will not be considered
 by the disabling logic!**
 
-The **DisabledResources** constructor will configure itself using the
-tree of Resources and initial list of disabled Resources.
+The **ExcludedResources** constructor will configure itself using the
+tree of Resources and initial list of excluded Resources.
 To start with, the UID of each member of the list is inserted into a
 set and any 'contained' (using the `contained_excludable_entities()` method) Resources
-are also disabled.
+are also excluded.
 
 A list of all ExcludableEntitySets in the tree is generated by recursively
 calling `contained_excludable_entities()` and iterating over all the ExcludableEntitySets.
 Then it iterates over the list of **ExcludableEntitySet**s. If a ExcludableEntitySet
-is not currently in the disabled set, it will call the `compute_disabled_state()`
+is not currently in the excluded set, it will call the `compute_excluded_state()`
 method to see if its state has been changed by the current content of
-the disabled set. It will repeat this procedure until an iteration
-that ends with the same number of disabled resources it started with.
+the excluded set. It will repeat this procedure until an iteration
+that ends with the same number of excluded resources it started with.
 
 
 ## Readout Map
@@ -95,7 +95,7 @@ single **DetDataReceiver**.
 
 ### Resource handling in the readout map
 
-The **DetectorToDaqConnection** is a **ExcludableEntitySet** with a custom implementation of `compute_disabled_state()` that checks that the **DetDataReceiver** and at least one **DetDataSender** are enabled.
+The **DetectorToDaqConnection** is a **ExcludableEntitySet** with a custom implementation of `compute_excluded_state()` that checks that the **DetDataReceiver** and at least one **DetDataSender** are included.
 
 The **DetDataSender** is a **ExcludableEntitySetAND** that contains a set of **DetectorStream** **Resource**s.
 

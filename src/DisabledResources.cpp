@@ -52,7 +52,7 @@ void DisabledResources::update(const ExcludableEntitySet* root,
     TLOG_DEBUG(6) <<  "before auto-disabling iteration " << count << " the number of disabled components is " << num ;
     for (const auto& res_set : resource_sets) {
       if (is_enabled(res_set)) {
-        if (res_set->compute_disabled_state(m_disabled)) {
+        if (res_set->compute_excluded_state(m_disabled)) {
           TLOG_DEBUG(6) <<  "disable custom resource-set- " << res_set->UID() << " because children are disabled" ;
           disable(*res_set);
           disable_children(*res_set);
@@ -61,7 +61,7 @@ void DisabledResources::update(const ExcludableEntitySet* root,
     }
 
     for (auto& res : simple_resources) {
-      if (is_enabled(res) && res->compute_disabled_state(m_disabled)) {
+      if (is_enabled(res) && res->compute_excluded_state(m_disabled)) {
         TLOG_DEBUG(6) << "Marking " << res->UID() << " as disabled\n";
         disable(*res);
       }

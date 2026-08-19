@@ -191,8 +191,8 @@
   <method name="receiver" description="Pure virtual method to get DataReceiver associated with this connection">
    <method-implementation language="c++" prototype="virtual const DetDataReceiver* receiver() const = 0" body=""/>
   </method>
-  <method name="compute_disabled_state" description="Custom implementation of method for DetectorToDaqConnection. Must AND the senders and OR the seult with the receiver.">
-   <method-implementation language="c++" prototype="bool compute_disabled_state(const std::set&lt;std::string&gt;&amp; disabled) const final" body=""/>
+  <method name="compute_excluded_state" description="Custom implementation of method for DetectorToDaqConnection. Must AND the senders and OR the seult with the receiver.">
+   <method-implementation language="c++" prototype="bool compute_excluded_state(const std::set&lt;std::string&gt;&amp; excluded) const final" body=""/>
   </method>
  </class>
 
@@ -328,36 +328,36 @@
   <attribute name="publish_timeout" type="u32" init-value="2" is-not-null="yes"/>
  </class>
 
- <class name="Resource" description="Base class for all Resource objects. A Resource is an object with an enabled/disabled state.&#xA;Derived classes must implement the compute_disabled_state() method to return the state." is-abstract="yes">
+ <class name="Resource" description="Base class for all Resource objects. A Resource is an object with an included/excluded state.&#xA;Derived classes must implement the compute_excluded_state() method to return the state." is-abstract="yes">
   <method name="parents" description="The algorithm calculates a vector of segments which are parents of given segment.&#xA;If the segment has parents referenced by the partition object, then:&#xA;- in case of C++ it fills the parents parameter; otherwise it throws {@link NotFoundException} exception">
    <method-implementation language="c++" prototype="void parents(const dunedaq::confmodel::Session&amp; session, std::list&lt; std::vector&lt;const dunedaq::confmodel::Resource *&gt; &gt;&amp; parents) const" body=""/>
   </method>
-  <method name="is_disabled" description="Method to be called from user code to determine if this Resource is disabled in the current configuration.">
-   <method-implementation language="c++" prototype="bool is_disabled(const dunedaq::confmodel::ExcludableEntityTree&amp; session) const" body=""/>
+  <method name="is_excluded" description="Method to be called from user code to determine if this Resource is excluded in the current configuration.">
+   <method-implementation language="c++" prototype="bool is_excluded(const dunedaq::confmodel::ExcludableEntityTree&amp; session) const" body=""/>
   </method>
-  <method name="compute_disabled_state" description="Virtual method to be implemented by subclasses containing the logic to determine if this object should be considered disabled.">
-   <method-implementation language="c++" prototype="virtual bool compute_disabled_state(const std::set&lt;std::string&gt;&amp;) const" body=""/>
+  <method name="compute_excluded_state" description="Virtual method to be implemented by subclasses containing the logic to determine if this object should be considered excluded.">
+   <method-implementation language="c++" prototype="virtual bool compute_excluded_state(const std::set&lt;std::string&gt;&amp;) const" body=""/>
   </method>
  </class>
 
  <class name="ExcludableEntitySet" description="Base class for a collection of Resource items. Derived classes must implement the contained_excludable_entities() method to return a vector of Resource objects." is-abstract="yes">
   <superclass name="Resource"/>
-  <method name="contained_excludable_entities" description="Virtual method to obtain the list of all contained Resources. Used internally by the core disabled logic. Not intended to be used in application code as that should be using individual relationships of the derived classes.">
+  <method name="contained_excludable_entities" description="Virtual method to obtain the list of all contained Resources. Used internally by the core exclusion logic. Not intended to be used in application code as that should be using individual relationships of the derived classes.">
    <method-implementation language="c++" prototype="virtual std::vector&lt;const Resource*&gt; contained_excludable_entities() const = 0" body="BEGIN_HEADER_EPILOGUE&#xA;template&lt;typename T&gt;&#xA;std::vector&lt;const dunedaq::confmodel::Resource*&gt; to_resources( const std::vector&lt;T*&gt;&amp; vector_of_children ) {&#xA;  std::vector&lt;const dunedaq::confmodel::Resource*&gt; resources;&#xA;  resources.reserve(vector_of_children.size());&#xA;&#xA;  std::copy(vector_of_children.begin(), vector_of_children.end(), std::back_inserter(resources));&#xA;&#xA;  return resources;&#xA;&#xA;}&#xA;END_HEADER_EPILOGUE"/>
   </method>
  </class>
 
- <class name="ExcludableEntitySetAND" description="Abstract base class for a resource set that determines it&apos;s disabled state by ANDing all its contained resources." is-abstract="yes">
+ <class name="ExcludableEntitySetAND" description="Abstract base class for a resource set that determines it&apos;s exclusion state by ANDing all its contained resources." is-abstract="yes">
   <superclass name="ExcludableEntitySet"/>
-  <method name="compute_disabled_state" description="Method that ANDs all resources to determine disabled state.">
-   <method-implementation language="c++" prototype="bool compute_disabled_state(const std::set&lt;std::string&gt;&amp; disabled) const final" body="  if (disabled.contains(UID())) {&#xA;    return true;&#xA;  }&#xA;  for (auto res: contained_excludable_entities()) {&#xA;     if (!res-&gt;compute_disabled_state(disabled)) {&#xA;        return false;&#xA;    }&#xA;  }&#xA;  return true;&#xA;  "/>
+  <method name="compute_excluded_state" description="Method that ANDs all resources to determine exclusion state.">
+   <method-implementation language="c++" prototype="bool compute_excluded_state(const std::set&lt;std::string&gt;&amp; excluded) const final" body="  if (excluded.contains(UID())) {&#xA;    return true;&#xA;  }&#xA;  for (auto res: contained_excludable_entities()) {&#xA;     if (!res-&gt;compute_excluded_state(excluded)) {&#xA;        return false;&#xA;    }&#xA;  }&#xA;  return true;&#xA;  "/>
   </method>
  </class>
 
  <class name="ExcludableEntitySetDisableOR" is-abstract="yes">
   <superclass name="ExcludableEntitySet"/>
-  <method name="compute_disabled_state" description="Method that ORs the disabled state of its contained resources to determine the state of the set">
-   <method-implementation language="c++" prototype="bool compute_disabled_state(const std::set&lt;std::string&gt;&amp; disabled) const final" body="  if (disabled.contains(UID())) {&#xA;    return true;&#xA;  }&#xA;  for (auto res: contained_excludable_entities()) {&#xA;     if (res-&gt;compute_disabled_state(disabled)) {&#xA;        return true;&#xA;    }&#xA;  }&#xA;  return false;&#xA;  "/>
+  <method name="compute_excluded_state" description="Method that ORs the disabled state of its contained resources to determine the state of the set">
+   <method-implementation language="c++" prototype="bool compute_excluded_state(const std::set&lt;std::string&gt;&amp; disabled) const final" body="  if (disabled.contains(UID())) {&#xA;    return true;&#xA;  }&#xA;  for (auto res: contained_excludable_entities()) {&#xA;     if (res-&gt;compute_excluded_state(disabled)) {&#xA;        return true;&#xA;    }&#xA;  }&#xA;  return false;&#xA;  "/>
   </method>
  </class>
 
@@ -385,8 +385,8 @@
   <method name="contained_excludable_entities" description="">
    <method-implementation language="c++" prototype="virtual std::vector&lt;const Resource*&gt; contained_excludable_entities() const" body=""/>
   </method>
-  <method name="compute_disabled_state" description="">
-   <method-implementation language="c++" prototype="bool compute_disabled_state(const std::set&lt;std::string&gt;&amp; disabled) const final" body=""/>
+  <method name="compute_excluded_state" description="">
+   <method-implementation language="c++" prototype="bool compute_excluded_state(const std::set&lt;std::string&gt;&amp; disabled) const final" body=""/>
   </method>
  </class>
 

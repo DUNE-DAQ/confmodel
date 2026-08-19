@@ -164,13 +164,13 @@ Resource::parents(
 
 std::vector<const Application*>
 Session::getSegmentApps(const Segment* segment,
-                        bool enabled_only) const {
+                        bool included_only) const {
   std::vector<const Application*> apps;
   auto segapps = segment->get_applications();
-  if (enabled_only) {
+  if (included_only) {
     for (auto app : segapps) {
       auto comp = app->cast<Resource>();
-      if (comp == nullptr || !comp->is_disabled(*this)) {
+      if (comp == nullptr || !comp->is_excluded(*this)) {
         apps.insert(apps.end(), app);
       }
     }
@@ -179,8 +179,8 @@ Session::getSegmentApps(const Segment* segment,
     apps.swap(segapps);
   }
   for (auto seg : segment->get_segments()) {
-    if (!enabled_only || !seg->is_disabled(*this)) {
-      auto segapps = getSegmentApps(seg, enabled_only);
+    if (!included_only || !seg->is_excluded(*this)) {
+      auto segapps = getSegmentApps(seg, included_only);
       apps.insert(apps.end(), segapps.begin(),segapps.end());
     }
   }
@@ -420,11 +420,11 @@ void ExcludableEntityTree::include(const Resource* res) {
   m_disabled_resources.update(root_entity(), disabled_vec);
 }
 
-bool Resource::is_disabled(const dunedaq::confmodel::ExcludableEntityTree& holder) const {
+bool Resource::is_excluded(const dunedaq::confmodel::ExcludableEntityTree& holder) const {
   return (!holder.disabled_components().is_enabled(this));
 }
-bool Resource::compute_disabled_state(const std::set<std::string>& disabled_resources) const {
-  TLOG_DEBUG(6) << "No compute_disabled_state method defined for Resource " << class_name();
+bool Resource::compute_excluded_state(const std::set<std::string>& disabled_resources) const {
+  TLOG_DEBUG(6) << "No compute_excluded_state method defined for Resource " << class_name();
   if (disabled_resources.contains(UID())) {
     return true;
   }
@@ -445,24 +445,24 @@ std::vector<const Resource*> DetectorToDaqConnection::contained_excludable_entit
 
 
 bool
-DetectorToDaqConnection::compute_disabled_state(const std::set<std::string>& disabled_resources) const {
+DetectorToDaqConnection::compute_excluded_state(const std::set<std::string>& disabled_resources) const {
   if (disabled_resources.contains(UID())) {
     return true;
   }
   bool send_disabled = true;
   for (auto sender: senders()) {
-    if (!sender->compute_disabled_state(disabled_resources)) {
+    if (!sender->compute_excluded_state(disabled_resources)) {
       send_disabled = false;
       break;
     }
   }
-  TLOG_DBG(6) << "receiver disabled=" << receiver()->compute_disabled_state(disabled_resources)
+  TLOG_DBG(6) << "receiver disabled=" << receiver()->compute_excluded_state(disabled_resources)
               << " senders disabled=" << send_disabled;
   auto rec = receiver();
   if ( ! rec )
     return send_disabled;
 
-  return (rec->compute_disabled_state(disabled_resources) || send_disabled) ;
+  return (rec->compute_excluded_state(disabled_resources) || send_disabled) ;
 
 }
 
@@ -485,7 +485,7 @@ Segment::contained_excludable_entities() const {
 }
 
 bool
-Segment::compute_disabled_state(const std::set<std::string>& disabled) const {
+Segment::compute_excluded_state(const std::set<std::string>& disabled) const {
   if (disabled.contains(UID())) {
     return true;
   }
@@ -496,7 +496,7 @@ Segment::compute_disabled_state(const std::set<std::string>& disabled) const {
     }
   }
   for (auto res: contained_excludable_entities()) {
-    if (!res->compute_disabled_state(disabled)) {
+    if (!res->compute_excluded_state(disabled)) {
       return false;
     }
   }
