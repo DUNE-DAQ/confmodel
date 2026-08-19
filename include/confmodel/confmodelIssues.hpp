@@ -60,8 +60,8 @@ ERS_DECLARE_ISSUE_BASE(confmodel, BadSessionID, AlgorithmError,
                        , ((std::string)name))
 
 ERS_DECLARE_ISSUE_BASE(
-    confmodel, SegmentDisabled, AlgorithmError,
-    "Cannot get information about applications because the segment is disabled",
+    confmodel, SegmentExcluded, AlgorithmError,
+    "Cannot get information about applications because the segment is excluded",
     , )
 
 ERS_DECLARE_ISSUE_BASE(confmodel, BadProgramInfo, AlgorithmError,
