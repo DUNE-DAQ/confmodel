@@ -378,7 +378,7 @@
  <attr name="y" type="s16" val="436"/>
 </obj>
 
-<obj class="Class" id="ProcessingResource">
+<obj class="Class" id="HostCores">
  <attr name="x" type="s16" val="861"/>
  <attr name="y" type="s16" val="680"/>
 </obj>
@@ -520,14 +520,14 @@
  </rel>
 </obj>
 
-<obj class="GLink" id="HostComponent-2-ProcessingResource">
+<obj class="GLink" id="HostComponent-2-HostCores">
  <rel name="From" class="Class" id="HostComponent"/>
- <rel name="To" class="Class" id="ProcessingResource"/>
+ <rel name="To" class="Class" id="HostCores"/>
  <rel name="Points">
-  <ref class="Point" id="1 HostComponent-2-ProcessingResource"/>
-  <ref class="Point" id="2 HostComponent-2-ProcessingResource"/>
-  <ref class="Point" id="3 HostComponent-2-ProcessingResource"/>
-  <ref class="Point" id="4 HostComponent-2-ProcessingResource"/>
+  <ref class="Point" id="1 HostComponent-2-HostCores"/>
+  <ref class="Point" id="2 HostComponent-2-HostCores"/>
+  <ref class="Point" id="3 HostComponent-2-HostCores"/>
+  <ref class="Point" id="4 HostComponent-2-HostCores"/>
  </rel>
 </obj>
 
@@ -666,7 +666,7 @@
  <attr name="y" type="s16" val="38"/>
 </obj>
 
-<obj class="Point" id="1 HostComponent-2-ProcessingResource">
+<obj class="Point" id="1 HostComponent-2-HostCores">
  <attr name="x" type="s16" val="49"/>
  <attr name="y" type="s16" val="38"/>
 </obj>
@@ -836,7 +836,7 @@
  <attr name="y" type="s16" val="651"/>
 </obj>
 
-<obj class="Point" id="2 HostComponent-2-ProcessingResource">
+<obj class="Point" id="2 HostComponent-2-HostCores">
  <attr name="x" type="s16" val="49"/>
  <attr name="y" type="s16" val="608"/>
 </obj>
@@ -1006,7 +1006,7 @@
  <attr name="y" type="s16" val="651"/>
 </obj>
 
-<obj class="Point" id="3 HostComponent-2-ProcessingResource">
+<obj class="Point" id="3 HostComponent-2-HostCores">
  <attr name="x" type="s16" val="78"/>
  <attr name="y" type="s16" val="608"/>
 </obj>
@@ -1180,7 +1180,7 @@
  <attr name="y" type="s16" val="8"/>
 </obj>
 
-<obj class="Point" id="4 HostComponent-2-ProcessingResource">
+<obj class="Point" id="4 HostComponent-2-HostCores">
  <attr name="x" type="s16" val="78"/>
  <attr name="y" type="s16" val="12"/>
 </obj>

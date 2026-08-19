@@ -334,7 +334,7 @@
   <relationship name="contains" description="List of hardware components on this host" class-type="HostComponent" low-cc="one" high-cc="many" is-composite="yes" is-exclusive="no" is-dependent="yes"/>
  </class>
 
- <class name="ProcessingResource">
+ <class name="HostCores">
   <superclass name="HostComponent"/>
   <attribute name="cpu_cores" type="u16" is-multi-value="yes" is-not-null="yes"/>
  </class>

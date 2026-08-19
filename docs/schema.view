@@ -22,7 +22,7 @@ NetworkDevice,950,946
 HostComponent,777,831
 VirtualHost,403,717
 PhysicalHost,794,725
-ProcessingResource,605,949
+HostCores,605,949
 StorageDevice,780,942
 ConnectionService,107,560
 Service,28,227
