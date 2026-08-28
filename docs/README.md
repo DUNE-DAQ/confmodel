@@ -1,11 +1,7 @@
 # confmodel
 This package contains the core' schema for the DUNE daq OKS configuration.
 
-_n.b. As of August 2026, many variable names have been changed that
-aren't reflected in the diagrams below - e.g., a `Resource` has become
-an `ExcludableEntity`_
-
-  ![schema](schema.png)
+![schema](schema.png)
 
 The top level of the schema is the **Session** which defines some global
 DAQ parameters and has a relationship to a single top-level **Segment**.
