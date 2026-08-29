@@ -1,11 +1,19 @@
-#ifndef DUNEDAQDAL_DISABLED_RESOURCES_H
-#define DUNEDAQDAL_DISABLED_RESOURCES_H
+/**
+ * @file DisabledResources.cpp
+ *
+ * This is part of the DUNE DAQ Software Suite, copyright 2020.
+ * Licensing/copyright details are in the COPYING file that you should have
+ * received with this code.
+ */
+
+#ifndef CONFMODEL_INCLUDE_CONFMODEL_DISABLEDRESOURCES_HPP_
+#define CONFMODEL_INCLUDE_CONFMODEL_DISABLEDRESOURCES_HPP_
 
 #include "confmodel/Resource.hpp"
 
 #include <set>
 #include <string>
-
+#include <vector>
 
 namespace dunedaq::confmodel {
 
@@ -18,6 +26,24 @@ namespace dunedaq::confmodel {
 
       friend class Session;
       friend class Resource;
+
+    public:
+      DisabledResources() = default;
+      DisabledResources(const ResourceSet* root,
+                        std::vector<const Resource*> initial_list);
+
+      ~DisabledResources() = default;
+
+      void update(const ResourceSet* root,
+                  std::vector<const Resource*> initial_list);
+
+      bool
+      is_enabled(const Resource* component) const {
+        return !m_disabled.contains(component->UID());
+      }
+
+      [[nodiscard]] bool initialised() const {return m_initialised;}
+
 
     private:
 
@@ -43,24 +69,7 @@ namespace dunedaq::confmodel {
         return m_disabled.size();
       }
 
-    public:
-
-      DisabledResources() = default;
-      DisabledResources(const ResourceSet* root,
-                        std::vector<const Resource*> initial_list);
-
-      ~DisabledResources() = default;
-
-      void update(const ResourceSet* root,
-                  std::vector<const Resource*> initial_list);
-
-      bool
-      is_enabled(const Resource* component) const {
-        return !m_disabled.contains(component->UID());
-      }
-
-      [[nodiscard]] bool initialised() const {return m_initialised;}
     };
 } // namespace dunedaq::confmodel
 
-#endif // DUNEDAQDAL_DISABLED_RESOURCES_H
+#endif // CONFMODEL_INCLUDE_CONFMODEL_DISABLEDRESOURCES_HPP_
