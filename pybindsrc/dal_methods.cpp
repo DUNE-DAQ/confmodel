@@ -99,6 +99,34 @@ namespace dunedaq::confmodel::python {
     return component_ptr->is_disabled(*session_ptr);
   }
 
+  std::string why_disabled(Configuration& db,
+                          const std::string& session_id,
+                          const std::string& component_id) {
+    if (component_disabled(db, session_id, component_id)) {
+      const dunedaq::confmodel::Resource* component_ptr =
+        db.get<dunedaq::confmodel::Resource>(component_id);
+      if (component_ptr == nullptr) {
+        throw (std::runtime_error(std::format("Component {} not found", component_id)));
+      }
+      return component_ptr->why_disabled();
+    } else {
+      return "not disabled";
+    }
+  }
+
+  std::vector<std::string>
+  contained_components(Configuration& db,
+                       const std::string& set_id) {
+    std::vector<std::string> result;
+    const dunedaq::confmodel::ResourceSet* set_ptr = db.get<dunedaq::confmodel::ResourceSet>(set_id);
+    if (set_ptr == nullptr) {
+      return result;
+    }
+    for (auto res : set_ptr->contained_resources()) {
+      result.emplace_back(res->UID());
+    }
+    return result;
+  }
 
   std::vector<std::vector<ObjectLocator>> component_get_parents(Configuration& db,
                                                                 const std::string& session_id,
@@ -212,6 +240,9 @@ register_dal_methods(py::module& m)
   m.def("enable_component", &enable_component, "Enable a Resource-derived object (e.g. a Segment)");
 
   m.def("component_disabled", &component_disabled, "Determine if a Resource-derived object (e.g. a Segment) has been disabled");
+  m.def("why_disabled", &why_disabled, "Why is a Resource-derived object (e.g. a Segment) disabled");
+  m.def("contained_components", &contained_components, "Get list of components of  a ResourceSet object");
+
   m.def("component_get_parents", &component_get_parents, "Get the Resource-derived class instances of the parent(s) of the Resource-derived object in question");
   m.def("daqapp_get_used_resources", &daq_application_get_used_hostresources, "Get list of HostResources used by DAQApplication");
   m.def("daq_application_construct_commandline_parameters", &daq_application_construct_commandline_parameters, "Get a version of the command line agruments parsed");
