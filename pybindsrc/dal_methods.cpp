@@ -18,10 +18,14 @@
 #include "confmodel/DetDataSender.hpp"
 #include "confmodel/HostComponent.hpp"
 #include "confmodel/RCApplication.hpp"
+#include "confmodel/Segment.hpp"
 #include "confmodel/Session.hpp"
 
-
+#include <format>
+#include <set>
+#include <stdexcept>
 #include <sstream>
+#include <string>
 
 namespace py = pybind11;
 using namespace dunedaq::conffwk;
@@ -36,11 +40,31 @@ namespace dunedaq::confmodel::python {
     const std::string class_name;
   };
 
+  std::set<std::string>
+  segment_get_managed_object_tags(Configuration& db,
+                                  const std::string& session_name,
+                                  std::string segment_name="") {
+    auto session=db.get<Session>(session_name);
+    if (session == nullptr) {
+      throw (std::runtime_error(std::format("Session {} not found", session_name)));
+    }
+    if (segment_name == "") {
+      segment_name = session->get_segment()->UID();
+    }
+    auto segment=db.get<Segment>(segment_name);
+    if (segment == nullptr) {
+      throw (std::runtime_error(std::format("Segment {} not found", segment_name)));
+    }
+    return segment->managed_object_tags(session);
+  }
 
   std::vector<ObjectLocator>
   session_get_all_applications(Configuration& db,
                                const std::string& session_name) {
     auto session=db.get<Session>(session_name);
+    if (session == nullptr) {
+      throw (std::runtime_error(std::format("Session {} not found", session_name)));
+    }
     std::vector<ObjectLocator> apps;
     for (auto app : session->all_applications()) {
       apps.push_back({app->UID(),app->class_name()});
@@ -52,6 +76,9 @@ namespace dunedaq::confmodel::python {
   session_get_enabled_applications(Configuration& db,
                                    const std::string& session_name) {
     auto session=db.get<Session>(session_name);
+    if (session == nullptr) {
+      throw (std::runtime_error(std::format("Session {} not found", session_name)));
+    }
     std::vector<ObjectLocator> apps;
     for (auto app : session->enabled_applications()) {
       apps.push_back({app->UID(),app->class_name()});
@@ -92,6 +119,9 @@ namespace dunedaq::confmodel::python {
                           const std::string& session_id,
                           const std::string& component_id) {
     const dunedaq::confmodel::Session* session_ptr = db.get<dunedaq::confmodel::Session>(session_id);
+    if (session_ptr == nullptr) {
+      throw (std::runtime_error(std::format("Session {} not found", session_id)));
+    }
     const dunedaq::confmodel::Resource* component_ptr = db.get<dunedaq::confmodel::Resource>(component_id);
     if (component_ptr == nullptr) {
       return false;
@@ -104,6 +134,9 @@ namespace dunedaq::confmodel::python {
                                                                 const std::string& session_id,
                                                                 const std::string& component_id) {
     const dunedaq::confmodel::Session* session_ptr = db.get<dunedaq::confmodel::Session>(session_id);
+    if (session_ptr == nullptr) {
+      throw (std::runtime_error(std::format("Session {} not found", session_id)));
+    }
     const dunedaq::confmodel::Resource* component_ptr = db.get<dunedaq::confmodel::Resource>(component_id);
 
     std::list<std::vector<const dunedaq::confmodel::Resource*>> parents;
@@ -125,6 +158,9 @@ namespace dunedaq::confmodel::python {
 
   std::vector<std::string> daq_application_get_used_hostresources(Configuration& db, const std::string& app_id) {
     auto app = db.get<dunedaq::confmodel::DaqApplication>(app_id);
+    if (app == nullptr) {
+      throw (std::runtime_error(std::format("DaqApplication {} not found", app_id)));
+    }
     std::vector<std::string> resources;
     for (auto res : app->get_used_hostresources()) {
       resources.push_back(res->UID());
@@ -136,7 +172,13 @@ namespace dunedaq::confmodel::python {
                                                                             const std::string& session_id,
                                                                             const std::string& app_id) {
     const auto* app = db.get<dunedaq::confmodel::DaqApplication>(app_id);
+    if (app == nullptr) {
+      throw (std::runtime_error(std::format("DaqApplication {} not found", app_id)));
+    }
     const auto* session = db.get<dunedaq::confmodel::Session>(session_id);
+    if (session == nullptr) {
+      throw (std::runtime_error(std::format("Session {} not found", session_id)));
+    }
     return app->construct_commandline_parameters(db, session);
   }
 
@@ -144,7 +186,13 @@ namespace dunedaq::confmodel::python {
                                                                            const std::string& session_id,
                                                                            const std::string& app_id) {
     const auto* app = db.get<dunedaq::confmodel::RCApplication>(app_id);
+    if (app == nullptr) {
+      throw (std::runtime_error(std::format("RCApplication {} not found", app_id)));
+    }
     const auto* session = db.get<dunedaq::confmodel::Session>(session_id);
+    if (session == nullptr) {
+      throw (std::runtime_error(std::format("Session {} not found", session_id)));
+    }
     return app->construct_commandline_parameters(db, session);
   }
 
@@ -205,6 +253,9 @@ register_dal_methods(py::module& m)
     .def_readonly("class_name", &ObjectLocator::class_name)
     ;
 
+  m.def("segment_get_managed_object_tags", &segment_get_managed_object_tags,
+        py::arg("db"), py::arg("session_name"), py::arg("segment_name")="",
+        "Get list of ALL ManagedObject tags in the requested segment that are enabled in the given session. If only a session is specified then the segment will be taken from the session's segment relationship");
   m.def("session_get_all_applications", &session_get_all_applications, "Get list of ALL applications (regardless of enabled/disabled state) in the requested session");
   m.def("session_get_enabled_applications", &session_get_enabled_applications, "Get list of enabled applications in the requested session");
 

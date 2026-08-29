@@ -17,6 +17,7 @@
 #include "confmodel/DetectorToDaqConnection.hpp"
 #include "confmodel/DetectorStream.hpp"
 #include "confmodel/Jsonable.hpp"
+#include "confmodel/ManagedObject.hpp"
 #include "confmodel/OpMonURI.hpp"
 #include "confmodel/PhysicalHost.hpp"
 #include "confmodel/RCApplication.hpp"
@@ -203,6 +204,68 @@ Session::enabled_applications() const {
   return apps;
 }
 
+static std::set<std::string>
+relationships(conffwk::Configuration& confdb, ConfigObject& obj) {
+  std::set<std::string> result;
+  auto class_info = confdb.get_class_info(obj.class_name());
+  for (auto rel: class_info.p_relationships) {
+    if (rel.p_cardinality == cardinality_t::zero_or_one ||
+        rel.p_cardinality == cardinality_t::only_one) {
+      ConfigObject rel_obj;
+      obj.get(rel.p_name, rel_obj);
+      if (!rel_obj.is_null()) {
+        result.insert(rel_obj.UID());
+        auto rels = relationships(confdb, rel_obj);
+        result.insert(rels.begin(), rels.end());
+      }
+    }
+    else {
+      std::vector<ConfigObject> rel_vec;
+      obj.get(rel.p_name, rel_vec);
+      for (auto rel_obj: rel_vec) {
+        result.insert(rel_obj.UID());
+      }
+      for (auto relobj : rel_vec) {
+        auto rels = relationships(confdb, relobj);
+        result.insert(rels.begin(), rels.end());
+      }
+    }
+  } 
+  return result;
+}
+std::set<std::string>
+Segment::managed_object_tags(const Session* session) const {
+  std::set<std::string> related_objs;
+  for (auto app : get_applications()) {
+    related_objs.insert(app->UID());
+    const Resource* res = app->cast<Resource>();
+    if (res != nullptr && res->is_disabled(*session)) {
+      continue;
+    }
+    auto obj = app->config_object();  // Take a copy because we need
+                                      // to call a non-const method!
+    auto rels = relationships(configuration(), obj);
+    related_objs.insert(rels.begin(), rels.end());
+  }
+  std::set<std::string> result;
+  for (auto obj : related_objs) {
+    auto mobj = configuration().get<ManagedObject>(obj);
+    if (mobj != nullptr) {
+      auto tags = mobj->object_tags();
+      result.insert(tags.begin(), tags.end());
+    }
+  }
+
+  for (auto seg : get_segments()) {
+    if (!seg->is_disabled(*session)) {
+      auto tags = seg->managed_object_tags(session);
+      result.insert(tags.begin(), tags.end());
+    }
+  }
+
+  result.erase("");
+  return result;
+}
 
 // ========================================================================
 
