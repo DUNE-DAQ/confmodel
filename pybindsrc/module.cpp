@@ -26,7 +26,7 @@ PYBIND11_MODULE(_daq_confmodel_dal_py, m)
 #if 0
   py::class_<dunedaq::confmodel::DaqApplication>(m,"DaqApplication")
     .def(py::init<conffwk::Configuration& , const conffwk::ConfigObject&>())
-    .def("get_used_hostresources", &dunedaq::confmodel::DaqApplication::get_used_hostresources);
+    .def("get_used_host_components", &dunedaq::confmodel::DaqApplication::get_used_host_components);
   py::class_<dunedaq::confmodel::HostComponent>(m,"HostComponent");
 #endif
   register_dal_methods(m);
