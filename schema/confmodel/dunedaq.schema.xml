@@ -80,7 +80,7 @@
 
 <oks-schema>
 
-<info name="" type="" num-of-items="49" oks-format="schema" oks-version="862f2957270" created-by="jcfree" created-on="mu2edaq13.fnal.gov" creation-time="20230123T223700" last-modified-by="gjc" last-modified-on="latitude" last-modification-time="20260218T122834"/>
+<info name="" type="" num-of-items="49" oks-format="schema" oks-version="862f2957270" created-by="jcfree" created-on="mu2edaq13.fnal.gov" creation-time="20230123T223700" last-modified-by="mroda" last-modified-on="mroda-xpsp" last-modification-time="20260819T122439"/>
 
  <class name="ActionPlan" description="A set of steps for an application to carry out a command">
   <attribute name="execution_policy" description="How the application should dispatch the command to modules matched by each step of the ActionPlan" type="enum" range="modules-in-parallel,modules-in-series" init-value="modules-in-parallel"/>
@@ -124,8 +124,8 @@
   <attribute name="application_name" description="Name of the application binary to run." type="string" init-value="daq_application" is-not-null="yes"/>
   <relationship name="modules" class-type="DaqModule" low-cc="zero" high-cc="many" is-composite="no" is-exclusive="no" is-dependent="no"/>
   <relationship name="action_plans" class-type="ActionPlan" low-cc="zero" high-cc="many" is-composite="no" is-exclusive="no" is-dependent="no"/>
-  <method name="get_used_hostresources" description="Get the set of all HostComponents used by this application">
-   <method-implementation language="c++" prototype=" std::set&lt;const dunedaq::confmodel::HostComponent*&gt; get_used_hostresources() const" body=""/>
+  <method name="get_used_host_components" description="Get the set of all HostComponents used by this application">
+   <method-implementation language="c++" prototype=" std::set&lt;const dunedaq::confmodel::HostComponent*&gt; get_used_host_components() const" body=""/>
   </method>
   <method name="construct_commandline_parameters" description="get the command line parameters for this application">
    <method-implementation language="c++" prototype=" const std::vector&lt;std::string&gt; construct_commandline_parameters(const conffwk::Configuration&amp; confdb, const dunedaq::confmodel::Session* session) const" body="BEGIN_HEADER_PROLOGUE&#xA;#include &quot;confmodel/util.hpp&quot;&#xA;END_HEADER_PROLOGUE"/>
@@ -135,7 +135,7 @@
  <class name="DaqModule" description="A plugin module for the app framework" is-abstract="yes">
   <relationship name="inputs" description="List of connections to/from this module" class-type="Connection" low-cc="zero" high-cc="many" is-composite="yes" is-exclusive="no" is-dependent="yes"/>
   <relationship name="outputs" description="Output connections from this module" class-type="Connection" low-cc="zero" high-cc="many" is-composite="yes" is-exclusive="no" is-dependent="yes"/>
-  <relationship name="used_resources" class-type="HostComponent" low-cc="zero" high-cc="many" is-composite="yes" is-exclusive="no" is-dependent="yes"/>
+  <relationship name="used_host_components" class-type="HostComponent" low-cc="zero" high-cc="many" is-composite="yes" is-exclusive="no" is-dependent="yes"/>
  </class>
 
  <class name="DaqModulesGroup" description="Represents a group of DAQ Modules that can run commands in parallel or in series as one of the steps of an ActionPlan." is-abstract="yes">
@@ -153,14 +153,14 @@
  </class>
 
  <class name="DetDataReceiver" is-abstract="yes">
-  <superclass name="Resource"/>
+  <superclass name="ExcludableEntity"/>
  </class>
 
  <class name="DetDataSender" is-abstract="yes">
-  <superclass name="ResourceSetDisableAND"/>
+  <superclass name="ExcludableEntitySetAND"/>
   <relationship name="streams" class-type="DetectorStream" low-cc="one" high-cc="many" is-composite="no" is-exclusive="yes" is-dependent="no"/>
-  <method name="contained_resources" description="">
-   <method-implementation language="c++" prototype="virtual std::vector&lt;const Resource*&gt; contained_resources() const override" body=""/>
+  <method name="contained_excludable_entities" description="">
+   <method-implementation language="c++" prototype="virtual std::vector&lt;const ExcludableEntity*&gt; contained_excludable_entities() const override" body=""/>
   </method>
  </class>
 
@@ -172,18 +172,18 @@
  </class>
 
  <class name="DetectorStream">
-  <superclass name="Resource"/>
+  <superclass name="ExcludableEntity"/>
   <attribute name="source_id" type="u32" is-not-null="yes"/>
   <relationship name="geo_id" class-type="GeoId" low-cc="one" high-cc="one" is-composite="no" is-exclusive="no" is-dependent="no"/>
  </class>
 
  <class name="DetectorToDaqConnection" is-abstract="yes">
-  <superclass name="ResourceSet"/>
+  <superclass name="ExcludableEntitySet"/>
   <method name="streams" description="">
    <method-implementation language="c++" prototype="std::vector&lt;const confmodel::DetectorStream*&gt; streams() const" body=""/>
   </method>
-  <method name="contained_resources" description="">
-   <method-implementation language="c++" prototype="virtual std::vector&lt;const Resource*&gt; contained_resources() const override" body=""/>
+  <method name="contained_excludable_entities" description="">
+   <method-implementation language="c++" prototype="virtual std::vector&lt;const ExcludableEntity*&gt; contained_excludable_entities() const override" body=""/>
   </method>
   <method name="senders" description="Pure virtual method to get vector of DataSenders">
    <method-implementation language="c++" prototype="virtual std::vector&lt;const DetDataSender*&gt; senders() const = 0" body=""/>
@@ -191,8 +191,45 @@
   <method name="receiver" description="Pure virtual method to get DataReceiver associated with this connection">
    <method-implementation language="c++" prototype="virtual const DetDataReceiver* receiver() const = 0" body=""/>
   </method>
-  <method name="compute_disabled_state" description="Custom implementation of method for DetectorToDaqConnection. Must AND the senders and OR the seult with the receiver.">
-   <method-implementation language="c++" prototype="bool compute_disabled_state(const std::set&lt;std::string&gt;&amp; disabled) const final" body=""/>
+  <method name="compute_excluded_state" description="Custom implementation of method for DetectorToDaqConnection. Must AND the senders and OR the seult with the receiver.">
+   <method-implementation language="c++" prototype="bool compute_excluded_state(const std::set&lt;std::string&gt;&amp; excluded) const final" body=""/>
+  </method>
+ </class>
+
+ <class name="ExcludableEntitySet" description="Base class for a collection of ExcludableEntity items. Derived classes must implement the contained_excludable_entities() method to return a vector of ExcludableEntity objects." is-abstract="yes">
+  <superclass name="ExcludableEntity"/>
+  <method name="contained_excludable_entities" description="Virtual method to obtain the list of all contained ExcludableEntitys. Used internally by the core exclusion logic. Not intended to be used in application code as that should be using individual relationships of the derived classes.">
+   <method-implementation language="c++" prototype="virtual std::vector&lt;const ExcludableEntity*&gt; contained_excludable_entities() const = 0" body="BEGIN_HEADER_EPILOGUE&#xA;template&lt;typename T&gt;&#xA;std::vector&lt;const dunedaq::confmodel::ExcludableEntity*&gt; to_resources( const std::vector&lt;T*&gt;&amp; vector_of_children ) {&#xA;  std::vector&lt;const dunedaq::confmodel::ExcludableEntity*&gt; resources;&#xA;  resources.reserve(vector_of_children.size());&#xA;&#xA;  std::copy(vector_of_children.begin(), vector_of_children.end(), std::back_inserter(resources));&#xA;&#xA;  return resources;&#xA;&#xA;}&#xA;END_HEADER_EPILOGUE"/>
+  </method>
+ </class>
+
+ <class name="ExcludableEntitySetAND" description="Abstract base class for a resource set that determines it&apos;s exclusion state by ANDing all its contained resources." is-abstract="yes">
+  <superclass name="ExcludableEntitySet"/>
+  <method name="compute_excluded_state" description="Method that ANDs all resources to determine exclusion state.">
+   <method-implementation language="c++" prototype="bool compute_excluded_state(const std::set&lt;std::string&gt;&amp; excluded) const final" body="  if (excluded.contains(UID())) {&#xA;    return true;&#xA;  }&#xA;  for (auto res: contained_excludable_entities()) {&#xA;     if (!res-&gt;compute_excluded_state(excluded)) {&#xA;        return false;&#xA;    }&#xA;  }&#xA;  return true;&#xA;  "/>
+  </method>
+ </class>
+
+ <class name="ExcludableEntitySetOR" is-abstract="yes">
+  <superclass name="ExcludableEntitySet"/>
+  <method name="compute_excluded_state" description="Method that ORs the excluded state of its contained resources to determine the state of the set">
+   <method-implementation language="c++" prototype="bool compute_excluded_state(const std::set&lt;std::string&gt;&amp; excluded) const final" body="  if (excluded.contains(UID())) {&#xA;    return true;&#xA;  }&#xA;  for (auto res: contained_excludable_entities()) {&#xA;     if (res-&gt;compute_excluded_state(excluded)) {&#xA;        return true;&#xA;    }&#xA;  }&#xA;  return false;&#xA;  "/>
+  </method>
+ </class>
+
+ <class name="ExcludableEntityTree" is-abstract="yes">
+  <relationship name="excluded" description="ExcludableEntitys that should not participate in the current run" class-type="ExcludableEntity" low-cc="zero" high-cc="many" is-composite="yes" is-exclusive="no" is-dependent="yes"/>
+  <method name="excluded_entities" description="Get a reference to the ExcludedEntities object of this ExcludableEntityTree, initialising it if it has not already been initialised.">
+   <method-implementation language="c++" prototype="const dunedaq::confmodel::ExcludedEntities&amp; excluded_entities() const" body="BEGIN_HEADER_PROLOGUE&#xA;#include &quot;confmodel/ExcludedEntities.hpp&quot;&#xA;#include &quot;confmodel/ExcludableEntity.hpp&quot;&#xA;END_HEADER_PROLOGUE&#xA;&#xA;BEGIN_PRIVATE_SECTION&#xA;mutable ExcludedEntities m_excluded_entities;&#xA;END_PRIVATE_SECTION&#xA;&#xA;&#xA;if (!m_excluded_entities.initialised()) {&#xA; m_excluded_entities.update(root_entity(),get_excluded());&#xA;}&#xA;return m_excluded_entities;"/>
+  </method>
+  <method name="root_entity" description="Pure virtual method to get the ExcludableEntitySet at the root of the ExcludableEntityTree.">
+   <method-implementation language="c++" prototype="virtual const ExcludableEntitySet* root_entity() const = 0" body=""/>
+  </method>
+  <method name="exclude" description="Add a component to the excluded relationship and recalculate the exclusion tree">
+   <method-implementation language="c++" prototype="void exclude(const ExcludableEntity*)" body=""/>
+  </method>
+  <method name="include" description="">
+   <method-implementation language="c++" prototype="void include(const ExcludableEntity*)" body=""/>
   </method>
  </class>
 
@@ -297,7 +334,7 @@
   <relationship name="contains" description="List of hardware components on this host" class-type="HostComponent" low-cc="one" high-cc="many" is-composite="yes" is-exclusive="no" is-dependent="yes"/>
  </class>
 
- <class name="ProcessingResource">
+ <class name="HostCores">
   <superclass name="HostComponent"/>
   <attribute name="cpu_cores" type="u16" is-multi-value="yes" is-not-null="yes"/>
  </class>
@@ -328,65 +365,28 @@
   <attribute name="publish_timeout" type="u32" init-value="2" is-not-null="yes"/>
  </class>
 
- <class name="Resource" description="Base class for all Resource objects. A Resource is an object with an enabled/disabled state.&#xA;Derived classes must implement the compute_disabled_state() method to return the state." is-abstract="yes">
+ <class name="ExcludableEntity" description="Base class for all ExcludableEntity objects. A ExcludableEntity is an object with an included/excluded state.&#xA;Derived classes must implement the compute_excluded_state() method to return the state." is-abstract="yes">
   <method name="parents" description="The algorithm calculates a vector of segments which are parents of given segment.&#xA;If the segment has parents referenced by the partition object, then:&#xA;- in case of C++ it fills the parents parameter; otherwise it throws {@link NotFoundException} exception">
-   <method-implementation language="c++" prototype="void parents(const dunedaq::confmodel::Session&amp; session, std::list&lt; std::vector&lt;const dunedaq::confmodel::Resource *&gt; &gt;&amp; parents) const" body=""/>
+   <method-implementation language="c++" prototype="void parents(const dunedaq::confmodel::Session&amp; session, std::list&lt; std::vector&lt;const dunedaq::confmodel::ExcludableEntity *&gt; &gt;&amp; parents) const" body=""/>
   </method>
-  <method name="is_disabled" description="Method to be called from user code to determine if this Resource is disabled in the current configuration.">
-   <method-implementation language="c++" prototype="bool is_disabled(const dunedaq::confmodel::ResourceTree&amp; session) const" body=""/>
+  <method name="is_excluded" description="Method to be called from user code to determine if this ExcludableEntity is excluded in the current configuration.">
+   <method-implementation language="c++" prototype="bool is_excluded(const dunedaq::confmodel::ExcludableEntityTree&amp; session) const" body=""/>
   </method>
-  <method name="compute_disabled_state" description="Virtual method to be implemented by subclasses containing the logic to determine if this object should be considered disabled.">
-   <method-implementation language="c++" prototype="virtual bool compute_disabled_state(const std::set&lt;std::string&gt;&amp;) const" body=""/>
-  </method>
- </class>
-
- <class name="ResourceSet" description="Base class for a collection of Resource items. Derived classes must implement the contained_resources() method to return a vector of Resource objects." is-abstract="yes">
-  <superclass name="Resource"/>
-  <method name="contained_resources" description="Virtual method to obtain the list of all contained Resources. Used internally by the core disabled logic. Not intended to be used in application code as that should be using individual relationships of the derived classes.">
-   <method-implementation language="c++" prototype="virtual std::vector&lt;const Resource*&gt; contained_resources() const = 0" body="BEGIN_HEADER_EPILOGUE&#xA;template&lt;typename T&gt;&#xA;std::vector&lt;const dunedaq::confmodel::Resource*&gt; to_resources( const std::vector&lt;T*&gt;&amp; vector_of_children ) {&#xA;  std::vector&lt;const dunedaq::confmodel::Resource*&gt; resources;&#xA;  resources.reserve(vector_of_children.size());&#xA;&#xA;  std::copy(vector_of_children.begin(), vector_of_children.end(), std::back_inserter(resources));&#xA;&#xA;  return resources;&#xA;&#xA;}&#xA;END_HEADER_EPILOGUE"/>
+  <method name="compute_excluded_state" description="Virtual method to be implemented by subclasses containing the logic to determine if this object should be considered excluded.">
+   <method-implementation language="c++" prototype="virtual bool compute_excluded_state(const std::set&lt;std::string&gt;&amp;) const" body=""/>
   </method>
  </class>
 
- <class name="ResourceSetDisableAND" description="Abstract base class for a resource set that determines it&apos;s disabled state by ANDing all its contained resources." is-abstract="yes">
-  <superclass name="ResourceSet"/>
-  <method name="compute_disabled_state" description="Method that ANDs all resources to determine disabled state.">
-   <method-implementation language="c++" prototype="bool compute_disabled_state(const std::set&lt;std::string&gt;&amp; disabled) const final" body="  if (disabled.contains(UID())) {&#xA;    return true;&#xA;  }&#xA;  for (auto res: contained_resources()) {&#xA;     if (!res-&gt;compute_disabled_state(disabled)) {&#xA;        return false;&#xA;    }&#xA;  }&#xA;  return true;&#xA;  "/>
-  </method>
- </class>
-
- <class name="ResourceSetDisableOR" is-abstract="yes">
-  <superclass name="ResourceSet"/>
-  <method name="compute_disabled_state" description="Method that ORs the disabled state of its contained resources to determine the state of the set">
-   <method-implementation language="c++" prototype="bool compute_disabled_state(const std::set&lt;std::string&gt;&amp; disabled) const final" body="  if (disabled.contains(UID())) {&#xA;    return true;&#xA;  }&#xA;  for (auto res: contained_resources()) {&#xA;     if (res-&gt;compute_disabled_state(disabled)) {&#xA;        return true;&#xA;    }&#xA;  }&#xA;  return false;&#xA;  "/>
-  </method>
- </class>
-
- <class name="ResourceTree" is-abstract="yes">
-  <relationship name="disabled" description="Resources that should not participate in the current run" class-type="Resource" low-cc="zero" high-cc="many" is-composite="yes" is-exclusive="no" is-dependent="yes"/>
-  <method name="disabled_components" description="Get a reference to the DisabledResources object of this ResourceTree, initialising it if it has not already been initialised.">
-   <method-implementation language="c++" prototype="const dunedaq::confmodel::DisabledResources&amp; disabled_components() const" body="BEGIN_HEADER_PROLOGUE&#xA;#include &quot;confmodel/DisabledResources.hpp&quot;&#xA;#include &quot;confmodel/Resource.hpp&quot;&#xA;END_HEADER_PROLOGUE&#xA;&#xA;BEGIN_PRIVATE_SECTION&#xA;mutable DisabledResources m_disabled_resources;&#xA;END_PRIVATE_SECTION&#xA;&#xA;&#xA;if (!m_disabled_resources.initialised()) {&#xA; m_disabled_resources.update(resource_root(),get_disabled());&#xA;}&#xA;return m_disabled_resources;"/>
-  </method>
-  <method name="resource_root" description="Pure virtual method to get the ResourceSet at the root of the ResourceTree.">
-   <method-implementation language="c++" prototype="virtual const ResourceSet* resource_root() const = 0" body=""/>
-  </method>
-  <method name="disable" description="Add a component to the disabled relationship and recalculate the disabled tree">
-   <method-implementation language="c++" prototype="void disable(const Resource*)" body=""/>
-  </method>
-  <method name="enable" description="">
-   <method-implementation language="c++" prototype="void enable(const Resource*)" body=""/>
-  </method>
- </class>
-
- <class name="Segment" description="Logical sub division of the configuration that can be enabled/disabled as a group">
-  <superclass name="ResourceSet"/>
+ <class name="Segment" description="Logical sub division of the configuration that can be included/excluded as a group">
+  <superclass name="ExcludableEntitySet"/>
   <relationship name="segments" description="Nested list of Segments that form part of this Segment" class-type="Segment" low-cc="zero" high-cc="many" is-composite="yes" is-exclusive="no" is-dependent="yes"/>
   <relationship name="applications" description="List of Applications that run in this Segment" class-type="Application" low-cc="zero" high-cc="many" is-composite="yes" is-exclusive="yes" is-dependent="yes"/>
   <relationship name="controller" description="This Segment&apos;s run controller." class-type="RCApplication" low-cc="one" high-cc="one" is-composite="yes" is-exclusive="yes" is-dependent="yes"/>
-  <method name="contained_resources" description="">
-   <method-implementation language="c++" prototype="virtual std::vector&lt;const Resource*&gt; contained_resources() const" body=""/>
+  <method name="contained_excludable_entities" description="">
+   <method-implementation language="c++" prototype="virtual std::vector&lt;const ExcludableEntity*&gt; contained_excludable_entities() const" body=""/>
   </method>
-  <method name="compute_disabled_state" description="">
-   <method-implementation language="c++" prototype="bool compute_disabled_state(const std::set&lt;std::string&gt;&amp; disabled) const final" body=""/>
+  <method name="compute_excluded_state" description="">
+   <method-implementation language="c++" prototype="bool compute_excluded_state(const std::set&lt;std::string&gt;&amp; excluded) const final" body=""/>
   </method>
  </class>
 
@@ -398,7 +398,7 @@
  </class>
 
  <class name="Session">
-  <superclass name="ResourceTree"/>
+  <superclass name="ExcludableEntityTree"/>
   <attribute name="description" description="A description of the session." type="string"/>
   <attribute name="data_request_timeout_ms" description="The baseline data request timeout that will be used by modules in the Readout and Trigger subsystems (i.e. any module that produces data fragments). Downstream timeouts, such as the trigger-record-building timeout, are derived from this" type="u32" init-value="1000" is-not-null="yes"/>
   <attribute name="data_rate_slowdown_factor" description="&quot;Factor by which to suppress data generation." type="u32" init-value="1" is-not-null="yes"/>
@@ -412,13 +412,13 @@
   <relationship name="detector_configuration" class-type="DetectorConfig" low-cc="one" high-cc="one" is-composite="no" is-exclusive="no" is-dependent="no"/>
   <relationship name="opmon_uri" description="Configuration for the OpMon facilities used across the session" class-type="OpMonURI" low-cc="one" high-cc="one" is-composite="yes" is-exclusive="no" is-dependent="yes"/>
   <method name="all_applications" description="Returns applications defined in the Session and all of its Segments.">
-   <method-implementation language="c++" prototype="std::vector&lt;const dunedaq::confmodel::Application *&gt; all_applications() const" body="BEGIN_PRIVATE_SECTION&#xA;friend class DisabledResources;&#xA;std::vector&lt;const Application*&gt;getSegmentApps(const Segment*,bool)const;&#xA;END_PRIVATE_SECTION&#xA;&#xA;BEGIN_HEADER_PROLOGUE&#xA;namespace dunedaq::confmodel{class Segment;}&#xA;END_HEADER_PROLOGUE"/>
+   <method-implementation language="c++" prototype="std::vector&lt;const dunedaq::confmodel::Application *&gt; all_applications() const" body="BEGIN_PRIVATE_SECTION&#xA;friend class ExcludedEntities;&#xA;std::vector&lt;const Application*&gt;getSegmentApps(const Segment*,bool)const;&#xA;END_PRIVATE_SECTION&#xA;&#xA;BEGIN_HEADER_PROLOGUE&#xA;namespace dunedaq::confmodel{class Segment;}&#xA;END_HEADER_PROLOGUE"/>
   </method>
-  <method name="enabled_applications" description="Returns all enabled applications defined in the Session and all of its Segments.">
-   <method-implementation language="c++" prototype="std::vector&lt;const dunedaq::confmodel::Application *&gt; enabled_applications() const" body=""/>
+  <method name="included_applications" description="Returns all included applications defined in the Session and all of its Segments.">
+   <method-implementation language="c++" prototype="std::vector&lt;const dunedaq::confmodel::Application *&gt; included_applications() const" body=""/>
   </method>
-  <method name="resource_root" description="">
-   <method-implementation language="c++" prototype="const ResourceSet* resource_root() const override" body="return get_segment();"/>
+  <method name="root_entity" description="">
+   <method-implementation language="c++" prototype="const ExcludableEntitySet* root_entity() const override" body="return get_segment();"/>
   </method>
  </class>
 
