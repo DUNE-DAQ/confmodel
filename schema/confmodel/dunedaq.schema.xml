@@ -80,7 +80,7 @@
 
 <oks-schema>
 
-<info name="" type="" num-of-items="49" oks-format="schema" oks-version="862f2957270" created-by="jcfree" created-on="mu2edaq13.fnal.gov" creation-time="20230123T223700" last-modified-by="mroda" last-modified-on="mroda-xpsp" last-modification-time="20260819T122439"/>
+<info name="" type="" num-of-items="50" oks-format="schema" oks-version="862f2957270" created-by="jcfree" created-on="mu2edaq13.fnal.gov" creation-time="20230123T223700" last-modified-by="eflumerf" last-modified-on="ironvirt9.mshome.net" last-modification-time="20260910T150005"/>
 
  <class name="ActionPlan" description="A set of steps for an application to carry out a command">
   <attribute name="execution_policy" description="How the application should dispatch the command to modules matched by each step of the ActionPlan" type="enum" range="modules-in-parallel,modules-in-series" init-value="modules-in-parallel"/>
@@ -111,7 +111,7 @@
  <class name="ConnectionOverride">
   <attribute name="connection_id_regex" description="Regex to match the connection id to override" type="string" init-value=".*" is-not-null="yes"/>
   <attribute name="override_type" description="Type of override to apply" type="enum" range="output_interface,output_hostname,capacity" init-value="capacity" is-not-null="yes"/>
-  <attribute name="override_value" description="Value to override with" type="string" init-value="" is-not-null="yes"/>
+  <attribute name="override_value" description="Value to override with" type="string" is-not-null="yes"/>
  </class>
 
  <class name="ConnectionService">
@@ -203,6 +203,18 @@
   </method>
  </class>
 
+ <class name="ExcludableEntity" description="Base class for all ExcludableEntity objects. A ExcludableEntity is an object with an included/excluded state.&#xA;Derived classes must implement the compute_excluded_state() method to return the state." is-abstract="yes">
+  <method name="parents" description="The algorithm calculates a vector of segments which are parents of given segment.&#xA;If the segment has parents referenced by the partition object, then:&#xA;- in case of C++ it fills the parents parameter; otherwise it throws {@link NotFoundException} exception">
+   <method-implementation language="c++" prototype="void parents(const dunedaq::confmodel::Session&amp; session, std::list&lt; std::vector&lt;const dunedaq::confmodel::ExcludableEntity *&gt; &gt;&amp; parents) const" body=""/>
+  </method>
+  <method name="is_excluded" description="Method to be called from user code to determine if this ExcludableEntity is excluded in the current configuration.">
+   <method-implementation language="c++" prototype="bool is_excluded(const dunedaq::confmodel::ExcludableEntityTree&amp; session) const" body=""/>
+  </method>
+  <method name="compute_excluded_state" description="Virtual method to be implemented by subclasses containing the logic to determine if this object should be considered excluded.">
+   <method-implementation language="c++" prototype="virtual bool compute_excluded_state(const std::set&lt;std::string&gt;&amp;) const" body=""/>
+  </method>
+ </class>
+
  <class name="ExcludableEntitySet" description="Base class for a collection of ExcludableEntity items. Derived classes must implement the contained_excludable_entities() method to return a vector of ExcludableEntity objects." is-abstract="yes">
   <superclass name="ExcludableEntity"/>
   <method name="contained_excludable_entities" description="Virtual method to obtain the list of all contained ExcludableEntitys. Used internally by the core exclusion logic. Not intended to be used in application code as that should be using individual relationships of the derived classes.">
@@ -288,6 +300,11 @@
   <attribute name="numa_id" type="u8" init-value="0" is-not-null="yes"/>
  </class>
 
+ <class name="HostCores">
+  <superclass name="HostComponent"/>
+  <attribute name="cpu_cores" type="u16" is-multi-value="yes" is-not-null="yes"/>
+ </class>
+
  <class name="Jsonable" is-abstract="yes">
   <method name="to_json" description="">
    <method-implementation language="c++" prototype="nlohmann::json to_json(bool direct=false, bool skip_name=false) const" body="BEGIN_HEADER_PROLOGUE&#xA;#include &quot;nlohmann/json.hpp&quot;&#xA;END_HEADER_PROLOGUE"/>
@@ -341,11 +358,6 @@
   <relationship name="contains" description="List of hardware components on this host" class-type="HostComponent" low-cc="one" high-cc="many" is-composite="yes" is-exclusive="no" is-dependent="yes"/>
  </class>
 
- <class name="HostCores">
-  <superclass name="HostComponent"/>
-  <attribute name="cpu_cores" type="u16" is-multi-value="yes" is-not-null="yes"/>
- </class>
-
  <class name="Queue">
   <superclass name="Connection"/>
   <attribute name="queue_type" description="Type of queue" type="enum" range="kUnknown,kStdDeQueue,kFollySPSCQueue,kFollyMPMCQueue" init-value="kFollySPSCQueue" is-not-null="yes"/>
@@ -370,18 +382,6 @@
   <attribute name="type" type="enum" range="kafka,undefined" init-value="kafka" is-not-null="yes"/>
   <attribute name="address" type="string" init-value="monkafka.cern.ch:30092"/>
   <attribute name="publish_timeout" type="u32" init-value="2" is-not-null="yes"/>
- </class>
-
- <class name="ExcludableEntity" description="Base class for all ExcludableEntity objects. A ExcludableEntity is an object with an included/excluded state.&#xA;Derived classes must implement the compute_excluded_state() method to return the state." is-abstract="yes">
-  <method name="parents" description="The algorithm calculates a vector of segments which are parents of given segment.&#xA;If the segment has parents referenced by the partition object, then:&#xA;- in case of C++ it fills the parents parameter; otherwise it throws {@link NotFoundException} exception">
-   <method-implementation language="c++" prototype="void parents(const dunedaq::confmodel::Session&amp; session, std::list&lt; std::vector&lt;const dunedaq::confmodel::ExcludableEntity *&gt; &gt;&amp; parents) const" body=""/>
-  </method>
-  <method name="is_excluded" description="Method to be called from user code to determine if this ExcludableEntity is excluded in the current configuration.">
-   <method-implementation language="c++" prototype="bool is_excluded(const dunedaq::confmodel::ExcludableEntityTree&amp; session) const" body=""/>
-  </method>
-  <method name="compute_excluded_state" description="Virtual method to be implemented by subclasses containing the logic to determine if this object should be considered excluded.">
-   <method-implementation language="c++" prototype="virtual bool compute_excluded_state(const std::set&lt;std::string&gt;&amp;) const" body=""/>
-  </method>
  </class>
 
  <class name="Segment" description="Logical sub division of the configuration that can be included/excluded as a group">
