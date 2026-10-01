@@ -8,16 +8,17 @@
 #include "nlohmann/json.hpp"
 
 #include <iostream>
-#include <string>
 #include <list>
+#include <string>
 
 using namespace dunedaq;
 
-
-int main(int /*argc*/, char* /*argv*/[]) {
-  std::list<std::string> inc_files{"schema/confmodel/dunedaq.schema.xml"};
-  conffwk::Configuration confdb ("oksconflibs");
-  std::string dbfile{"/tmp/js-test.data.xml"};
+int
+main(int /*argc*/, char* /*argv*/[])
+{
+  std::list<std::string> inc_files{ "schema/confmodel/dunedaq.schema.xml" };
+  conffwk::Configuration confdb("oksconflibs");
+  std::string dbfile{ "/tmp/js-test.data.xml" };
   confdb.create(dbfile, inc_files);
 
   conffwk::ConfigObject config_obj1;
@@ -39,5 +40,4 @@ int main(int /*argc*/, char* /*argv*/[]) {
 
   nlohmann::json json2 = dal->to_json(false, true);
   std::cout << "json2:\n=====\n" << json2.dump(4) << "\n";
-
 }

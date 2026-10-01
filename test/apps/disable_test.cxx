@@ -2,9 +2,9 @@
 
 #include "conffwk/Configuration.hpp"
 
-#include "confmodel/ExcludableEntityBase.hpp"
 #include "confmodel/DaqApplication.hpp"
 #include "confmodel/DaqModule.hpp"
+#include "confmodel/ExcludableEntityBase.hpp"
 #include "confmodel/ExcludableEntitySet.hpp"
 #include "confmodel/Segment.hpp"
 #include "confmodel/Session.hpp"
@@ -14,15 +14,16 @@
 
 using namespace dunedaq;
 
-void listApps(const confmodel::Session* session) {
+void
+listApps(const confmodel::Session* session)
+{
   for (auto app : session->get_all_applications()) {
     std::cout << "Application: " << app->UID();
     auto res = app->cast<confmodel::ExcludableEntitySet>();
     if (res) {
       if (res->disabled(*session)) {
         std::cout << "<disabled>";
-      }
-      else {
+      } else {
         for (auto mod : res->get_contains()) {
           std::cout << " " << mod->UID();
           if (mod->disabled(*session)) {
@@ -42,7 +43,9 @@ void listApps(const confmodel::Session* session) {
   }
 }
 
-int main(int argc, char* argv[]) {
+int
+main(int argc, char* argv[])
+{
   if (argc < 3) {
     std::cout << "Usage: " << argv[0] << " session database-file\n";
     return 0;
@@ -53,7 +56,6 @@ int main(int argc, char* argv[]) {
 
   std::string sessionName(argv[1]);
 
-  
   dunedaq::logging::Logging::setup(sessionName, "disable-test");
 
   auto session = confdb->get<confmodel::Session>(sessionName);
@@ -62,15 +64,12 @@ int main(int argc, char* argv[]) {
     return -1;
   }
 
-
   std::cout << "Checking segments disabled state\n";
   auto rseg = session->get_segment();
   if (!rseg->disabled(*session)) {
-    std::cout << "Root segment " << rseg->UID()
-              << " is not disabled, looping over contained segments\n";
+    std::cout << "Root segment " << rseg->UID() << " is not disabled, looping over contained segments\n";
     for (auto seg : rseg->get_segments()) {
-      std::cout << "Segment " << seg->UID()
-                << std::string(seg->disabled(*session)? " is ":" is not ")
+      std::cout << "Segment " << seg->UID() << std::string(seg->disabled(*session) ? " is " : " is not ")
                 << "disabled\n";
     }
   }
@@ -99,5 +98,4 @@ int main(int argc, char* argv[]) {
   std::cout << "======\nNow trying to set disabled to an empty list \n";
   session->set_disabled({});
   listApps(session);
-
 }

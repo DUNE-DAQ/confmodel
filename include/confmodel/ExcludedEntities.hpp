@@ -6,61 +6,44 @@
 #include <set>
 #include <string>
 
-
 namespace dunedaq::confmodel {
 
-    class Session;
-    class ExcludableEntitySet;
-    class TestCircularDependency;
+class Session;
+class ExcludableEntitySet;
+class TestCircularDependency;
 
-    class ExcludedEntities 
-    {
+class ExcludedEntities
+{
 
-      friend class Session;
-      friend class ExcludableEntity;
+  friend class Session;
+  friend class ExcludableEntity;
 
-    private:
+private:
+  std::set<std::string> m_excluded;
+  bool m_initialised{ false };
+  void fill(const ExcludableEntitySet& rs,
+            std::vector<const ExcludableEntitySet*>& all_resource_sets,
+            std::set<const ExcludableEntity*>& simple_resources,
+            TestCircularDependency& cd_fuse);
 
-      std::set<std::string> m_excluded;
-      bool m_initialised{false};
-      void fill(const ExcludableEntitySet& rs,
-                std::vector<const ExcludableEntitySet*>& all_resource_sets,
-                std::set<const ExcludableEntity*>& simple_resources,
-                TestCircularDependency& cd_fuse);
+  void exclude(const ExcludableEntity& component) { m_excluded.insert(component.UID()); }
 
-      void
-      exclude(const ExcludableEntity& component)
-      {
-        m_excluded.insert(component.UID());
-      }
+  void exclude_children(const ExcludableEntitySet&);
 
-      void
-      exclude_children(const ExcludableEntitySet&);
+  size_t size() noexcept { return m_excluded.size(); }
 
-      size_t
-      size() noexcept
-      {
-        return m_excluded.size();
-      }
+public:
+  ExcludedEntities() = default;
+  ExcludedEntities(const ExcludableEntitySet* root, std::vector<const ExcludableEntity*> initial_list);
 
-    public:
+  ~ExcludedEntities() = default;
 
-      ExcludedEntities() = default;
-      ExcludedEntities(const ExcludableEntitySet* root,
-                        std::vector<const ExcludableEntity*> initial_list);
+  void update(const ExcludableEntitySet* root, std::vector<const ExcludableEntity*> initial_list);
 
-      ~ExcludedEntities() = default;
+  bool is_included(const ExcludableEntity* component) const { return !m_excluded.contains(component->UID()); }
 
-      void update(const ExcludableEntitySet* root,
-                  std::vector<const ExcludableEntity*> initial_list);
-
-      bool
-      is_included(const ExcludableEntity* component) const {
-        return ! m_excluded.contains(component->UID());
-      }
-
-      [[nodiscard]] bool initialised() const {return m_initialised;}
-    };
+  [[nodiscard]] bool initialised() const { return m_initialised; }
+};
 } // namespace dunedaq::confmodel
 
 #endif // DUNEDAQDAL_EXCLUDED_ENTITIES_H

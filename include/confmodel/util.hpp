@@ -5,8 +5,8 @@
 
 #include "conffwk/Configuration.hpp"
 // #include "conffwk/DalObject.hpp"
-#include "nlohmann/json.hpp"
 #include "logging/Logging.hpp" // NOTE: if ISSUES ARE DECLARED BEFORE include logging/Logging.hpp, TLOG_DEBUG<<issue wont work.
+#include "nlohmann/json.hpp"
 
 #include "confmodel/Application.hpp"
 #include "confmodel/PhysicalHost.hpp"
@@ -51,14 +51,16 @@ namespace confmodel {
  *  \return Returns the pointer to the session object if found, or 0.
  */
 
-const dunedaq::confmodel::Session *
-get_session(dunedaq::conffwk::Configuration &conf, const std::string &name,
+const dunedaq::confmodel::Session*
+get_session(dunedaq::conffwk::Configuration& conf,
+            const std::string& name,
             unsigned long rlevel = 10,
-            const std::vector<std::string> *rclasses = nullptr);
+            const std::vector<std::string>* rclasses = nullptr);
 
-template <typename T>
-void add_json_value(conffwk::ConfigObject &obj, std::string &name,
-                    bool multi_value, nlohmann::json &attributes) {
+template<typename T>
+void
+add_json_value(conffwk::ConfigObject& obj, std::string& name, bool multi_value, nlohmann::json& attributes)
+{
   if (!multi_value) {
     T value;
     obj.get(name, value);
@@ -70,14 +72,16 @@ void add_json_value(conffwk::ConfigObject &obj, std::string &name,
   }
 }
 
-template <typename T>
-const std::vector<std::string> construct_commandline_parameters_appfwk(
-    const T *app, const conffwk::Configuration &confdb,
-    const dunedaq::confmodel::Session *session) {
+template<typename T>
+const std::vector<std::string>
+construct_commandline_parameters_appfwk(const T* app,
+                                        const conffwk::Configuration& confdb,
+                                        const dunedaq::confmodel::Session* session)
+{
 
-  const dunedaq::confmodel::Service *control_service = nullptr;
+  const dunedaq::confmodel::Service* control_service = nullptr;
 
-  for (auto const *as : app->get_exposes_service()) {
+  for (auto const* as : app->get_exposes_service()) {
     if (as->UID().ends_with("_control")) {
       if (control_service)
         throw DuplicatedControlService(ERS_HERE, as->UID());
@@ -88,22 +92,13 @@ const std::vector<std::string> construct_commandline_parameters_appfwk(
   if (control_service == nullptr)
     throw NoControlServiceDefined(ERS_HERE, app->UID());
 
-  const std::string control_uri = control_service->get_protocol() + "://" +
-                                  app->get_runs_on()->get_runs_on()->UID() +
-                                  ":" +
-                                  std::to_string(control_service->get_port());
+  const std::string control_uri = control_service->get_protocol() + "://" + app->get_runs_on()->get_runs_on()->UID() +
+                                  ":" + std::to_string(control_service->get_port());
 
   const std::string configuration_uri = confdb.get_impl_spec();
 
   return {
-      "-s",
-      session->UID(),
-      "--name",
-      app->UID(),
-      "-c",
-      control_uri,
-      "--configurationService",
-      configuration_uri,
+    "-s", session->UID(), "--name", app->UID(), "-c", control_uri, "--configurationService", configuration_uri,
   };
 }
 

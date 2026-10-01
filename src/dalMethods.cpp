@@ -9,53 +9,51 @@
  */
 
 #include "confmodel/Application.hpp"
-#include "confmodel/confmodelIssues.hpp"
 #include "confmodel/DaqApplication.hpp"
 #include "confmodel/DaqModule.hpp"
-#include "confmodel/DetDataSender.hpp"
 #include "confmodel/DetDataReceiver.hpp"
-#include "confmodel/DetectorToDaqConnection.hpp"
+#include "confmodel/DetDataSender.hpp"
 #include "confmodel/DetectorStream.hpp"
+#include "confmodel/DetectorToDaqConnection.hpp"
+#include "confmodel/ExcludableEntity.hpp"
+#include "confmodel/ExcludableEntitySet.hpp"
 #include "confmodel/Jsonable.hpp"
 #include "confmodel/OpMonURI.hpp"
 #include "confmodel/PhysicalHost.hpp"
 #include "confmodel/RCApplication.hpp"
-#include "confmodel/ExcludableEntity.hpp"
-#include "confmodel/ExcludableEntitySet.hpp"
 #include "confmodel/Segment.hpp"
-#include "confmodel/Session.hpp"
 #include "confmodel/Service.hpp"
+#include "confmodel/Session.hpp"
 #include "confmodel/VirtualHost.hpp"
+#include "confmodel/confmodelIssues.hpp"
 
 #include "confmodel/test_circular_dependency.hpp"
 
-#include "nlohmann/json.hpp"
 #include "conffwk/ConfigObject.hpp"
 #include "conffwk/Configuration.hpp"
 #include "conffwk/Schema.hpp"
+#include "nlohmann/json.hpp"
 
+#include <iostream>
 #include <list>
 #include <set>
-#include <iostream>
 
 using namespace dunedaq::conffwk;
 
-
 // Stolen from ATLAS dal package
 namespace {
-  /**
-   *  Static function to calculate list of components
-   *  from the root segment to the lowest component which
-   *  the child object (a segment or a resource) belongs.
-   */
+/**
+ *  Static function to calculate list of components
+ *  from the root segment to the lowest component which
+ *  the child object (a segment or a resource) belongs.
+ */
 
 void
-make_parents_list(
-    const ConfigObjectImpl * child,
-    const dunedaq::confmodel::ExcludableEntitySet * resource_set,
-    std::vector<const dunedaq::confmodel::ExcludableEntity *> & p_list,
-    std::list< std::vector<const dunedaq::confmodel::ExcludableEntity *> >& out,
-    dunedaq::confmodel::TestCircularDependency& cd_fuse)
+make_parents_list(const ConfigObjectImpl* child,
+                  const dunedaq::confmodel::ExcludableEntitySet* resource_set,
+                  std::vector<const dunedaq::confmodel::ExcludableEntity*>& p_list,
+                  std::list<std::vector<const dunedaq::confmodel::ExcludableEntity*>>& out,
+                  dunedaq::confmodel::TestCircularDependency& cd_fuse)
 {
   dunedaq::confmodel::AddTestOnCircularDependency add_fuse_test(cd_fuse, resource_set);
 
@@ -66,8 +64,7 @@ make_parents_list(
   for (const auto& i : resource_set->contained_excludable_entities()) {
     if (i->config_object().implementation() == child) {
       out.push_back(p_list);
-    }
-    else if (const dunedaq::confmodel::ExcludableEntitySet * rs = i->cast<dunedaq::confmodel::ExcludableEntitySet>()) {
+    } else if (const dunedaq::confmodel::ExcludableEntitySet* rs = i->cast<dunedaq::confmodel::ExcludableEntitySet>()) {
       make_parents_list(child, rs, p_list, out, cd_fuse);
     }
   }
@@ -77,13 +74,12 @@ make_parents_list(
 }
 
 void
-make_parents_list(
-    const dunedaq::conffwk::ConfigObjectImpl * child,
-    const dunedaq::confmodel::Segment * segment,
-    std::vector<const dunedaq::confmodel::ExcludableEntity *> & p_list,
-    std::list<std::vector<const dunedaq::confmodel::ExcludableEntity *> >& out,
-    bool is_segment,
-    dunedaq::confmodel::TestCircularDependency& cd_fuse)
+make_parents_list(const dunedaq::conffwk::ConfigObjectImpl* child,
+                  const dunedaq::confmodel::Segment* segment,
+                  std::vector<const dunedaq::confmodel::ExcludableEntity*>& p_list,
+                  std::list<std::vector<const dunedaq::confmodel::ExcludableEntity*>>& out,
+                  bool is_segment,
+                  dunedaq::confmodel::TestCircularDependency& cd_fuse)
 {
   dunedaq::confmodel::AddTestOnCircularDependency add_fuse_test(cd_fuse, segment);
 
@@ -111,18 +107,16 @@ make_parents_list(
   p_list.pop_back();
 }
 
-
 void
-check_segment(
-    std::list< std::vector<const dunedaq::confmodel::ExcludableEntity *> >& out,
-    const dunedaq::confmodel::Segment * segment,
-    const dunedaq::conffwk::ConfigObjectImpl * child,
-    bool is_segment,
-    dunedaq::confmodel::TestCircularDependency& cd_fuse)
+check_segment(std::list<std::vector<const dunedaq::confmodel::ExcludableEntity*>>& out,
+              const dunedaq::confmodel::Segment* segment,
+              const dunedaq::conffwk::ConfigObjectImpl* child,
+              bool is_segment,
+              dunedaq::confmodel::TestCircularDependency& cd_fuse)
 {
   dunedaq::confmodel::AddTestOnCircularDependency add_fuse_test(cd_fuse, segment);
 
-  std::vector<const dunedaq::confmodel::ExcludableEntity *> compList;
+  std::vector<const dunedaq::confmodel::ExcludableEntity*> compList;
 
   if (segment->config_object().implementation() == child) {
     out.push_back(compList);
@@ -131,15 +125,12 @@ check_segment(
 }
 } // namespace
 
-
 namespace dunedaq::confmodel {
 
 void
-ExcludableEntity::parents(
-  const Session& session,
-  std::list<std::vector<const ExcludableEntity *>>& parents) const
+ExcludableEntity::parents(const Session& session, std::list<std::vector<const ExcludableEntity*>>& parents) const
 {
-  const ConfigObjectImpl * obj_impl = config_object().implementation();
+  const ConfigObjectImpl* obj_impl = config_object().implementation();
 
   const bool is_segment = castable(Segment::s_class_name);
 
@@ -147,15 +138,13 @@ ExcludableEntity::parents(
     TestCircularDependency cd_fuse("component parents", &session);
 
     // check session's segment
-    check_segment(parents, session.get_segment(), obj_impl, is_segment,
-                  cd_fuse);
-
+    check_segment(parents, session.get_segment(), obj_impl, is_segment, cd_fuse);
 
     if (parents.empty()) {
-      TLOG_DEBUG(1) <<  "cannot find segment/resource path(s) between ExcludableEntity " << this << " and session " << &session << " objects (check this object is linked with the session as a segment or a resource)" ;
+      TLOG_DEBUG(1) << "cannot find segment/resource path(s) between ExcludableEntity " << this << " and session "
+                    << &session << " objects (check this object is linked with the session as a segment or a resource)";
     }
-  }
-  catch (ers::Issue & ex) {
+  } catch (ers::Issue& ex) {
     ers::error(CannotGetParents(ERS_HERE, full_name(), ex));
   }
 }
@@ -163,8 +152,8 @@ ExcludableEntity::parents(
 // ========================================================================
 
 std::vector<const Application*>
-Session::getSegmentApps(const Segment* segment,
-                        bool included_only) const {
+Session::getSegmentApps(const Segment* segment, bool included_only) const
+{
   std::vector<const Application*> apps;
   auto segapps = segment->get_applications();
   if (included_only) {
@@ -174,42 +163,43 @@ Session::getSegmentApps(const Segment* segment,
         apps.insert(apps.end(), app);
       }
     }
-  }
-  else {
+  } else {
     apps.swap(segapps);
   }
   for (auto seg : segment->get_segments()) {
     if (!included_only || !seg->is_excluded(*this)) {
       auto segapps = getSegmentApps(seg, included_only);
-      apps.insert(apps.end(), segapps.begin(),segapps.end());
+      apps.insert(apps.end(), segapps.begin(), segapps.end());
     }
   }
   return apps;
 }
 
 std::vector<const Application*>
-Session::all_applications() const {
+Session::all_applications() const
+{
   std::vector<const Application*> apps;
   auto segapps = getSegmentApps(get_segment(), false);
-  apps.insert(apps.end(), segapps.begin(),segapps.end());
+  apps.insert(apps.end(), segapps.begin(), segapps.end());
   return apps;
 }
 
 std::vector<const Application*>
-Session::included_applications() const {
+Session::included_applications() const
+{
   std::vector<const Application*> apps;
   auto segapps = getSegmentApps(get_segment(), true);
-  apps.insert(apps.end(), segapps.begin(),segapps.end());
+  apps.insert(apps.end(), segapps.begin(), segapps.end());
   return apps;
 }
-
 
 // ========================================================================
 
 std::set<const HostComponent*>
-DaqApplication::get_used_host_components() const {
+DaqApplication::get_used_host_components() const
+{
   std::set<const HostComponent*> res;
-  for (auto module :  get_modules()) {
+  for (auto module : get_modules()) {
     for (auto hostresource : module->get_used_host_components()) {
       res.insert(hostresource);
     }
@@ -218,11 +208,13 @@ DaqApplication::get_used_host_components() const {
 }
 
 namespace {
-nlohmann::json get_json_config(conffwk::Configuration& confdb,
-                               const std::string& class_name,
-                               const std::string& uid,
-                               bool direct_only,
-                               bool skip_object_name) {
+nlohmann::json
+get_json_config(conffwk::Configuration& confdb,
+                const std::string& class_name,
+                const std::string& uid,
+                bool direct_only,
+                bool skip_object_name)
+{
   using nlohmann::json;
   using namespace conffwk;
   TLOG_DBG(9) << "Getting attributes for " << uid << " of class " << class_name;
@@ -233,65 +225,46 @@ nlohmann::json get_json_config(conffwk::Configuration& confdb,
   for (auto attr : class_info.p_attributes) {
     if (attr.p_type == type_t::u8_type) {
       add_json_value<uint8_t>(obj, attr.p_name, attr.p_is_multi_value, attributes);
-    }
-    else if (attr.p_type == type_t::u16_type) {
+    } else if (attr.p_type == type_t::u16_type) {
       add_json_value<uint16_t>(obj, attr.p_name, attr.p_is_multi_value, attributes);
-    }
-    else if (attr.p_type == type_t::u32_type) {
+    } else if (attr.p_type == type_t::u32_type) {
       add_json_value<uint32_t>(obj, attr.p_name, attr.p_is_multi_value, attributes);
-    }
-    else if (attr.p_type == type_t::u64_type) {
+    } else if (attr.p_type == type_t::u64_type) {
       add_json_value<uint64_t>(obj, attr.p_name, attr.p_is_multi_value, attributes);
-    }
-    else if (attr.p_type == type_t::s8_type) {
+    } else if (attr.p_type == type_t::s8_type) {
       add_json_value<int8_t>(obj, attr.p_name, attr.p_is_multi_value, attributes);
-    }
-    else if (attr.p_type == type_t::s16_type) {
+    } else if (attr.p_type == type_t::s16_type) {
       add_json_value<int16_t>(obj, attr.p_name, attr.p_is_multi_value, attributes);
-    }
-    else if (attr.p_type == type_t::s32_type ||
-             attr.p_type == type_t::s16_type) {
+    } else if (attr.p_type == type_t::s32_type || attr.p_type == type_t::s16_type) {
       add_json_value<int32_t>(obj, attr.p_name, attr.p_is_multi_value, attributes);
-    }
-    else if (attr.p_type == type_t::s64_type) {
+    } else if (attr.p_type == type_t::s64_type) {
       add_json_value<int64_t>(obj, attr.p_name, attr.p_is_multi_value, attributes);
-    }
-    else if (attr.p_type == type_t::float_type) {
+    } else if (attr.p_type == type_t::float_type) {
       add_json_value<float>(obj, attr.p_name, attr.p_is_multi_value, attributes);
-    }
-    else if (attr.p_type == type_t::double_type) {
+    } else if (attr.p_type == type_t::double_type) {
       add_json_value<double>(obj, attr.p_name, attr.p_is_multi_value, attributes);
-    }
-    else if (attr.p_type == type_t::bool_type) {
+    } else if (attr.p_type == type_t::bool_type) {
       add_json_value<bool>(obj, attr.p_name, attr.p_is_multi_value, attributes);
-    }
-    else if ((attr.p_type == type_t::string_type) ||
-             (attr.p_type == type_t::enum_type) ||
-             (attr.p_type == type_t::date_type) ||
-             (attr.p_type == type_t::time_type)) {
+    } else if ((attr.p_type == type_t::string_type) || (attr.p_type == type_t::enum_type) ||
+               (attr.p_type == type_t::date_type) || (attr.p_type == type_t::time_type)) {
       add_json_value<std::string>(obj, attr.p_name, attr.p_is_multi_value, attributes);
     }
   }
   if (!direct_only) {
     TLOG_DBG(9) << "Processing  relationships";
-    for (auto iter: class_info.p_relationships) {
+    for (auto iter : class_info.p_relationships) {
       std::string rel_name = iter.p_name;
-      if (iter.p_cardinality == cardinality_t::zero_or_one ||
-          iter.p_cardinality == cardinality_t::only_one) {
+      if (iter.p_cardinality == cardinality_t::zero_or_one || iter.p_cardinality == cardinality_t::only_one) {
         ConfigObject rel_obj;
         obj.get(rel_name, rel_obj);
         if (!rel_obj.is_null()) {
           TLOG_DBG(9) << "Getting attibute of relationship " << rel_name;
-          attributes[rel_name] = get_json_config(confdb, rel_obj.class_name(),
-                                                 rel_obj.UID(),
-                                                 direct_only,
-                                                 skip_object_name);
-        }
-        else {
+          attributes[rel_name] =
+            get_json_config(confdb, rel_obj.class_name(), rel_obj.UID(), direct_only, skip_object_name);
+        } else {
           TLOG_DBG(9) << "Relationship " << rel_name << " not set";
         }
-      }
-      else {
+      } else {
         TLOG_DBG(9) << "Relationship " << rel_name << " is multi value. "
                     << "Getting attibutes for relationship.";
         std::vector<ConfigObject> rel_vec;
@@ -299,8 +272,7 @@ nlohmann::json get_json_config(conffwk::Configuration& confdb,
         std::vector<json> configs;
         for (auto rel_obj : rel_vec) {
           TLOG_DBG(9) << "Getting attibute of relationship " << rel_obj.UID();
-          auto rel_conf = get_json_config(confdb, rel_obj.class_name(), rel_obj.UID(),
-                                          direct_only, skip_object_name);
+          auto rel_conf = get_json_config(confdb, rel_obj.class_name(), rel_obj.UID(), direct_only, skip_object_name);
           configs.push_back(rel_conf);
         }
         attributes[rel_name] = configs;
@@ -317,58 +289,55 @@ nlohmann::json get_json_config(conffwk::Configuration& confdb,
 }
 } // namespace
 
-nlohmann::json Jsonable::to_json(bool direct_only,
-                                 bool skip_object_name) const {
-  return get_json_config(p_registry.configuration(), class_name(), UID(), direct_only,
-                         skip_object_name);
+nlohmann::json
+Jsonable::to_json(bool direct_only, bool skip_object_name) const
+{
+  return get_json_config(p_registry.configuration(), class_name(), UID(), direct_only, skip_object_name);
 }
 
-const std::vector<std::string> DaqApplication::construct_commandline_parameters(
-  const conffwk::Configuration& confdb,
-  const dunedaq::confmodel::Session* session) const {
+const std::vector<std::string>
+DaqApplication::construct_commandline_parameters(const conffwk::Configuration& confdb,
+                                                 const dunedaq::confmodel::Session* session) const
+{
 
-    return construct_commandline_parameters_appfwk<dunedaq::confmodel::DaqApplication>(this, confdb, session);
+  return construct_commandline_parameters_appfwk<dunedaq::confmodel::DaqApplication>(this, confdb, session);
 }
 
-const std::vector<std::string> RCApplication::construct_commandline_parameters(
-  const conffwk::Configuration& confdb,
-  const dunedaq::confmodel::Session* session) const {
+const std::vector<std::string>
+RCApplication::construct_commandline_parameters(const conffwk::Configuration& confdb,
+                                                const dunedaq::confmodel::Session* session) const
+{
 
-    const std::string configuration_uri = confdb.get_impl_spec();
-    const dunedaq::confmodel::Service* control_service = nullptr;
+  const std::string configuration_uri = confdb.get_impl_spec();
+  const dunedaq::confmodel::Service* control_service = nullptr;
 
-    const std::string controller_log_level = session->get_controller_log_level();
+  const std::string controller_log_level = session->get_controller_log_level();
 
-    for (auto const *as : get_exposes_service()) {
-      if (as->UID().ends_with("_control")) {
-        if (control_service)
-          throw DuplicatedControlService(ERS_HERE, as->UID());
-        control_service = as;
-      }
+  for (auto const* as : get_exposes_service()) {
+    if (as->UID().ends_with("_control")) {
+      if (control_service)
+        throw DuplicatedControlService(ERS_HERE, as->UID());
+      control_service = as;
     }
+  }
 
-    if (control_service == nullptr)
-      throw NoControlServiceDefined(ERS_HERE, UID());
+  if (control_service == nullptr)
+    throw NoControlServiceDefined(ERS_HERE, UID());
 
-    const std::string control_uri =
-      control_service->get_protocol()
-      + "://"
-      + get_runs_on()->get_runs_on()->UID()
-      + ":"
-      + std::to_string(control_service->get_port());
+  const std::string control_uri = control_service->get_protocol() + "://" + get_runs_on()->get_runs_on()->UID() + ":" +
+                                  std::to_string(control_service->get_port());
 
-    std::vector<std::string> ret = { "-l", controller_log_level };
-    ret.push_back(configuration_uri);
-    ret.push_back(control_uri);
-    ret.push_back(UID());
-    ret.push_back(session->UID());
-    return ret;
+  std::vector<std::string> ret = { "-l", controller_log_level };
+  ret.push_back(configuration_uri);
+  ret.push_back(control_uri);
+  ret.push_back(UID());
+  ret.push_back(session->UID());
+  return ret;
 }
-
-
 
 std::vector<const confmodel::DetectorStream*>
-DetectorToDaqConnection::streams() const {
+DetectorToDaqConnection::streams() const
+{
   std::vector<const confmodel::DetectorStream*> all_streams;
   // Loop over senders
   for (auto sender : this->senders()) {
@@ -378,23 +347,26 @@ DetectorToDaqConnection::streams() const {
   return all_streams;
 }
 
-std::string OpMonURI::get_URI( const std::string & /* app */) const {
+std::string
+OpMonURI::get_URI(const std::string& /* app */) const
+{
 
   auto type = get_type();
-  if ( type == "file" ) {
+  if (type == "file") {
     return type + "://" + get_path();
   }
 
-  if ( type == "stream" ) {
+  if (type == "stream") {
     return type + "://" + get_path();
   }
 
   return "stdout://";
 }
 
-
 // ========================================================================
-void ExcludableEntityTree::exclude(const ExcludableEntity* res) {
+void
+ExcludableEntityTree::exclude(const ExcludableEntity* res)
+{
   auto excluded_vec = get_excluded();
   for (auto excluded_resource : excluded_vec) {
     if (excluded_resource == res) {
@@ -404,26 +376,32 @@ void ExcludableEntityTree::exclude(const ExcludableEntity* res) {
   excluded_vec.push_back(res);
 
   set_excluded(excluded_vec);
-  configuration().update<ExcludableEntityTree>({UID()}, {}, {});
+  configuration().update<ExcludableEntityTree>({ UID() }, {}, {});
 
   m_excluded_entities.update(root_entity(), excluded_vec);
 }
-void ExcludableEntityTree::include(const ExcludableEntity* res) {
+void
+ExcludableEntityTree::include(const ExcludableEntity* res)
+{
   auto excluded_vec = get_excluded();
   auto count = std::erase(excluded_vec, res);
   if (count == 0) {
     return;
   }
   set_excluded(excluded_vec);
-  configuration().update<ExcludableEntityTree>({UID()}, {}, {});
+  configuration().update<ExcludableEntityTree>({ UID() }, {}, {});
 
   m_excluded_entities.update(root_entity(), excluded_vec);
 }
 
-bool ExcludableEntity::is_excluded(const dunedaq::confmodel::ExcludableEntityTree& holder) const {
+bool
+ExcludableEntity::is_excluded(const dunedaq::confmodel::ExcludableEntityTree& holder) const
+{
   return (!holder.excluded_entities().is_included(this));
 }
-bool ExcludableEntity::compute_excluded_state(const std::set<std::string>& excluded_resources) const {
+bool
+ExcludableEntity::compute_excluded_state(const std::set<std::string>& excluded_resources) const
+{
   TLOG_DEBUG(6) << "No compute_excluded_state method defined for ExcludableEntity " << class_name();
   if (excluded_resources.contains(UID())) {
     return true;
@@ -431,26 +409,30 @@ bool ExcludableEntity::compute_excluded_state(const std::set<std::string>& exclu
   return false;
 }
 
-std::vector<const ExcludableEntity*> DetDataSender::contained_excludable_entities() const {
+std::vector<const ExcludableEntity*>
+DetDataSender::contained_excludable_entities() const
+{
   return to_resources(get_streams());
 }
 
-std::vector<const ExcludableEntity*> DetectorToDaqConnection::contained_excludable_entities() const {
+std::vector<const ExcludableEntity*>
+DetectorToDaqConnection::contained_excludable_entities() const
+{
   auto res = to_resources(senders());
   auto rec = receiver();
-  if (rec) 
+  if (rec)
     res.push_back(rec);
   return res;
 }
 
-
 bool
-DetectorToDaqConnection::compute_excluded_state(const std::set<std::string>& excluded_resources) const {
+DetectorToDaqConnection::compute_excluded_state(const std::set<std::string>& excluded_resources) const
+{
   if (excluded_resources.contains(UID())) {
     return true;
   }
   bool send_excluded = true;
-  for (auto sender: senders()) {
+  for (auto sender : senders()) {
     if (!sender->compute_excluded_state(excluded_resources)) {
       send_excluded = false;
       break;
@@ -459,22 +441,22 @@ DetectorToDaqConnection::compute_excluded_state(const std::set<std::string>& exc
   TLOG_DBG(6) << "receiver excluded=" << receiver()->compute_excluded_state(excluded_resources)
               << " senders excluded=" << send_excluded;
   auto rec = receiver();
-  if ( ! rec )
+  if (!rec)
     return send_excluded;
 
-  return (rec->compute_excluded_state(excluded_resources) || send_excluded) ;
-
+  return (rec->compute_excluded_state(excluded_resources) || send_excluded);
 }
 
 std::vector<const ExcludableEntity*>
-Segment::contained_excludable_entities() const {
+Segment::contained_excludable_entities() const
+{
   // All our contained segments are resources
   std::vector<const ExcludableEntity*> resources = to_resources(get_segments());
 
   // Only a subset of our applications might be resources so check individually
-  for (auto app: get_applications()) {
+  for (auto app : get_applications()) {
     TLOG_DBG(6) << "Checking " << app->UID();
-    auto res=app->cast<const ExcludableEntity>();
+    auto res = app->cast<const ExcludableEntity>();
     if (res != nullptr) {
       TLOG_DBG(6) << "Adding " << app->UID();
       resources.push_back(res);
@@ -485,17 +467,18 @@ Segment::contained_excludable_entities() const {
 }
 
 bool
-Segment::compute_excluded_state(const std::set<std::string>& excluded) const {
+Segment::compute_excluded_state(const std::set<std::string>& excluded) const
+{
   if (excluded.contains(UID())) {
     return true;
   }
-  for (auto app: get_applications()) {
-    auto res=app->cast<const ExcludableEntity>();
+  for (auto app : get_applications()) {
+    auto res = app->cast<const ExcludableEntity>();
     if (res == nullptr) {
       return false;
     }
   }
-  for (auto res: contained_excludable_entities()) {
+  for (auto res : contained_excludable_entities()) {
     if (!res->compute_excluded_state(excluded)) {
       return false;
     }

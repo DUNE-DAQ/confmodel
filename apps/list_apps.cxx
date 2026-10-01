@@ -9,17 +9,18 @@
 #include "confmodel/Session.hpp"
 
 #include <iostream>
-//#include <set>
+// #include <set>
 #include <string>
 
 using namespace dunedaq;
 using namespace dunedaq::confmodel;
 
-
-void process_segment(const Session* session,
-                     const Segment* segment,
-                     const std::set<std::string>& excluded_objects,
-                     std::string spacer) {
+void
+process_segment(const Session* session,
+                const Segment* segment,
+                const std::set<std::string>& excluded_objects,
+                std::string spacer)
+{
   std::cout << spacer << "Segment " << segment->UID();
   bool segment_excluded = segment->is_excluded(*session);
   std::string reason = "";
@@ -29,7 +30,7 @@ void process_segment(const Session* session,
   }
   std::cout << "\n";
   for (auto subseg : segment->get_segments()) {
-    process_segment (session, subseg, excluded_objects, spacer+"  ");
+    process_segment(session, subseg, excluded_objects, spacer + "  ");
   }
 
   for (auto app : segment->get_applications()) {
@@ -42,8 +43,7 @@ void process_segment(const Session* session,
           excluded = true;
           if (excluded_objects.find(app->UID()) != excluded_objects.end()) {
             reason = "directly";
-          }
-          else {
+          } else {
             reason = "due to state of related objects";
           }
         }
@@ -64,7 +64,7 @@ void process_segment(const Session* session,
       }
     }
     if (excluded) {
-      std::cout << " <excluded "<< reason << ">";
+      std::cout << " <excluded " << reason << ">";
     }
     auto daqApp = app->cast<DaqApplication>();
     if (daqApp) {
@@ -78,7 +78,9 @@ void process_segment(const Session* session,
   }
 }
 
-int main(int argc, char* argv[]) {
+int
+main(int argc, char* argv[])
+{
 
   if (argc < 2) {
     std::cout << "Usage: " << argv[0] << " [session] database-file\n";
@@ -95,8 +97,7 @@ int main(int argc, char* argv[]) {
   std::vector<std::string> sessionList;
   if (argc == 3) {
     sessionList.emplace_back(std::string(argv[1]));
-  }
-  else {
+  } else {
     std::vector<conffwk::ConfigObject> session_obj;
     confdb->get("Session", session_obj);
     if (session_obj.size() == 0) {
@@ -107,31 +108,26 @@ int main(int argc, char* argv[]) {
       sessionList.push_back(obj.UID());
     }
   }
-  dunedaq::logging::Logging::setup(sessionList[0], "list-apps"
-  );
+  dunedaq::logging::Logging::setup(sessionList[0], "list-apps");
 
   std::string separator{};
   for (const auto& sessionName : sessionList) {
     const Session* session;
     session = confdb->get<Session>(sessionName);
-    if (session==nullptr) {
+    if (session == nullptr) {
       std::cerr << "Session " << sessionName << " not found in database\n";
       return -1;
     }
 
-    std::cout << separator << "      Applications in Session: "
-              << sessionName << "\n";
+    std::cout << separator << "      Applications in Session: " << sessionName << "\n";
     std::set<std::string> excluded_objects;
     for (auto object : session->get_excluded()) {
       TLOG_DEBUG(11) << object->UID() << " is in excluded list of Session";
       excluded_objects.insert(object->UID());
     }
 
-    process_segment (session, session->get_segment(),
-                     excluded_objects,
-                     "");
-    separator =
-      "\n   ----------------------------------------------\n\n";
+    process_segment(session, session->get_segment(), excluded_objects, "");
+    separator = "\n   ----------------------------------------------\n\n";
   }
   delete confdb;
 }
