@@ -28,13 +28,7 @@ daq_add_application(jsonable_test jsonable_test.cxx TEST
 
 
 # See https://dune-daq-sw.readthedocs.io/en/latest/packages/daq-cmake/#daq_add_python_bindings
-daq_add_python_bindings(*.cpp DAL )
-
-# Ship the py.typed marker and the pybind stubs so mypy reads confmodel_dal,
-# including dal_protocols.py. After changing pybindsrc/, rebuild and regenerate with:
-#   pybind11-stubgen confmodel_dal._daq_confmodel_dal_py -o python
-install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/python/ DESTINATION ${CMAKE_INSTALL_PYTHONDIR} OPTIONAL FILES_MATCHING PATTERN "py.typed" PATTERN "*.pyi")
-
+daq_add_python_bindings(*.cpp DAL GENERATE_STUBS)
 
 ##############################################################################
 
