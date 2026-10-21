@@ -80,7 +80,7 @@
 
 <oks-schema>
 
-<info name="" type="" num-of-items="49" oks-format="schema" oks-version="862f2957270" created-by="jcfree" created-on="mu2edaq13.fnal.gov" creation-time="20230123T223700" last-modified-by="mroda" last-modified-on="mroda-xpsp" last-modification-time="20260819T122439"/>
+<info name="" type="" num-of-items="51" oks-format="schema" oks-version="862f2957270" created-by="jcfree" created-on="mu2edaq13.fnal.gov" creation-time="20230123T223700" last-modified-by="mroda" last-modified-on="mroda-xpsp" last-modification-time="20261021T125736"/>
 
  <class name="ActionPlan" description="A set of steps for an application to carry out a command">
   <attribute name="execution_policy" description="How the application should dispatch the command to modules matched by each step of the ActionPlan" type="enum" range="modules-in-parallel,modules-in-series" init-value="modules-in-parallel"/>
@@ -196,6 +196,18 @@
   </method>
  </class>
 
+ <class name="ExcludableEntity" description="Base class for all ExcludableEntity objects. A ExcludableEntity is an object with an included/excluded state.&#xA;Derived classes must implement the compute_excluded_state() method to return the state." is-abstract="yes">
+  <method name="parents" description="The algorithm calculates a vector of segments which are parents of given segment.&#xA;If the segment has parents referenced by the partition object, then:&#xA;- in case of C++ it fills the parents parameter; otherwise it throws {@link NotFoundException} exception">
+   <method-implementation language="c++" prototype="void parents(const dunedaq::confmodel::Session&amp; session, std::list&lt; std::vector&lt;const dunedaq::confmodel::ExcludableEntity *&gt; &gt;&amp; parents) const" body=""/>
+  </method>
+  <method name="is_excluded" description="Method to be called from user code to determine if this ExcludableEntity is excluded in the current configuration.">
+   <method-implementation language="c++" prototype="bool is_excluded(const dunedaq::confmodel::ExcludableEntityTree&amp; session) const" body=""/>
+  </method>
+  <method name="compute_excluded_state" description="Virtual method to be implemented by subclasses containing the logic to determine if this object should be considered excluded.">
+   <method-implementation language="c++" prototype="virtual bool compute_excluded_state(const std::set&lt;std::string&gt;&amp;) const" body=""/>
+  </method>
+ </class>
+
  <class name="ExcludableEntitySet" description="Base class for a collection of ExcludableEntity items. Derived classes must implement the contained_excludable_entities() method to return a vector of ExcludableEntity objects." is-abstract="yes">
   <superclass name="ExcludableEntity"/>
   <method name="contained_excludable_entities" description="Virtual method to obtain the list of all contained ExcludableEntitys. Used internally by the core exclusion logic. Not intended to be used in application code as that should be using individual relationships of the derived classes.">
@@ -236,38 +248,47 @@
  <class name="FSMCommand">
   <attribute name="cmd" type="string" is-not-null="yes"/>
   <attribute name="optional" type="bool" init-value="true" is-not-null="yes"/>
+  <attribute name="reload_configuration" description="flag the describes if applications should reload configurations" type="bool" init-value="false" is-not-null="yes"/>
+ </class>
+
+ <class name="FSMPostTransition">
+  <superclass name="FSMxTransition"/>
+ </class>
+
+ <class name="FSMPreTransition">
+  <superclass name="FSMxTransition"/>
  </class>
 
  <class name="FSMaction">
   <attribute name="name" type="string" is-not-null="yes"/>
-  <attribute name="commands" type="string" is-multi-value="yes"/>
+  <attribute name="commands" description="Currently this is ignored" type="string" is-multi-value="yes"/>
   <relationship name="parameters" class-type="Variable" low-cc="zero" high-cc="many" is-composite="yes" is-exclusive="no" is-dependent="no"/>
  </class>
 
  <class name="FSMconfiguration">
   <attribute name="states" type="string" is-multi-value="yes" init-value="&quot;initial&quot;,&quot;configured&quot;" is-not-null="yes"/>
   <attribute name="initial_state" type="string" init-value="initial" is-not-null="yes"/>
-  <relationship name="transitions" class-type="FSMtransition" low-cc="one" high-cc="many" is-composite="yes" is-exclusive="no" is-dependent="no"/>
-  <relationship name="command_sequences" class-type="FSMsequence" low-cc="zero" high-cc="many" is-composite="yes" is-exclusive="no" is-dependent="no"/>
-  <relationship name="pre_transitions" class-type="FSMxTransition" low-cc="zero" high-cc="many" is-composite="yes" is-exclusive="no" is-dependent="no"/>
-  <relationship name="post_transitions" class-type="FSMxTransition" low-cc="zero" high-cc="many" is-composite="yes" is-exclusive="no" is-dependent="no"/>
-  <relationship name="actions" class-type="FSMaction" low-cc="zero" high-cc="many" is-composite="yes" is-exclusive="no" is-dependent="no"/>
+  <relationship name="transitions" class-type="FSMtransition" low-cc="one" high-cc="many" is-composite="no" is-exclusive="no" is-dependent="no"/>
+  <relationship name="command_sequences" class-type="FSMsequence" low-cc="zero" high-cc="many" is-composite="no" is-exclusive="no" is-dependent="no"/>
  </class>
 
  <class name="FSMsequence">
-  <attribute name="name" type="string" is-multi-value="yes" is-not-null="yes"/>
-  <relationship name="sequence" class-type="FSMCommand" low-cc="one" high-cc="many" is-composite="yes" is-exclusive="no" is-dependent="no"/>
+  <attribute name="name" type="string" is-not-null="yes"/>
+  <relationship name="sequence" class-type="FSMtransition" low-cc="one" high-cc="many" is-composite="no" is-exclusive="no" is-dependent="no"/>
  </class>
 
  <class name="FSMtransition">
   <attribute name="source" description="Source state" type="string" is-not-null="yes"/>
   <attribute name="dest" description="Destination state" type="string" is-not-null="yes"/>
+  <attribute name="cmd" type="string" is-not-null="yes"/>
+  <attribute name="reload_configuration" type="bool" init-value="false" is-not-null="yes"/>
+  <relationship name="pre_transition" class-type="FSMPreTransition" low-cc="one" high-cc="one" is-composite="no" is-exclusive="no" is-dependent="no"/>
+  <relationship name="post_transition" class-type="FSMPostTransition" low-cc="one" high-cc="one" is-composite="no" is-exclusive="no" is-dependent="no"/>
  </class>
 
- <class name="FSMxTransition">
-  <attribute name="transition" description="The main transition that this pre/post transition applies to" type="string" is-not-null="yes"/>
-  <attribute name="order" type="string" is-multi-value="yes" is-not-null="yes"/>
+ <class name="FSMxTransition" is-abstract="yes">
   <attribute name="mandatory" type="string" is-multi-value="yes"/>
+  <relationship name="actions" class-type="FSMaction" low-cc="zero" high-cc="many" is-composite="no" is-exclusive="no" is-dependent="no"/>
  </class>
 
  <class name="GeoId" description="The location of a stream, in detector geographical coordinates.">
@@ -279,6 +300,11 @@
 
  <class name="HostComponent" is-abstract="yes">
   <attribute name="numa_id" type="u8" init-value="0" is-not-null="yes"/>
+ </class>
+
+ <class name="HostCores">
+  <superclass name="HostComponent"/>
+  <attribute name="cpu_cores" type="u16" is-multi-value="yes" is-not-null="yes"/>
  </class>
 
  <class name="Jsonable" is-abstract="yes">
@@ -334,11 +360,6 @@
   <relationship name="contains" description="List of hardware components on this host" class-type="HostComponent" low-cc="one" high-cc="many" is-composite="yes" is-exclusive="no" is-dependent="yes"/>
  </class>
 
- <class name="HostCores">
-  <superclass name="HostComponent"/>
-  <attribute name="cpu_cores" type="u16" is-multi-value="yes" is-not-null="yes"/>
- </class>
-
  <class name="Queue">
   <superclass name="Connection"/>
   <attribute name="queue_type" description="Type of queue" type="enum" range="kUnknown,kStdDeQueue,kFollySPSCQueue,kFollyMPMCQueue" init-value="kFollySPSCQueue" is-not-null="yes"/>
@@ -363,18 +384,6 @@
   <attribute name="type" type="enum" range="kafka,undefined" init-value="kafka" is-not-null="yes"/>
   <attribute name="address" type="string" init-value="monkafka.cern.ch:30092"/>
   <attribute name="publish_timeout" type="u32" init-value="2" is-not-null="yes"/>
- </class>
-
- <class name="ExcludableEntity" description="Base class for all ExcludableEntity objects. A ExcludableEntity is an object with an included/excluded state.&#xA;Derived classes must implement the compute_excluded_state() method to return the state." is-abstract="yes">
-  <method name="parents" description="The algorithm calculates a vector of segments which are parents of given segment.&#xA;If the segment has parents referenced by the partition object, then:&#xA;- in case of C++ it fills the parents parameter; otherwise it throws {@link NotFoundException} exception">
-   <method-implementation language="c++" prototype="void parents(const dunedaq::confmodel::Session&amp; session, std::list&lt; std::vector&lt;const dunedaq::confmodel::ExcludableEntity *&gt; &gt;&amp; parents) const" body=""/>
-  </method>
-  <method name="is_excluded" description="Method to be called from user code to determine if this ExcludableEntity is excluded in the current configuration.">
-   <method-implementation language="c++" prototype="bool is_excluded(const dunedaq::confmodel::ExcludableEntityTree&amp; session) const" body=""/>
-  </method>
-  <method name="compute_excluded_state" description="Virtual method to be implemented by subclasses containing the logic to determine if this object should be considered excluded.">
-   <method-implementation language="c++" prototype="virtual bool compute_excluded_state(const std::set&lt;std::string&gt;&amp;) const" body=""/>
-  </method>
  </class>
 
  <class name="Segment" description="Logical sub division of the configuration that can be included/excluded as a group">
