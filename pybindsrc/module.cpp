@@ -21,6 +21,9 @@ register_dal_methods(py::module&);
 
 PYBIND11_MODULE(_daq_confmodel_dal_py, m)
 {
+  // Our functions take conffwk::Configuration; import the module that registers
+  // its Python type so signatures and stubs resolve it
+  py::module_::import("conffwk._daq_conffwk_py");
 
   m.doc() = "C++ implementation of the confmodel modules";
 #if 0
