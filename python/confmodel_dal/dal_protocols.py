@@ -15,6 +15,10 @@ class DalObject(Protocol):
     def fullName(self) -> str: ...
 
 
+class WritableDalObject(DalObject, Protocol):
+    def rename(self, new_name: str) -> None: ...
+
+
 class ActionPlan(DalObject, Protocol):
     """A set of steps for an application to carry out a command"""
     @property
@@ -401,3 +405,354 @@ class VirtualHost(DalObject, Protocol):
     def uses(self) -> Sequence[HostComponent]: ...
     @property
     def runs_on(self) -> PhysicalHost: ...
+
+
+class WritableActionPlan(ActionPlan, WritableDalObject, Protocol):
+    """Mutable view of ActionPlan, for code that edits the DAL in place."""
+    execution_policy: Literal['modules-in-parallel', 'modules-in-series']
+    command: WritableFSMCommand
+    steps: list[WritableDaqModulesGroup]
+
+
+class WritableApplication(Application, WritableDalObject, Protocol):
+    """Mutable view of Application, for code that edits the DAL in place."""
+    application_name: str
+    commandline_parameters: list[str]
+    log_path: str
+    application_environment: list[WritableVariableBase]
+    runs_on: WritableVirtualHost
+    exposes_service: list[WritableService]
+    opmon_conf: WritableOpMonConf
+
+
+class WritableConnection(Connection, WritableDalObject, Protocol):
+    """Mutable view of Connection, for code that edits the DAL in place."""
+    data_type: str
+    capacity: int
+    send_timeout_ms: int
+    recv_timeout_ms: int
+
+
+class WritableConnectionService(ConnectionService, WritableApplication, Protocol):
+    """Mutable view of ConnectionService, for code that edits the DAL in place."""
+    application_name: str
+    commandline_parameters: list[str]
+    log_path: str
+    application_environment: list[WritableVariableBase]
+    runs_on: WritableVirtualHost
+    exposes_service: list[WritableService]
+    opmon_conf: WritableOpMonConf
+    threads: int
+
+
+class WritableConnectivityService(ConnectivityService, WritableDalObject, Protocol):
+    """Mutable view of ConnectivityService, for code that edits the DAL in place."""
+    interval_ms: int
+    host: str
+    service: WritableService
+
+
+class WritableDaqApplication(DaqApplication, WritableApplication, Protocol):
+    """Mutable view of DaqApplication, for code that edits the DAL in place."""
+    application_name: str
+    commandline_parameters: list[str]
+    log_path: str
+    application_environment: list[WritableVariableBase]
+    runs_on: WritableVirtualHost
+    exposes_service: list[WritableService]
+    opmon_conf: WritableOpMonConf
+    modules: list[WritableDaqModule]
+    action_plans: list[WritableActionPlan]
+
+
+class WritableDaqModule(DaqModule, WritableDalObject, Protocol):
+    """Mutable view of DaqModule, for code that edits the DAL in place."""
+    inputs: list[WritableConnection]
+    outputs: list[WritableConnection]
+    used_host_components: list[WritableHostComponent]
+
+
+class WritableDaqModulesGroup(DaqModulesGroup, WritableDalObject, Protocol):
+    """Mutable view of DaqModulesGroup, for code that edits the DAL in place."""
+    optional: bool
+
+
+class WritableDaqModulesGroupById(DaqModulesGroupById, WritableDaqModulesGroup, Protocol):
+    """Mutable view of DaqModulesGroupById, for code that edits the DAL in place."""
+    optional: bool
+    modules: list[WritableDaqModule]
+
+
+class WritableDaqModulesGroupByType(DaqModulesGroupByType, WritableDaqModulesGroup, Protocol):
+    """Mutable view of DaqModulesGroupByType, for code that edits the DAL in place."""
+    optional: bool
+    modules: list[str]
+
+
+class WritableExcludableEntity(ExcludableEntity, WritableDalObject, Protocol):
+    """Mutable view of ExcludableEntity, for code that edits the DAL in place."""
+
+
+class WritableDetDataReceiver(DetDataReceiver, WritableExcludableEntity, Protocol):
+    """Mutable view of DetDataReceiver, for code that edits the DAL in place."""
+
+
+class WritableExcludableEntitySet(ExcludableEntitySet, WritableExcludableEntity, Protocol):
+    """Mutable view of ExcludableEntitySet, for code that edits the DAL in place."""
+
+
+class WritableExcludableEntitySetAND(ExcludableEntitySetAND, WritableExcludableEntitySet, Protocol):
+    """Mutable view of ExcludableEntitySetAND, for code that edits the DAL in place."""
+
+
+class WritableDetDataSender(DetDataSender, WritableExcludableEntitySetAND, Protocol):
+    """Mutable view of DetDataSender, for code that edits the DAL in place."""
+    streams: list[WritableDetectorStream]
+
+
+class WritableDetectorConfig(DetectorConfig, WritableDalObject, Protocol):
+    """Mutable view of DetectorConfig, for code that edits the DAL in place."""
+    tpg_channel_map: str
+    clock_speed_hz: int
+    op_env: str
+    offline_data_stream: str
+
+
+class WritableDetectorStream(DetectorStream, WritableExcludableEntity, Protocol):
+    """Mutable view of DetectorStream, for code that edits the DAL in place."""
+    source_id: int
+    geo_id: WritableGeoId
+
+
+class WritableDetectorToDaqConnection(DetectorToDaqConnection, WritableExcludableEntitySet, Protocol):
+    """Mutable view of DetectorToDaqConnection, for code that edits the DAL in place."""
+
+
+class WritableExcludableEntitySetOR(ExcludableEntitySetOR, WritableExcludableEntitySet, Protocol):
+    """Mutable view of ExcludableEntitySetOR, for code that edits the DAL in place."""
+
+
+class WritableExcludableEntityTree(ExcludableEntityTree, WritableDalObject, Protocol):
+    """Mutable view of ExcludableEntityTree, for code that edits the DAL in place."""
+    excluded: list[WritableExcludableEntity]
+
+
+class WritableFSMCommand(FSMCommand, WritableDalObject, Protocol):
+    """Mutable view of FSMCommand, for code that edits the DAL in place."""
+    cmd: str
+    optional: bool
+
+
+class WritableFSMaction(FSMaction, WritableDalObject, Protocol):
+    """Mutable view of FSMaction, for code that edits the DAL in place."""
+    name: str
+    commands: list[str]
+    parameters: list[WritableVariable]
+
+
+class WritableFSMconfiguration(FSMconfiguration, WritableDalObject, Protocol):
+    """Mutable view of FSMconfiguration, for code that edits the DAL in place."""
+    states: list[str]
+    initial_state: str
+    transitions: list[WritableFSMtransition]
+    command_sequences: list[WritableFSMsequence]
+    pre_transitions: list[WritableFSMxTransition]
+    post_transitions: list[WritableFSMxTransition]
+    actions: list[WritableFSMaction]
+
+
+class WritableFSMsequence(FSMsequence, WritableDalObject, Protocol):
+    """Mutable view of FSMsequence, for code that edits the DAL in place."""
+    name: list[str]
+    sequence: list[WritableFSMCommand]
+
+
+class WritableFSMtransition(FSMtransition, WritableDalObject, Protocol):
+    """Mutable view of FSMtransition, for code that edits the DAL in place."""
+    source: str
+    dest: str
+
+
+class WritableFSMxTransition(FSMxTransition, WritableDalObject, Protocol):
+    """Mutable view of FSMxTransition, for code that edits the DAL in place."""
+    transition: str
+    order: list[str]
+    mandatory: list[str]
+
+
+class WritableGeoId(GeoId, WritableDalObject, Protocol):
+    """Mutable view of GeoId, for code that edits the DAL in place."""
+    detector_id: int
+    crate_id: int
+    slot_id: int
+    stream_id: int
+
+
+class WritableHostComponent(HostComponent, WritableDalObject, Protocol):
+    """Mutable view of HostComponent, for code that edits the DAL in place."""
+    numa_id: int
+
+
+class WritableJsonable(Jsonable, WritableDalObject, Protocol):
+    """Mutable view of Jsonable, for code that edits the DAL in place."""
+
+
+class WritableJsonableTest(JsonableTest, WritableJsonable, Protocol):
+    """Mutable view of JsonableTest, for code that edits the DAL in place."""
+    this: int
+    that: int
+    other: WritableJsonableTest | None
+
+
+class WritableNetworkConnection(NetworkConnection, WritableConnection, Protocol):
+    """Mutable view of NetworkConnection, for code that edits the DAL in place."""
+    data_type: str
+    capacity: int
+    send_timeout_ms: int
+    recv_timeout_ms: int
+    connection_type: Literal['kSendRecv', 'kPubSub']
+    associated_service: WritableService
+
+
+class WritableNetworkInterface(NetworkInterface, WritableDalObject, Protocol):
+    """Mutable view of NetworkInterface, for code that edits the DAL in place."""
+    mac_address: str
+    ip_address: list[str]
+    interface_name: str
+    network_mask: str
+    network_name: Literal['Control', 'Data']
+
+
+class WritableNetworkDevice(NetworkDevice, WritableHostComponent, WritableNetworkInterface, Protocol):
+    """Mutable view of NetworkDevice, for code that edits the DAL in place."""
+    numa_id: int
+    mac_address: str
+    ip_address: list[str]
+    interface_name: str
+    network_mask: str
+    network_name: Literal['Control', 'Data']
+    pcie_addr: str
+
+
+class WritableOpMonConf(OpMonConf, WritableDalObject, Protocol):
+    """Mutable view of OpMonConf, for code that edits the DAL in place."""
+    level: int
+    interval_s: int
+
+
+class WritableOpMonURI(OpMonURI, WritableDalObject, Protocol):
+    """Mutable view of OpMonURI, for code that edits the DAL in place."""
+    path: str
+    type: Literal['stdout', 'file', 'stream']
+
+
+class WritablePhysicalHost(PhysicalHost, WritableDalObject, Protocol):
+    """Mutable view of PhysicalHost, for code that edits the DAL in place."""
+    contains: list[WritableHostComponent]
+
+
+class WritableHostCores(HostCores, WritableHostComponent, Protocol):
+    """Mutable view of HostCores, for code that edits the DAL in place."""
+    numa_id: int
+    cpu_cores: list[int]
+
+
+class WritableQueue(Queue, WritableConnection, Protocol):
+    """Mutable view of Queue, for code that edits the DAL in place."""
+    data_type: str
+    capacity: int
+    send_timeout_ms: int
+    recv_timeout_ms: int
+    queue_type: Literal['kUnknown', 'kStdDeQueue', 'kFollySPSCQueue', 'kFollyMPMCQueue']
+
+
+class WritableQueueWithSourceId(QueueWithSourceId, WritableQueue, Protocol):
+    """Mutable view of QueueWithSourceId, for code that edits the DAL in place."""
+    data_type: str
+    capacity: int
+    send_timeout_ms: int
+    recv_timeout_ms: int
+    queue_type: Literal['kUnknown', 'kStdDeQueue', 'kFollySPSCQueue', 'kFollyMPMCQueue']
+    source_id: int
+
+
+class WritableRCApplication(RCApplication, WritableApplication, Protocol):
+    """Mutable view of RCApplication, for code that edits the DAL in place."""
+    application_name: str
+    commandline_parameters: list[str]
+    log_path: str
+    application_environment: list[WritableVariableBase]
+    runs_on: WritableVirtualHost
+    exposes_service: list[WritableService]
+    opmon_conf: WritableOpMonConf
+    fsm: WritableFSMconfiguration
+    broadcaster: WritableRCBroadcaster | None
+
+
+class WritableRCBroadcaster(RCBroadcaster, WritableDalObject, Protocol):
+    """Mutable view of RCBroadcaster, for code that edits the DAL in place."""
+    type: Literal['kafka', 'undefined']
+    address: str
+    publish_timeout: int
+
+
+class WritableSegment(Segment, WritableExcludableEntitySet, Protocol):
+    """Mutable view of Segment, for code that edits the DAL in place."""
+    segments: list[WritableSegment]
+    applications: list[WritableApplication]
+    controller: WritableRCApplication
+
+
+class WritableService(Service, WritableDalObject, Protocol):
+    """Mutable view of Service, for code that edits the DAL in place."""
+    protocol: str
+    port: int
+    eth_device_name: str
+    path: str
+
+
+class WritableSession(Session, WritableExcludableEntityTree, Protocol):
+    """Mutable view of Session, for code that edits the DAL in place."""
+    excluded: list[WritableExcludableEntity]
+    description: str
+    data_request_timeout_ms: int
+    data_rate_slowdown_factor: int
+    rte_script: str
+    controller_log_level: Literal['CRITICAL', 'ERROR', 'WARNING', 'INFO', 'DEBUG']
+    log_path: str
+    connectivity_service: WritableConnectivityService | None
+    environment: list[WritableVariableBase]
+    segment: WritableSegment
+    infrastructure_applications: list[WritableApplication]
+    detector_configuration: WritableDetectorConfig
+    opmon_uri: WritableOpMonURI
+
+
+class WritableStorageDevice(StorageDevice, WritableHostComponent, Protocol):
+    """Mutable view of StorageDevice, for code that edits the DAL in place."""
+    numa_id: int
+    storage: int
+
+
+class WritableVariableBase(VariableBase, WritableDalObject, Protocol):
+    """Mutable view of VariableBase, for code that edits the DAL in place."""
+    description: str
+
+
+class WritableVariable(Variable, WritableVariableBase, Protocol):
+    """Mutable view of Variable, for code that edits the DAL in place."""
+    description: str
+    name: str
+    value: str
+
+
+class WritableVariableSet(VariableSet, WritableVariableBase, Protocol):
+    """Mutable view of VariableSet, for code that edits the DAL in place."""
+    description: str
+    contains: list[WritableVariableBase]
+
+
+class WritableVirtualHost(VirtualHost, WritableDalObject, Protocol):
+    """Mutable view of VirtualHost, for code that edits the DAL in place."""
+    uses: list[WritableHostComponent]
+    runs_on: WritablePhysicalHost
