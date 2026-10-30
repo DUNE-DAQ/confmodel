@@ -80,7 +80,7 @@
 
 <oks-schema>
 
-<info name="" type="" num-of-items="50" oks-format="schema" oks-version="862f2957270" created-by="jcfree" created-on="mu2edaq13.fnal.gov" creation-time="20230123T223700" last-modified-by="mroda" last-modified-on="mroda-xpsp" last-modification-time="20261022T145205"/>
+<info name="" type="" num-of-items="50" oks-format="schema" oks-version="862f2957270" created-by="jcfree" created-on="mu2edaq13.fnal.gov" creation-time="20230123T223700" last-modified-by="mroda" last-modified-on="mroda-xpsp" last-modification-time="20261030T102801"/>
 
  <class name="ActionPlan" description="A set of steps for an application to carry out a command">
   <attribute name="execution_policy" description="How the application should dispatch the command to modules matched by each step of the ActionPlan" type="enum" range="modules-in-parallel,modules-in-series" init-value="modules-in-parallel"/>
@@ -280,7 +280,7 @@
   <relationship name="post_transition" class-type="FSMPostTransition" low-cc="zero" high-cc="one" is-composite="no" is-exclusive="no" is-dependent="no"/>
  </class>
 
- <class name="FSMxTransition">
+ <class name="FSMxTransition" is-abstract="yes">
   <attribute name="mandatory" type="string" is-multi-value="yes"/>
   <relationship name="actions" class-type="FSMaction" low-cc="zero" high-cc="many" is-composite="no" is-exclusive="no" is-dependent="no"/>
  </class>
