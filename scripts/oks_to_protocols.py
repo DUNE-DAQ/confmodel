@@ -6,6 +6,10 @@ Usage: oks_to_protocols.py OUT.py SCHEMA.xml [SCHEMA.xml ...]
 Type mapping follows conffwk/schema.py oks_types. Attributes without a value
 read from the DB come back as their default ('' or 0), so they are not
 Optional; single relationships with low-cc="zero" are.
+
+Each class X gets a read-only protocol X and a settable subtype WritableX,
+like const and non-const objects in the C++ DAL. Use WritableX for code that
+modifies the DAL. id is always read-only; change it with rename().
 """
 
 import keyword
@@ -36,6 +40,10 @@ class DalObject(Protocol):
     def className(self) -> str: ...
     def oksTypes(self) -> list[str]: ...
     def fullName(self) -> str: ...
+
+
+class WritableDalObject(DalObject, Protocol):
+    def rename(self, new_name: str) -> None: ...
 '''
 
 
@@ -59,19 +67,31 @@ def attr_type(a: ET.Element) -> str:
     return py
 
 
-def rel_type(r: ET.Element) -> str:
+def rel_type(r: ET.Element, writable: bool = False) -> str:
     cls = req(r, "class-type")
+    if writable:
+        cls = f"Writable{cls}"
     if r.get("high-cc") == "many":
-        return f"Sequence[{cls}]"
+        return f"list[{cls}]" if writable else f"Sequence[{cls}]"
     if r.get("low-cc") == "zero":
         return f"{cls} | None"
     return cls
 
 
+def valid(name: str) -> bool:
+    return name.isidentifier() and not keyword.iskeyword(name)
+
+
 def prop(name: str, py: str) -> str:
-    if keyword.iskeyword(name) or not name.isidentifier():
+    if not valid(name):
         return f"    # skipped {name!r}: not a valid identifier\n"
     return f"    @property\n    def {name}(self) -> {py}: ...\n"
+
+
+def member(name: str, py: str) -> str:
+    if not valid(name):
+        return f"    # skipped {name!r}: not a valid identifier\n"
+    return f"    {name}: {py}\n"
 
 
 def emit_class(c: ET.Element) -> str:
@@ -83,6 +103,34 @@ def emit_class(c: ET.Element) -> str:
     if doc:
         head += f'    """{doc.strip()}"""\n'
     return head + ("".join(body) or "    pass\n")
+
+
+def writable_fields(c: ET.Element, by_name: dict[str, ET.Element]) -> dict[str, str]:
+    """Writable member types of c, including inherited ones (subclass wins).
+
+    Every member is redeclared so that WritableX overrides the read-only
+    properties it inherits from X and from the Writable bases agree.
+    """
+    fields: dict[str, str] = {}
+    for s in c.findall("superclass"):
+        base = by_name.get(req(s, "name"))
+        if base is not None:
+            fields.update(writable_fields(base, by_name))
+    for a in c.findall("attribute"):
+        fields[req(a, "name")] = attr_type(a)
+    for r in c.findall("relationship"):
+        fields[req(r, "name")] = rel_type(r, writable=True)
+    return fields
+
+
+def emit_writable_class(c: ET.Element, by_name: dict[str, ET.Element]) -> str:
+    name = req(c, "name")
+    supers = [f"Writable{req(s, 'name')}" for s in c.findall("superclass")]
+    supers = [name, *(supers or ["WritableDalObject"])]
+    body = [member(n, py) for n, py in writable_fields(c, by_name).items()]
+    head = f"class Writable{name}({', '.join(supers)}, Protocol):\n"
+    head += f'    """Mutable view of {name}, for code that edits the DAL in place."""\n'
+    return head + "".join(body)
 
 
 def superclasses_first(classes: list[ET.Element]) -> list[ET.Element]:
@@ -107,8 +155,11 @@ def main(out: str, schemas: list[str]) -> None:
     classes = []
     for path in schemas:
         classes += ET.parse(path).getroot().findall("class")
+    by_name = {req(c, "name"): c for c in classes}
+    ordered = superclasses_first(classes)
     chunks = [HEADER.format(sources=", ".join(schemas))]
-    chunks += [emit_class(c) for c in superclasses_first(classes)]
+    chunks += [emit_class(c) for c in ordered]
+    chunks += [emit_writable_class(c, by_name) for c in ordered]
     with open(out, "w") as f:
         f.write("\n\n".join(chunks))
 
