@@ -275,7 +275,6 @@
   <attribute name="source" description="Source state" type="string" is-not-null="yes"/>
   <attribute name="dest" description="Destination state" type="string" is-not-null="yes"/>
   <attribute name="cmd" type="string" is-not-null="yes"/>
-  <attribute name="reload_configuration" type="bool" init-value="false" is-not-null="yes"/>
   <relationship name="pre_transition" class-type="FSMPreTransition" low-cc="zero" high-cc="one" is-composite="no" is-exclusive="no" is-dependent="no"/>
   <relationship name="post_transition" class-type="FSMPostTransition" low-cc="zero" high-cc="one" is-composite="no" is-exclusive="no" is-dependent="no"/>
  </class>
